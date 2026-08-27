@@ -11,7 +11,23 @@ Usage:
 """
 from __future__ import annotations
 import argparse, csv
+import hashlib
+import sys
 from pathlib import Path
+
+
+def _raise_csv_field_limit() -> None:
+    """Allow very long email bodies (Python defaults to a ~131 KB field cap)."""
+    limit = sys.maxsize
+    while True:
+        try:
+            csv.field_size_limit(limit)
+            return
+        except OverflowError:
+            limit = int(limit / 10)
+
+
+_raise_csv_field_limit()
 
 TEXT_COLUMNS = ("body", "email_body", "message", "text", "content", "email", "Email Text", "email_text", "raw")
 SUBJECT_COLUMNS = ("subject", "Subject", "email_subject")
@@ -72,6 +88,8 @@ def main():
     p = argparse.ArgumentParser(description="Prepare public email CSV(s) for model training.")
     p.add_argument("items", nargs="+", help="CSV file(s)/folder(s), and optionally the output CSV last")
     p.add_argument("--output", "-o", default=None, help="output CSV path (default: data/reviewed_mail.csv)")
+    p.add_argument("--max-per-class", type=int, default=None,
+                   help="optional cap on examples per label, kept by random sampling (e.g. 25000)")
     args = p.parse_args()
 
     # Backward-compatible shorthand: `prepare_dataset <input> <output.csv>`
@@ -90,16 +108,23 @@ def main():
     if not files:
         raise SystemExit("No CSV files found in the given locations.")
 
-    seen: set[str] = set()
-    total_kept = total_skipped = total_dupes = 0
-    spam = ham = 0
-    per_file: list[tuple[str, int, int, int]] = []
+    import random
 
-    with open(output, "w", encoding="utf-8", newline="") as target:
-        writer = csv.DictWriter(target, fieldnames=["raw_email", "label"])
-        writer.writeheader()
+    rng = random.Random(42)
+    seen: set[str] = set()
+    total_skipped = total_dupes = eligible = 0
+    ham = spam = 0
+    per_file: list[tuple[str, int, int, int]] = []
+    # When capping, hold rows in a reservoir (capped per class) instead of streaming.
+    reservoir: dict[int, list[dict]] = {0: [], 1: []}
+    seen_per_class = {0: 0, 1: 0}
+
+    target = open(output, "w", encoding="utf-8", newline="")
+    writer = csv.DictWriter(target, fieldnames=["raw_email", "label"])
+    writer.writeheader()
+    try:
         for path in files:
-            kept = skipped = dupes = 0
+            skipped = dupes = kept = 0
             try:
                 rows = read_rows(path)
             except Exception as exc:  # noqa: BLE001 - report and continue with other files
@@ -116,28 +141,55 @@ def main():
                 except ValueError:
                     skipped += 1
                     continue
-                key = " ".join(body.split()).lower()
+                key = hashlib.sha1(" ".join(body.split()).lower().encode("utf-8", "replace")).hexdigest()
                 if key in seen:
                     dupes += 1
                     continue
                 seen.add(key)
-                raw = f"From: {choose(row, FROM_COLUMNS)}\nSubject: {choose(row, SUBJECT_COLUMNS)}\n\n{body}"
-                writer.writerow({"raw_email": raw, "label": normalized})
-                kept += 1
-                spam += normalized
-                ham += 1 - normalized
-            per_file.append((path.name, kept, skipped, dupes))
-            total_kept += kept
+                eligible += 1
+                seen_per_class[normalized] += 1
+                record = {
+                    "raw_email": f"From: {choose(row, FROM_COLUMNS)}\nSubject: {choose(row, SUBJECT_COLUMNS)}\n\n{body}",
+                    "label": normalized,
+                }
+                if args.max_per_class:
+                    bucket = reservoir[normalized]
+                    if len(bucket) < args.max_per_class:
+                        bucket.append(record)
+                    else:
+                        j = rng.randrange(seen_per_class[normalized])
+                        if j < args.max_per_class:
+                            bucket[j] = record
+                    kept = len(bucket) if normalized == 0 else kept
+                else:
+                    writer.writerow(record)
+                    kept += 1
+            per_file.append((path.name, kept if not args.max_per_class else 0, skipped, dupes))
             total_skipped += skipped
             total_dupes += dupes
+
+        if args.max_per_class:
+            for label in (0, 1):
+                for record in reservoir[label]:
+                    writer.writerow(record)
+            ham, spam = len(reservoir[0]), len(reservoir[1])
+            total_kept = ham + spam
+        else:
+            ham, spam = seen_per_class[0], seen_per_class[1]
+            total_kept = eligible
+    finally:
+        target.close()
 
     print(f"\n{'file':28s} {'kept':>8s} {'skipped':>8s} {'dupes':>8s}")
     print("-" * 56)
     for name, kept, skipped, dupes in per_file:
-        print(f"{name[:28]:28s} {kept:>8d} {skipped:>8d} {dupes:>8d}")
+        label = "(combined below)" if kept == 0 and args.max_per_class else ""
+        print(f"{name[:28]:28s} {kept:>8d} {skipped:>8d} {dupes:>8d} {label}")
     print("-" * 56)
-    print(f"{'TOTAL':28s} {total_kept:>8d} {total_skipped:>8d} {total_dupes:>8d}")
-    print(f"\nLabel balance: {ham} legitimate (0) / {spam} spam-or-phishing (1)")
+    print(f"{'TOTAL written':28s} {total_kept:>8d} {total_skipped:>8d} {total_dupes:>8d}")
+    print(f"\nUnique emails found: {eligible} ({seen_per_class[0]} legitimate / {seen_per_class[1]} spam-or-phishing)")
+    if args.max_per_class:
+        print(f"After --max-per-class {args.max_per_class}: wrote {ham} legitimate / {spam} spam-or-phishing.")
     print(f"Wrote {total_kept} rows to {output}. Inspect the first rows in Excel before training.")
     if total_kept == 0:
         print("\nNothing was converted. Open one CSV and send me the FIRST ROW (column headings only).")
