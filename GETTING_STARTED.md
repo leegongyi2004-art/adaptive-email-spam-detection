@@ -101,13 +101,39 @@ print(result)
 
 The `spam_probability` is a risk score—not proof that a message was AI-written. Start with `.55`; select the final threshold only after measuring false positives on the validation set.
 
+## 5b. See the "adaptive" loop and auto-scan a folder
+
+**Watch it learn a new scam from feedback** (self-contained, no dataset needed):
+
+```powershell
+.venv\Scripts\python.exe examples\demo_adaptive.py
+```
+
+It trains a model on known spam types, shows it miss a brand-new "crypto airdrop"
+scam wave, then retrains on reviewed feedback and catches the campaign afterward —
+while still passing legitimate mail. This is what *adaptive* means: scheduled retraining
+on reviewed labels (like Gmail learning from "Report spam"), not unsupervised self-learning.
+
+**Auto-process incoming mail (simulation):** put `.eml` email files into a folder (this is
+what a mail server delivers), then scan and optionally quarantine spam:
+
+```powershell
+# safe report only:
+.venv\Scripts\python.exe -m spam_detection.scan_mailbox mail_inbox
+# move spam into a quarantine folder, leave legitimate mail:
+.venv\Scripts\python.exe -m spam_detection.scan_mailbox mail_inbox --action quarantine --quarantine-dir mail_quarantine
+```
+
 ## 6. Run the basic API
 
 ```powershell
 .venv\Scripts\python.exe -m uvicorn spam_detection.api:app --host 0.0.0.0 --port 8000
 ```
 
-Then open http://127.0.0.1:8000/docs for an interactive test page (POST /predict → Try it out).
+Then open http://127.0.0.1:8000/ for a friendly paste-and-check page (it shows the
+auto-extracted metadata signals), or http://127.0.0.1:8000/docs for the raw API. A mail
+server integrates by calling `POST /predict` with `{ "raw_email": "..." }` for each
+incoming message and acting on the returned label.
 
 The existing `/predict` API serves the fast baseline from `models/email_spam_detector.joblib`. Once you have reviewed the results, we can expose the final fusion model in the API with the threshold you approve.
 
