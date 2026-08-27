@@ -70,6 +70,19 @@ This prints accuracy, precision, recall, F1, ROC-AUC, the confusion matrix, and 
 
 The first run downloads the open model (~66M parameters, ~250 MB); later runs use the local saved model. On CPU this can take hours for a large dataset; an NVIDIA GPU makes it minutes. The saved `models/distilbert-email/training_config.json` records your settings and validation loss for the report. Skip this step entirely until your baseline works.
 
+### No NVIDIA GPU? Use the Google Colab notebook (free T4 GPU)
+
+If your machine only has Intel/AMD integrated graphics, don't train DistilBERT locally. Use
+`notebooks/distilbert_colab.ipynb`:
+
+1. Upload `data/reviewed_mail.csv` to your Google Drive.
+2. Open [colab.research.google.com](https://colab.research.google.com) → **File > Upload notebook** → choose `notebooks/distilbert_colab.ipynb`.
+3. **Runtime > Change runtime type > T4 GPU**, then run the cells top to bottom (Shift+Enter).
+
+It installs everything on the Colab machine, fine-tunes on a balanced 24k subset (~20–30 min),
+prints a held-out report, and reruns the AI-style phishing test through the transformer. The
+trained model is saved back to your Google Drive.
+
 ## 5. Try one email locally
 
 ```python
