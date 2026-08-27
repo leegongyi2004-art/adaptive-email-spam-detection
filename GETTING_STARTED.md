@@ -113,12 +113,14 @@ Then I can adjust the data-import path, model size, labels, threshold, and API r
 
 The project does **not** contain a training dataset yet; it is code waiting for labeled email. For a fast academic prototype, download the **Phishing Email Dataset** CSV from Kaggle, which describes roughly 82,500 combined samples from Enron, Ling, CEAS, Nazario, Nigerian Fraud, and SpamAssassin sources and is published under CC BY-SA 4.0. Record its version, licence, and citation in your report. [Dataset page](https://www.kaggle.com/datasets/naserabdullahalam/phishing-email-dataset/)
 
-After downloading and unzipping it, convert the CSV (replace the filename with the downloaded filename):
+The download contains **several CSVs** (enron, ling, spamassassin, ceas_08, nazario, nigerian_fraud, phishing_email). Keep them all — the legitimate corpora (enron/ling/spamassassin) and the phishing corpora (ceas/nazario/nigerian_fraud/phishing_email) are both needed so the model learns each class. Put the extracted files in a `downloads` folder, then convert the **whole folder at once** (it combines them, drops duplicates, and prints a per-file table):
 
 ```powershell
-.venv\Scripts\python.exe -m spam_detection.prepare_dataset .\downloads\your_dataset.csv .\data\reviewed_mail.csv
+.venv\Scripts\python.exe -m spam_detection.prepare_dataset downloads --output data\reviewed_mail.csv
 .venv\Scripts\python.exe -m spam_detection.evaluate .\data\reviewed_mail.csv --save .\models\email_spam_detector.joblib --threshold 0.55
 .venv\Scripts\python.exe -m spam_detection.train_transformer .\data\reviewed_mail.csv --output .\models\distilbert-email --max-length 256 --epochs 3 --batch-size 8
 ```
+
+The converter prints a `kept / skipped / dupes` table per file and a final `X legitimate / Y spam` balance. If a file shows a large **skipped** count, open that CSV and send me the **column headings only** (not email content) so I can add its format.
 
 Before training, open `data/reviewed_mail.csv` in Excel and verify it has `raw_email,label`, both labels occur, and no sensitive local data was included. The converter recognizes common columns (`body`, `text`, `Email Text`, `subject`, `sender`, `label`, `class`). If it reports many skipped rows, send me the **column headings only**, not the email content, and I will adapt it.
