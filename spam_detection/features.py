@@ -15,6 +15,16 @@ URL_RE = re.compile(r"https?://[^\s<>'\"]+", re.IGNORECASE)
 EMAIL_RE = re.compile(r"\b[\w.+-]+@[\w.-]+\.[a-z]{2,}\b", re.IGNORECASE)
 
 
+def _url_domain(url: str) -> str:
+    """Return the lowercased host of a URL; '' for malformed URLs (real mail
+    contains broken links such as bracketed/IPv6-like strings that crash
+    urlparse)."""
+    try:
+        return urlparse(url).netloc.lower()
+    except (ValueError, UnicodeError):
+        return ""
+
+
 def _text(part: Any) -> str:
     """Extract plain message text, gracefully handling malformed email."""
     try:
@@ -37,7 +47,7 @@ def parse_email(raw: str | bytes) -> dict[str, Any]:
     if not body:
         body = raw_bytes.decode("utf-8", errors="replace")
     urls = URL_RE.findall(body)
-    domains = {urlparse(u).netloc.lower() for u in urls if urlparse(u).netloc}
+    domains = {d for u in urls if (d := _url_domain(u))}
     sender_domain_match = EMAIL_RE.search(sender)
     sender_domain = sender_domain_match.group().rsplit("@", 1)[-1].lower() if sender_domain_match else ""
     auth_headers = " ".join(str(message.get(h, "")) for h in ("Authentication-Results", "Received-SPF", "DKIM-Signature"))
