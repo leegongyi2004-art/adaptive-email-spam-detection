@@ -37,7 +37,7 @@ def _text(part: Any) -> str:
     return ""
 
 
-def parse_email(raw: str | bytes) -> dict[str, Any]:
+def _parse_email_impl(raw: str | bytes) -> dict[str, Any]:
     """Return normalized content and privacy-preserving structural metadata."""
     raw_bytes = raw.encode("utf-8", errors="replace") if isinstance(raw, str) else raw
     message = BytesParser(policy=policy.default).parsebytes(raw_bytes)
@@ -66,3 +66,24 @@ def parse_email(raw: str | bytes) -> dict[str, Any]:
             "suspicious_term_count": sum(term in (subject + " " + body).lower() for term in SUSPICIOUS_TERMS),
         },
     }
+
+
+def parse_email(raw: str | bytes) -> dict[str, Any]:
+    """Public, crash-safe wrapper so one malformed real email never aborts a run."""
+    try:
+        return _parse_email_impl(raw)
+    except Exception:  # noqa: BLE001 - fall back to treating the input as plain text
+        text = raw.decode("utf-8", errors="replace") if isinstance(raw, bytes) else str(raw)
+        urls = URL_RE.findall(text)
+        return {
+            "text": f"subject: \nbody: {text}",
+            "metadata": {
+                "subject_len": 0, "body_len": len(text), "url_count": len(urls),
+                "unique_url_domains": len({d for u in urls if (d := _url_domain(u))}),
+                "attachment_count": 0, "sender_has_domain": 0.0,
+                "sender_url_domain_mismatch": 0.0, "has_reply_to": 0.0,
+                "spf_pass": 0.0, "dkim_present": 0.0, "all_caps_ratio": 0.0,
+                "exclamation_count": text.count("!"),
+                "suspicious_term_count": sum(term in text.lower() for term in SUSPICIOUS_TERMS),
+            },
+        }
