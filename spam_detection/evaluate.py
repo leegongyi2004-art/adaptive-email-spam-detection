@@ -29,7 +29,18 @@ def load_csv(path: str):
     emails = [r["raw_email"] for r in rows]
     labels = [int(r["label"]) for r in rows]
     if len(set(labels)) < 2:
-        raise ValueError("CSV must contain both ham (0) and spam (1) labels")
+        raise ValueError(f"{path} must contain both ham (0) and spam (1) labels")
+    return emails, labels
+
+
+def load_many(paths):
+    emails, labels = [], []
+    for path in paths:
+        e, l = load_csv(path)
+        emails.extend(e)
+        labels.extend(l)
+    if len(set(labels)) < 2:
+        raise ValueError("Combined CSVs must contain both ham (0) and spam (1) labels")
     return emails, labels
 
 
@@ -83,13 +94,13 @@ def print_report(metrics: dict) -> None:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Evaluate the baseline detector on a labeled CSV.")
-    parser.add_argument("csv", help="CSV with raw_email,label columns")
+    parser = argparse.ArgumentParser(description="Evaluate the baseline detector on labeled CSV(s).")
+    parser.add_argument("csv", nargs="+", help="CSV(s) with raw_email,label columns (base data + optional feedback)")
     parser.add_argument("--threshold", type=float, default=0.55)
     parser.add_argument("--save", default="", help="optional path to save the trained model (e.g. models/email_spam_detector.joblib)")
     args = parser.parse_args()
 
-    emails, labels = load_csv(args.csv)
+    emails, labels = load_many(args.csv)
     model, metrics = evaluate(emails, labels, threshold=args.threshold)
     print_report(dict(metrics))
     if args.save:

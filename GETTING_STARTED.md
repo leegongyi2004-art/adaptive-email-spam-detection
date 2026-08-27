@@ -122,7 +122,21 @@ what a mail server delivers), then scan and optionally quarantine spam:
 .venv\Scripts\python.exe -m spam_detection.scan_mailbox mail_inbox
 # move spam into a quarantine folder, leave legitimate mail:
 .venv\Scripts\python.exe -m spam_detection.scan_mailbox mail_inbox --action quarantine --quarantine-dir mail_quarantine
+# live "auto-detect" mode: leave it running, drop new emails in, they are scored instantly:
+.venv\Scripts\python.exe -m spam_detection.scan_mailbox mail_inbox --action quarantine --watch
 ```
+
+**Feedback loop (how the system learns from mistakes):** every scan writes `review_queue.csv`.
+You only review what the model got wrong — open that CSV, type `spam` or `ham` in the
+`correct_label` column for the wrong rows (most emails are never touched), then:
+
+```powershell
+.venv\Scripts\python.exe -m spam_detection.feedback review_queue.csv
+.venv\Scripts\python.exe -m spam_detection.evaluate data\reviewed_mail.csv data\feedback.csv --save models\email_spam_detector.joblib
+```
+
+The second line retrains on the original data **plus** the corrections — the scheduled
+adaptation step. `examples/demo_adaptive.py` shows this loop on a new scam wave.
 
 ## 6. Run the basic API
 
