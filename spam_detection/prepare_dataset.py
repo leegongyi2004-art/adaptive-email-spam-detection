@@ -3,18 +3,21 @@ from __future__ import annotations
 import argparse, csv
 from pathlib import Path
 
-TEXT_COLUMNS = ("body", "email_body", "message", "text", "content", "email", "Email Text")
+TEXT_COLUMNS = ("body", "email_body", "message", "text", "content", "email", "Email Text", "email_text", "raw")
 SUBJECT_COLUMNS = ("subject", "Subject", "email_subject")
 FROM_COLUMNS = ("sender", "from", "From", "email_sender")
-LABEL_COLUMNS = ("label", "Label", "class", "Class", "spam", "is_spam")
-SPAM_VALUES = {"1", "spam", "phishing", "phish", "malicious", "true", "yes"}
+LABEL_COLUMNS = ("label", "Label", "class", "Class", "spam", "is_spam", "Email Type", "email_type", "type", "category", "Category")
+SPAM_VALUES = {"1", "spam", "phishing", "phish", "malicious", "true", "yes", "junk"}
 HAM_VALUES = {"0", "ham", "legitimate", "safe", "benign", "false", "no"}
 
-def choose(row, names): return next((row[n] for n in names if n in row and row[n]), "")
+def choose(row, names): return next((str(row[n]).strip() for n in names if n in row and row[n] and str(row[n]).strip().lower() not in ("nan", "none", "")), "")
 def normalise(value):
     v = str(value).strip().lower()
     if v in SPAM_VALUES: return 1
     if v in HAM_VALUES: return 0
+    # Fallback for labels written as phrases, e.g. "Phishing Email" / "Safe Email".
+    if any(token in v for token in ("phish", "spam", "malicious", "junk")): return 1
+    if any(token in v for token in ("safe", "ham", "legit", "benign", "normal")): return 0
     raise ValueError(f"Unrecognized label {value!r}; edit SPAM_VALUES/HAM_VALUES if required.")
 
 def main():
