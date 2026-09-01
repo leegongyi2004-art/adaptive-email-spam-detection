@@ -11,12 +11,22 @@ Reports the full threshold picture, including recall at a low false-positive rat
 from __future__ import annotations
 
 import argparse
+import csv
 import time
 
 from sklearn.metrics import confusion_matrix, roc_auc_score
 
-from .evaluate import load_csv
 from .model import EmailSpamDetector
+
+
+def load_test_csv(path: str):
+    """Read a labelled test CSV without requiring both classes (a phishing-only
+    set is valid for measuring recall)."""
+    with open(path, newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    emails = [r["raw_email"] for r in rows]
+    labels = [int(r["label"]) for r in rows]
+    return emails, labels
 
 
 def counts(labels, preds):
@@ -36,7 +46,7 @@ def main():
                         help="acceptable false-positive rate for the operating point (default 0.05)")
     args = parser.parse_args()
 
-    emails, labels = load_csv(args.test_csv)
+    emails, labels = load_test_csv(args.test_csv)
     model = EmailSpamDetector.load(args.model)
 
     latencies, probs = [], []
@@ -49,10 +59,10 @@ def main():
 
     print(f"\n=== External test set: {args.test_csv} ===")
     print(f"emails: {len(emails)}  ({n_phish} spam/phishing, {len(emails)-n_phish} legitimate)")
-    try:
+    if len(set(labels)) == 2:
         print(f"ROC-AUC: {roc_auc_score(labels, probs):.3f}  (1.0 = perfect ranking; 0.5 = random)")
-    except ValueError:
-        pass
+    else:
+        print("ROC-AUC: n/a (this set has one class only - measuring phishing recall)")
 
     print(f"\n{'threshold':>9} | {'spam caught':>11} | {'legit wrongly flagged':>22} | {'FPR':>5} | {'precision':>9} | {'F1':>5}")
     print("-" * 80)
