@@ -104,6 +104,11 @@ Model artifacts (`models/*.joblib`) and data (`data/`, downloads) are gitignored
 - [x] **Full report draft written: `REPORT.md`** (Chapters 1–5, abstract, citations, real numbers).
 - [ ] NEXT (user): open REPORT.md, copy into faculty template, add name/cover; tell the agent the
       faculty's required chapter list/template if they want reformatting.
+- [x] **Zenodo LLM-phishing test DONE** (`llm_corpus_sampled.csv` → `data/llm_test.csv`, 4,986
+      GPT-4.1/DeepSeek3.2/LLaMA3.3 phishing, all label 1). v1 caught **92% at thr 0.30 / 84% at 0.55**
+      with NO AI-specific training; v2 (synthetic-feedback) ~same (91%/84%) → adaptation needs
+      reviewed examples of the REAL new threat, not look-alikes. Catch falls with threshold (model
+      less confident on LLM mail). In REPORT.md §4.2b.
 - [ ] Optional extras (only if time/advisor wants):
   - Zenodo LLM-phishing set https://zenodo.org/records/20250116 (`cross-model-phishing.zip`,
     4,986 GPT-4/DeepSeek/LLaMA emails) → **test-only** scoring for a "catches X% of AI-generated
