@@ -138,6 +138,39 @@ You only review what the model got wrong — open that CSV, type `spam` or `ham`
 The second line retrains on the original data **plus** the corrections — the scheduled
 adaptation step. `examples/demo_adaptive.py` shows this loop on a new scam wave.
 
+## 5c. The AI-era phishing experiments (for the advisor's "accuracy + AI email" goals)
+
+Two labelled, disjoint synthetic sets ship in the repo (regenerate any time with
+`python examples/generate_modern_sets.py`):
+
+- `examples/modern_test.csv` — **held-out** modern AI-style phishing + BEC + tricky
+  legitimate mail. NEVER used in training.
+- `examples/modern_feedback.csv` — a separate "reviewed batch" of modern threats used to
+  adapt the model.
+
+**Experiment A — measure detection of modern/AI-style phishing** (after you've trained the
+real model):
+
+```powershell
+.venv\Scripts\python.exe -m spam_detection.evaluate_external models\email_spam_detector.joblib examples\modern_test.csv
+```
+
+This prints accuracy / precision / recall / **false-positive rate** on the modern set — the
+number that answers "does it catch AI-era phishing and leave legitimate mail alone?"
+
+**Experiment B — show adaptation improving accuracy on the new threats:** retrain on the
+classic corpus **plus** the reviewed modern batch, then re-measure on the same held-out set:
+
+```powershell
+.venv\Scripts\python.exe -m spam_detection.evaluate data\reviewed_mail.csv examples\modern_feedback.csv --save models\email_spam_detector_adapted.joblib --threshold 0.55
+.venv\Scripts\python.exe -m spam_detection.evaluate_external models\email_spam_detector_adapted.joblib examples\modern_test.csv
+```
+
+Compare the recall before vs after. The concept is the same loop shown live in
+`python examples\demo_adaptive.py` (a brand-new scam campaign goes from 0/6 caught to 5/6
+after one reviewed retraining cycle). `examples/modern_*.csv` are synthetic with inert
+`.example` domains — cite them as an illustrative benchmark, not a proof of AI-authorship.
+
 ## 6. Run the basic API
 
 ```powershell
