@@ -4,13 +4,16 @@ Run once (outputs are committed to the repo):
 
     python examples/generate_modern_sets.py
 
-Produces:
+Produces two disjoint files:
   examples/modern_test.csv      - held-out modern threats (NEVER used to train)
-  examples/modern_feedback.csv  - a reviewed batch of modern threats used to ADAPT
+  examples/modern_feedback.csv  - a balanced reviewed batch used to ADAPT:
+                                  modern phishing (to catch) + modern legitimate
+                                  mail that contains spam-like words (to stop the
+                                  model flagging safe mail)
 
-The two files are disjoint. All content is synthetic with inert .example domains.
-These mimic modern, polished (AI-assisted-style) phishing and link-less business
-email compromise (BEC), plus tricky legitimate mail that uses similar vocabulary.
+All content is synthetic with inert .example domains. The feedback set models the
+"reviewed mistakes" of the adaptive loop: missed phishing labelled spam and false
+alarms labelled ham, from campaigns/emails different from the held-out test rows.
 """
 import csv
 import itertools
@@ -66,7 +69,8 @@ BEC = [
     "From: ceo@exec-team.example\nSubject: Are you free\n\nI need a small favour urgently. My phone is about to die, so email only. I need to make a payment to a new supplier today - reply and I will forward the details. Strictly between us for now.",
     "From: payroll@hr-internal.example\nSubject: Re: reimbursement\n\nThere was an issue with the payroll file. Reply with your full bank account number and online banking log-in so we can verify and re-issue your bonus before the holiday.",
 ]
-LEGIT = [
+# Legit emails used in the HELD-OUT TEST (do not reuse these bodies in feedback)
+LEGIT_TEST = [
     "From: it.helpdesk@company.example\nSubject: Password expiry reminder\n\nHi all, your network password expires this Friday. Change it through Settings > Account on your work laptop, not via any email link. The IT desk in Building B can help. Thanks, IT.",
     "From: ap@company.example\nSubject: Invoice 4471 attached\n\nPlease find invoice 4471 for the September retainer attached, per our signed contract. Payment terms are net 30 to the bank account already on file. No new account details are needed.",
     "From: tracking@courier.example\nSubject: Out for delivery today\n\nYour parcel is out for delivery and should arrive by 6pm. Track it in the courier app. No payment is required - all fees were paid at checkout.",
@@ -77,8 +81,43 @@ LEGIT = [
     "From: payroll@company.example\nSubject: Payroll onboarding\n\nFor direct deposit setup, please complete the payroll form in the HR system under Onboarding. We never accept bank details by email for security reasons.",
     "From: it.helpdesk@company.example\nSubject: Security awareness reminder\n\nThis quarter's security training is open on the learning portal. Remember: IT will never ask you to email your password. Always verify money requests by phone or in person.",
     "From: sarah.lee@company.example\nSubject: Friday team lunch\n\nTeam lunch Friday at 12:30 in the cafeteria - no need to reply, just turn up. Let me know if you need a vegetarian option.",
-    "From: finance@company.example\nSubject: Q3 budget draft\n\nThe budget draft is in the shared drive for our project. Numbers on the second tab are placeholders pending finance confirmation.",
-    "From: colleague@company.example\nSubject: Re: presentation\n\nGreat presentation today. Could you send the source figures behind chart 4 when you have a moment? No rush - end of the week is fine.",
+]
+# NEW adversarial-but-legitimate emails for FEEDBACK ONLY (different wording from
+# the test set). They deliberately mention passwords, payments, delivery and
+# security - but are clearly safe - to teach the model NOT to flag such mail.
+LEGIT_FEEDBACK = [
+    ("it.helpdesk@company.example", "Scheduled password change",
+     "Reminder: the quarterly password change opens Monday. Do it yourself via Settings > Security on your laptop. We will never send you a link or ask for your password by email. Visit the IT desk if you need help."),
+    ("it.helpdesk@company.example", "Two-factor authentication rollout",
+     "2FA enrolment is now open in the security portal under your account. Follow the on-screen prompts on your own device. No email replies with codes are needed; support never asks for verification codes."),
+    ("tracking@courier.example", "Your parcel has been delivered",
+     "Your parcel was delivered to your front porch at 2:14pm. A signature was not required. Nothing is owed; delivery fees were settled when you placed the order."),
+    ("tracking@courier.example", "Delivery rescheduled to Tuesday",
+     "Your delivery has been rescheduled to Tuesday between 9am and noon at your request. No payment is needed to hold or redeliver; you can change the slot any time in the app."),
+    ("ap@company.example", "Invoice 4821 on file",
+     "Thank you - invoice 4821 was paid on the 5th to the account we already have on record. No updated bank details are required; future invoices follow the same net-30 process."),
+    ("billing@saas-vendor.example", "Your receipt for October",
+     "This is a receipt for your October subscription, charged to the card ending 4421 as usual. No action is required. Update billing details only from your account settings page."),
+    ("payroll@company.example", "Salary credited",
+     "Your October salary has been transferred to the bank account registered in the HR system. Please check the payslip in the portal. We do not change account details from email requests."),
+    ("hr@company.example", "Benefits enrolment closing",
+     "Benefits enrolment closes Friday. Make your selections in the HR system. Enrolment never requires sending bank details, passwords or a confirmation link by email."),
+    ("security@company.example", "Phishing awareness poster",
+     "October is cyber awareness month. Tip: real internal messages about accounts never ask you to reply with credentials or to click a link to 'verify'. When in doubt, call the IT desk using the number on the intranet."),
+    ("it.helpdesk@company.example", "Maintenance completed",
+     "The weekend mail-server maintenance finished on schedule. No action was required from staff and no settings changed. Report anything unusual via the normal IT ticket portal."),
+    ("team@shared-drive.example", "Document access note",
+     "You now have view access to the project folder on the company intranet. Open it via your normal browser bookmark. We never email direct login pages; reach documents from the internal portal only."),
+    ("colleague@company.example", "Re: expense claim",
+     "Your expense claim was approved and will appear on the next payroll run. Submit receipts through the expenses app rather than by email, and never include full card numbers."),
+    ("colleague@company.example", "Re: client call notes",
+     "Thanks for the notes. The contract figures match what finance signed off; no new payment information was shared and no action is needed from us by email."),
+    ("facilities@company.example", "Access card ready",
+     "Your new building access card is at reception. Bring your old card and photo ID. This is a physical-card swap; it does not involve any account verification or online form."),
+    ("library@university.example", "Account notice",
+     "Your library account is in good standing and nothing is due this week. Renew books from the library portal. Please disregard any message asking for a password or payment via email."),
+    ("newsletter@techdigest.example", "This week in security",
+     "This issue covers passkeys, phishing trends, and why legitimate providers never ask for passwords over email. You are receiving this because you subscribed; unsubscribe via the link in your settings."),
 ]
 
 
@@ -89,12 +128,22 @@ def gen_phish(n, combo_start, rng):
     i = 0
     while len(out) < n:
         ti, li = combos[(combo_start + i) % len(combos)]
-        # vary subject/sender to keep repetitions distinct
         sender = rng.choice(SENDERS)
         subject = rng.choice(SUBJECTS).format(n=rng.randint(1000, 9999))
         body = TEMPLATES[ti].format(n=rng.randint(1000, 9999), l=LINKS[li])
         rt = "\nReply-To: collector@webmail.example" if rng.random() < 0.4 else ""
         out.append((f"From: {sender}{rt}\nSubject: {subject}\n\n{body}", 1))
+        i += 1
+    return out
+
+
+def gen_legit_feedback(n, rng):
+    out = []
+    i = 0
+    while len(out) < n:
+        sender, subject, body = LEGIT_FEEDBACK[i % len(LEGIT_FEEDBACK)]
+        subj = subject if i < len(LEGIT_FEEDBACK) else f"{subject} ({rng.randint(1, 9)})"
+        out.append((f"From: {sender}\nSubject: {subj}\n\n{body}", 0))
         i += 1
     return out
 
@@ -107,20 +156,16 @@ def write(path, rows):
 
 
 def main():
-    test = []
     rng_t = random.Random(20240601)
-    # test: 16 link-phish from the FIRST combo slice + first 4 BEC + first 10 legit
-    test += gen_phish(16, 0, rng_t)
+    test = gen_phish(16, 0, rng_t)
     test += [(e, 1) for e in BEC[:4]]
-    test += [(LEGIT[i], 0) for i in range(10)]
+    test += [(LEGIT_TEST[i], 0) for i in range(10)]
     rng_t.shuffle(test)
 
-    feedback = []
     rng_f = random.Random(19051990)
-    # feedback: 96 link-phish starting AFTER the test slice + last 4 BEC + last 2 legit
-    feedback += gen_phish(96, 30, rng_f)
+    feedback = gen_phish(200, 30, rng_f)
     feedback += [(e, 1) for e in BEC[4:]]
-    feedback += [(LEGIT[i], 0) for i in range(10, 12)]
+    feedback += gen_legit_feedback(200, rng_f)
     rng_f.shuffle(feedback)
 
     write(ROOT / "examples" / "modern_test.csv", test)
@@ -129,7 +174,8 @@ def main():
     tb = {e for e, _ in test}
     fb = {e for e, _ in feedback}
     print(f"modern_test.csv    : {len(test)} rows ({sum(l for _, l in test)} phish)")
-    print(f"modern_feedback.csv: {len(feedback)} rows ({sum(l for _, l in feedback)} phish)")
+    print(f"modern_feedback.csv: {len(feedback)} rows ({sum(l for _, l in feedback)} phish / "
+          f"{sum(1 for _, l in feedback if l == 0)} legit)")
     print(f"duplicate emails across the two sets: {len(tb & fb)}")
 
 
