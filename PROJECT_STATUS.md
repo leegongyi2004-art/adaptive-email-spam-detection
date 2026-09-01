@@ -42,15 +42,18 @@ its rows are all duplicates and get skipped — expected.)
 - [x] Demo data + `examples/run_demo.py` (verified working on the user's PC).
 - [x] Metadata StandardScaler bug fix (raw lengths were dominating TF-IDF).
 - [x] CSV long-field limit raised on package import (`spam_detection/__init__.py`).
-- [ ] **IMMEDIATE NEXT STEP (user was about to do this when blocked):**
-      run baseline training/evaluation on real data:
-      `python -m spam_detection.evaluate data\reviewed_mail.csv --save models\email_spam_detector.joblib --threshold 0.55`
-      (offline, ~5–15 min CPU; keep laptop awake). Collect the metrics table.
-- [ ] Tune threshold on validation; optionally test the live API via `uvicorn`.
-- [ ] Deep-learning stage on **Google Colab** (no local GPU): give notebook cells.
-- [ ] Build a small set of **AI-assisted phishing test emails** to demonstrate detection;
-      report findings defensively (do NOT overclaim "better than Gmail"; see EVALUATION_PLAN.md).
-- [ ] Final **report/documentation** using the printed metrics.
+- [x] CSV long-field limit raised on package import (`spam_detection/__init__.py`).
+- [x] Real training done: 81,152 emails -> accuracy 0.992, precision/recall/F1 ~0.992,
+      ROC-AUC 1.000, ~16 ms/email, FPR ~0.9% (confusion: TP 10399 / FN 80 / FP 90 / TN 9719).
+- [x] Web UI with feedback console; mailbox watch/quarantine; feedback->retrain loop.
+- [x] AI-era experiment tooling: evaluate_external.py (threshold sweep + recall@low-FPR),
+      modern_test.csv (held-out) and modern_feedback.csv (balanced adaptation batch).
+- [x] **Adaptive result measured:** v1 ROC-AUC 0.81 -> v2 0.945 on held-out modern set;
+      phishing recall at <=5% FPR 20% -> 85%; main accuracy held at 0.991.
+- [x] Report draft written: REPORT.md (standard FYP chapters, real numbers, citations).
+- [ ] NEXT: user reads/edits REPORT.md into faculty template; optional Zenodo LLM-phishing
+      test (cross-model-phishing.zip) for a larger "AI-generated" detection number; optional
+      authorised disposable-Gmail comparison; optional DistilBERT via Colab.
 
 ## Fixed pitfalls (don't re-introduce)
 - `DictVectorizer`/`TfidfVectorizer` import from `sklearn.feature_extraction.text` /
