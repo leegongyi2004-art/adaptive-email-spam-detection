@@ -606,7 +606,7 @@ approximately 20,288 test messages. Table 3.2 summarises the corpus.
 |---|---|---|
 | Enron [14] | Mostly legitimate | Real organisational email; natural legitimate style |
 | Ling-Spam | Legitimate | Mailing-list technical content |
-| SpamAssassin Public Corpus [15] | Legitimate + spam | Full headers; rich metadata |
+| SpamAssassin Public Corpus [16] | Legitimate + spam | Full headers; rich metadata |
 | CEAS-2008 | Phishing | Large filtered phishing collection |
 | Nazario | Phishing | Classic phishing messages |
 | Nigerian-Fraud | Fraud | Advance-fee / BEC-style text |
@@ -1134,9 +1134,12 @@ Several directions were identified for future work:
 1. **Live mailbox integration.** Connect the API to a live mailbox through an automation
    platform or mail-transfer agent, with quarantine and a reviewer dashboard, under appropriate
    authorisation.
-2. **Authorised commercial comparison.** Conduct a supervisor-approved, controlled black-box
-   comparison against a commercial filter on a disposable account, reporting results only on
-   the shared labelled test set.
+2. **Controlled black-box comparison with live filters.** As directed during supervision, run a
+   controlled black-box test in which one fixed, labelled set of emails is submitted
+   simultaneously to the proposed detector and to live commercial filters (such as Gmail and
+   Microsoft 365) through disposable accounts under appropriate authorisation; all systems are
+   then scored on the identical messages with the same metrics, removing the dataset mismatch
+   that limits literature-based comparisons.
 3. **Operational retraining.** Operationalise periodic scheduled retraining with drift
    monitoring, retraining on reviewed genuine new-campaign samples rather than synthetic data.
 4. **Feature refinement.** Extend the metadata signal set (for example header-routing anomalies
@@ -1202,6 +1205,10 @@ in *Proc. 15th European Conf. Machine Learning (ECML)*, Pisa, Italy, 2004, pp. 2
 
 [15] F. Pedregosa et al., "Scikit-learn: Machine learning in Python," *Journal of Machine
 Learning Research*, vol. 12, pp. 2825–2830, 2011.
+
+[16] The Apache Software Foundation, "SpamAssassin public corpora," Apache SpamAssassin,
+2003. [Online]. Available: https://spamassassin.apache.org/old/publiccorpus/ (accessed
+Sep. 3, 2026).
 
 ---
 
