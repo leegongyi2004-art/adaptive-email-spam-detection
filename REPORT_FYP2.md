@@ -146,9 +146,9 @@ sender-policy-framework and DomainKeys-Identified-Mail indicators, and casing an
 term statistics. The streams were fused into a single feature space and classified by a
 class-balanced logistic regression model, with multinomial Naïve Bayes and a linear support
 vector machine evaluated for comparison. A FastAPI service, a browser review console, a
-mailbox watcher with quarantine, and a feedback-driven retraining loop were implemented,
-together with an optional deep-learning DistilBERT branch documented for graphics-
-processing-unit deployment.
+mailbox watcher with quarantine, and a feedback-driven retraining loop were implemented.
+The detector ran entirely on a commodity central processing unit with no graphics-processor
+requirement.
 
 The fused model was trained on 81,152 de-duplicated public emails and achieved 99.2%
 accuracy with precision 0.991, recall 0.992 and receiver-operating-characteristic area
@@ -195,7 +195,7 @@ CHAPTER 2 LITERATURE REVIEW
     2.2.2 Content-Based Statistical Classifiers
     2.2.3 Metadata and Reputation-Based Systems
     2.2.4 Hybrid and Fusion Systems
-    2.2.5 Deep-Learning and Commercial Systems
+    2.2.5 Commercial Systems
     2.2.6 Summary of the Existing Systems
   2.3 Limitations of Previous Studies (Table 2.2)
   2.4 Summary
@@ -288,7 +288,6 @@ APPENDICES
 - API — Application Programming Interface
 - AUC — Area Under the Curve
 - BEC — Business Email Compromise
-- BERT — Bidirectional Encoder Representations from Transformers
 - CPU — Central Processing Unit
 - CSV — Comma-Separated Values
 - DKIM — DomainKeys Identified Mail
@@ -391,10 +390,9 @@ or customer email. This local-first scope was a privacy and reproducibility deci
 no message content left the host, the detector could be evaluated and deployed without exposing
 mail to a third-party service, and every reported figure could be reproduced from public data.
 All data used for training and testing were public corpora or synthetic data generated for
-controlled experiments. The core detector was a classical machine-learning model
-over content and metadata; a deep-learning transformer branch (DistilBERT) was designed and
-provided as an optional, graphics-processing-unit-deployed enhancement, with a ready-to-run
-notebook for free cloud execution.
+controlled experiments. The detector was a classical machine-learning model over content
+and metadata (logistic regression, with Naïve Bayes and a support vector machine evaluated
+for comparison); it required no graphics processor and ran on ordinary hardware.
 
 The system produced a spam probability, a binary label and an explanation of the structural
 signals observed in a message, and it supported a configurable action (report or quarantine)
@@ -461,10 +459,7 @@ were performed on a consumer laptop running Windows 11, powered by an Intel-clas
 processing unit with integrated Intel UHD graphics and no discrete graphics processing unit.
 This constraint was treated as a design requirement rather than a limitation: a detector that
 ran comfortably on a central processing unit could be deployed widely, embedded in mail
-automation, and reproduced by other researchers without specialist infrastructure. The optional
-deep-learning branch was engineered so that its heavier training workload could be offloaded to
-a free cloud graphics processing unit, while inference of the deployed classical model remained
-on the central processing unit.
+automation, and reproduced by other researchers without specialist infrastructure.
 
 ### 2.1.2 Firmware / Operating System
 
@@ -490,9 +485,7 @@ principal libraries were scikit-learn for feature extraction and classification 
 TF-IDF vectorisation, dictionary vectorisation of metadata, feature union, standardisation,
 logistic regression, multinomial Naïve Bayes and the linear support-vector classifier — and
 Joblib for model persistence. The service layer used FastAPI with Uvicorn as the application
-server and Pydantic for request validation. The optional transformer branch used the Hugging
-Face Transformers library, PyTorch and the Datasets library, isolated in a separate requirements
-file so that the core system remained lightweight. Standard-library modules (`email`, `re`,
+server and Pydantic for request validation. Standard-library modules (`email`, `re`,
 `csv`, `pathlib`) handled message parsing, regular-expression extraction and file handling.
 
 ### 2.1.5 Algorithms
@@ -503,22 +496,19 @@ unigrams and bigrams captured phrasing, while character n-grams of length three 
 tolerated obfuscation such as spaced or misspelled words. **Multinomial Naïve Bayes** applied
 Bayes' theorem with a conditional-independence assumption to provide a fast generative baseline;
 it remained a competitive, efficient method for text classification and had been shown to reach
-high accuracy when paired with sound preprocessing [4], [16]. **Logistic regression** modelled
+high accuracy when paired with sound preprocessing [4], [5]. **Logistic regression** modelled
 the log-odds of spam as a linear function of the features passed through a sigmoid, producing a
 calibrated-style probability and interpretable coefficients. **Linear support vector machines**
 found a maximum-margin separating hyperplane and provided a strong discriminative baseline for
 high-dimensional text. **Standardisation** was applied to metadata features so that raw lengths
-could not dominate the normalised text features. Finally, **transformer-based deep learning**
-(DistilBERT, a distilled version of the bidirectional encoder representations from transformers
-family) modelled context and paraphrase at substantially higher computational cost [10], [19].
-Comprehensive reviews of machine learning for spam filtering confirmed that learned models
-consistently outperformed manually engineered rule systems, and that hybrid combinations of
-feature sources were among the most robust approaches [11], [20], [25]. Recent comparative
-studies across many classifiers further showed that both classical models (random forest,
-support vector machines) and deep models reached the high-nineties in accuracy on public
-phishing and spam corpora, with the gap between them narrowing on well-prepared data [20],
-[26]. Naïve Bayes in particular remained a competitive baseline not only for text but also for
-related security-classification tasks, where its simplicity and speed were valued [29]. The choice of logistic
+could not dominate the normalised text features. Comprehensive reviews of machine learning for
+spam filtering confirmed that learned models consistently outperformed manually engineered
+rule systems, and that hybrid combinations of feature sources were among the most robust
+approaches [6], [7]. Recent comparative studies across many classical classifiers further
+showed that models such as random forests and support vector machines reached the high-nineties
+in accuracy on public phishing and spam corpora [8], [9]. Naïve Bayes in particular remained a
+competitive baseline not only for text but also for related security-classification tasks,
+where its simplicity and speed were valued [10]. The choice of logistic
 regression as the deployed classifier reflected three practical requirements of this project:
 it produced a genuine probability that could be compared against an adjustable threshold, it
 accepted balanced class weighting to compensate for the ham/spam ratio, and its linear
@@ -531,9 +521,7 @@ evaluated during Project I.
 
 A Python and scikit-learn stack provided a fast, explainable and reproducible detector on
 commodity central-processing-unit hardware, with comma-separated-value storage and Joblib
-persistence keeping the system portable. The documented transformer path offered a route to
-semantic deep learning when a graphics processing unit was available, without burdening the
-deployed system.
+persistence keeping the system portable and free of any special hardware dependency.
 
 ## 2.2 Review of Existing Systems and Applications
 
@@ -550,7 +538,7 @@ link-less business-email-compromise messages was a primary motivation for learne
 Statistical content filters learned the distribution of words in spam versus legitimate mail.
 The seminal Bayesian approach of Sahami et al. estimated the probability of a message being junk
 from its terms [4]; later work combined TF-IDF representation with classifiers such as Naïve
-Bayes and support vector machines and reported high accuracy on public corpora [5], [16].
+Bayes and support vector machines and reported high accuracy on public corpora [11], [5].
 Content methods were computationally efficient and effective for well-defined spam vocabulary,
 but they examined only what a message said and were vulnerable to fluent rewording; they ignored
 message structure entirely.
@@ -572,34 +560,33 @@ sent from plausibly configured accounts.
 Hybrid approaches combined content and structural features and were repeatedly reported to be
 more robust than either source alone. Studies using content- and header-based features with
 machine-learning classifiers demonstrated improved reliability, and hierarchical and attention-
-based fusion mechanisms had been proposed to weight complementary feature streams adaptively [9],
-[18]. The Project I preliminary ablation similarly found that the content-plus-metadata fusion
+based fusion mechanisms had been proposed to weight complementary feature streams adaptively [12],
+[13]. The Project I preliminary ablation similarly found that the content-plus-metadata fusion
 configuration delivered the most balanced precision–recall trade-off and the best coverage of
 spam, even though a strong text-only support-vector-machine baseline was hard to beat with simple
 concatenation — a finding that motivated the richer word-plus-character content representation and
 the standardised metadata used in Project II.
 
-### 2.2.5 Deep-Learning and Commercial Systems
+### 2.2.5 Commercial Systems
 
-Deep-learning models based on word embeddings, recurrent architectures and bidirectional
-transformer encoders achieved strong accuracy on public corpora and captured semantic
-relationships that bag-of-words models could not [6], [7], [10], [19]. Their drawbacks were
-computational cost, reduced direct explainability and a dependence on graphics processing units.
-Commercial filters such as Gmail used proprietary, continuously updated artificial-intelligence
-pipelines and reported blocking the vast majority of unwanted mail; because their models were
-private, they could not be benchmarked offline, and any comparison required an authorised,
-controlled black-box test on a disposable account. Most relevant to the present threat
-landscape, recent research showed that large-language-model-generated phishing could evade an
-institutional filter at high rates, while a conventional machine-learning detector trained on
-ordinary phishing data still detected the large majority of those AI-generated emails [17];
-public cross-model large-language-model phishing corpora and business-email-compromise datasets
-had also become available for evaluation [21], [22].
+Commercial filters such as Gmail and Microsoft Defender for Office 365 were large, proprietary,
+continuously updated cloud systems operated at the scale of billions of messages per day; they
+used mixed machine-learning and reputation pipelines and reported blocking the vast majority of
+unwanted mail [14], [15]. Because their models were private, they could not be benchmarked
+offline, and any comparison required an authorised, controlled black-box test on a disposable
+account. Most relevant to the present threat landscape, recent research showed that
+large-language-model-generated phishing could evade an institutional filter at high rates,
+while a conventional machine-learning detector trained on ordinary phishing data still detected
+the large majority of those AI-generated emails [16]; public cross-model large-language-model
+phishing corpora and business-email-compromise datasets had also become available for evaluation
+[17], [18]. These results motivated a locally deployable, explainable classical detector of the
+kind developed in this project.
 
 ### 2.2.6 Summary of the Existing Systems
 
 Table 2.1 summarises the paradigms. The literature indicated that no single source was
-sufficient: rules were brittle, content models ignored structure, metadata alone was weak, deep
-learning was costly and less explainable, and commercial systems were not reproducible. The
+sufficient: rules were brittle, content models ignored structure, metadata alone was weak, and
+commercial systems were not reproducible. The
 project therefore adopted an explainable fusion of rich content and standardised metadata,
 added an adaptive retraining loop to address concept drift, and evaluated the resulting system
 explicitly against AI-assisted phishing.
@@ -612,9 +599,8 @@ explicitly against AI-assisted phishing.
 | Content (TF-IDF + NB/SVM) | Fast; learns wording; strong on classic spam | Ignores structure; vulnerable to fluent rewording |
 | Metadata / reputation | Catches structural anomalies | Weak alone (~93% in preliminary work); evaded by link-less BEC |
 | Hybrid fusion | Robust; balanced precision–recall | More features to manage; fusion design matters |
-| Deep learning (BERT family) | Context and paraphrase aware | Costly; needs GPU; less directly explainable |
 | Commercial filter | Very high reported block rate | Proprietary; cannot be benchmarked offline |
-| This project (fusion + adaptation) | Robust, fast, explainable; updates from feedback | Semantic edge cases; GPU branch optional |
+| This project (fusion + adaptation) | Robust, fast on CPU, explainable; updates from feedback | Semantic edge cases require review feedback |
 
 ## 2.3 Limitations of Previous Studies
 
@@ -633,20 +619,19 @@ summarises the reviewed approaches and their limitations in relation to this pro
 
 | Approach (representative work) | Technique | Strengths | Limitations for this project |
 |---|---|---|---|
-| Rule / keyword / blocklist | Static signatures and lists | Simple; explainable | Brittle; manual upkeep; evaded by fluent BEC [11], [25] |
-| Content statistical classifiers [4], [5], [16] | TF-IDF / Naïve Bayes / SVM on text | Fast; strong on classic spam | Ignores structure; weak on fluent rewording |
+| Rule / keyword / blocklist | Static signatures and lists | Simple; explainable | Brittle; manual upkeep; evaded by fluent BEC [6], [7] |
+| Content statistical classifiers [4], [11], [5] | TF-IDF / Naïve Bayes / SVM on text | Fast; strong on classic spam | Ignores structure; weak on fluent rewording |
 | Metadata / reputation systems | Header, SPF/DKIM, sender and link analysis | Catches structural anomalies | Weak alone (~93% in preliminary work); evaded by link-less BEC |
-| Hybrid / fusion [9], [18] | Content + header features; attention fusion | More robust; balanced | Fusion design is non-trivial; rarely local/explainable |
-| Deep learning [6], [7], [10], [20] | LSTM/CNN/BERT-family transformers | Context and paraphrase aware | Costly; GPU-dependent; less explainable |
-| Commercial filters [27], [28] | Proprietary cloud ML at scale | Very high reported block rate | Not reproducible; cannot be benchmarked offline |
+| Hybrid / fusion [12], [13] | Content + header features; attention fusion | More robust; balanced | Fusion design is non-trivial; rarely local/explainable |
+| Commercial filters [14], [15] | Proprietary cloud ML at scale | Very high reported block rate | Not reproducible; cannot be benchmarked offline |
 
 ## 2.4 Summary
 
 This chapter reviewed the technologies used in the project — commodity central-processing-unit
 hardware, a cross-platform Python environment, comma-separated-value storage, and the scikit-learn
 machine-learning stack — and surveyed existing spam-detection systems, from rule-based and
-content-statistical methods through metadata and hybrid/fusion approaches to deep learning and
-proprietary commercial filters. The review established that no single source of evidence was
+content-statistical methods through metadata and hybrid/fusion approaches to proprietary
+commercial filters. The review established that no single source of evidence was
 sufficient on its own, that fusion of content and metadata was among the most robust approaches,
 and that adaptation to evolving and AI-assisted threats remained under-served by locally
 deployable, explainable systems. These findings motivated the proposed solution described next.
@@ -657,8 +642,7 @@ The proposed solution was a local, open-source adaptive detector that fused word
 TF-IDF content features with twelve standardised structural metadata signals under a
 class-balanced logistic-regression classifier, with Naïve Bayes and a linear support vector
 machine evaluated for comparison. The detector was wrapped in a service with a browser review
-console, a mailbox watcher with quarantine and a feedback-driven retraining loop, and was
-accompanied by an optional DistilBERT branch for graphics-processing-unit deployment.
+console, a mailbox watcher with quarantine and a feedback-driven retraining loop.
 
 ---
 
@@ -773,9 +757,9 @@ approximately 20,288 test messages. Table 3.2 summarises the corpus.
 
 | Source corpus | Role | Characteristics |
 |---|---|---|
-| Enron [14] | Mostly legitimate | Real organisational email; natural legitimate style |
+| Enron [19] | Mostly legitimate | Real organisational email; natural legitimate style |
 | Ling-Spam | Legitimate | Mailing-list technical content |
-| SpamAssassin Public Corpus [12] | Legitimate + spam | Full headers; rich metadata |
+| SpamAssassin Public Corpus [20] | Legitimate + spam | Full headers; rich metadata |
 | CEAS-2008 | Phishing | Large filtered phishing collection |
 | Nazario | Phishing | Classic phishing messages |
 | Nigerian-Fraud | Fraud | Advance-fee / BEC-style text |
@@ -783,7 +767,7 @@ approximately 20,288 test messages. Table 3.2 summarises the corpus.
 
 Two further data sources were used only for testing, never for training. A cross-model
 large-language-model phishing corpus provided 4,986 phishing emails generated by GPT-4.1,
-DeepSeek 3.2 and LLaMA 3.3, used to assess generalisation to AI-assisted phishing [22]. A
+DeepSeek 3.2 and LLaMA 3.3, used to assess generalisation to AI-assisted phishing [18]. A
 synthetic modern-threat set and a reviewed feedback set, generated with inert placeholder domains,
 were used for the controlled adaptation experiment. No external or AI-generated email was used
 during training, so that every external figure measured genuine out-of-sample generalisation.
@@ -895,7 +879,6 @@ Table 4.1 lists the modules and their responsibilities.
 | `prepare_dataset.py` | Ingests and merges public corpus CSVs, de-duplicates, handles encodings, long fields and multiple label formats. |
 | `evaluate.py` | Held-out training/evaluation: metrics, confusion matrix, threshold sweep, recall-at-low-FPR, latency; serialises the model. |
 | `evaluate_external.py` | Scores external/AI-style sets that may contain a single class; threshold sweep. |
-| `transformer.py`, `train_transformer.py`, `notebooks/distilbert_colab.ipynb` | Optional DistilBERT branch and free-GPU training notebook. |
 
 The deployed classifier (`model.py`) was a scikit-learn `Pipeline`. Its feature stage was a
 `FeatureUnion` of three branches: a word `TfidfVectorizer` with `ngram_range=(1,2)`,
@@ -977,9 +960,8 @@ retraining path. Chapter 5 describes how this design was implemented and operate
 
 The system was developed and evaluated on a consumer laptop with an Intel-class central
 processing unit, integrated Intel UHD graphics and no discrete graphics processing unit. No
-specialised hardware was required for the deployed detector. The optional DistilBERT branch was
-designed to train on a free cloud graphics processing unit (Google Colab), while its design and
-the classical pipeline were developed and tested locally. Table 5.1 summarises the environment.
+specialised hardware was required for the detector, which ran entirely on the central
+processing unit. Table 5.1 summarises the environment.
 
 **Table 5.1 — Development hardware and software.**
 
@@ -989,7 +971,6 @@ the classical pipeline were developed and tested locally. Table 5.1 summarises t
 | Processor | Intel-class CPU, no discrete GPU |
 | Python | 3.11+ virtual environment |
 | Core libraries | scikit-learn 1.4+, Joblib, FastAPI, Uvicorn, Pydantic |
-| Optional GPU stack | Transformers, PyTorch, Datasets (`requirements-transformer.txt`) |
 | Storage | Local CSV files; Joblib-serialised model |
 
 [FIGURE 5.1: Screenshot of the terminal showing the Python virtual environment created and the
@@ -998,9 +979,8 @@ requirements installed successfully.]
 ## 5.2 Software Setup
 
 A dedicated Python virtual environment was created and the core dependencies were installed from
-`requirements.txt` (scikit-learn, Joblib, FastAPI, Uvicorn and Pydantic). The optional
-transformer stack was isolated in `requirements-transformer.txt` so that the lightweight core
-could be installed without PyTorch. The public corpus was prepared with the dataset-preparation
+`requirements.txt` (scikit-learn, Joblib, FastAPI, Uvicorn and Pydantic). The public corpus
+was prepared with the dataset-preparation
 script, which merged the source CSV files, raised the CSV field-size limit for long bodies,
 handled multiple encodings and label formats, and de-duplicated the records. De-duplication was
 performed on normalised message content so that identical emails repeated across the merged
@@ -1181,9 +1161,9 @@ roughly 11 milliseconds per email. Table 6.3 summarises the result.
 
 The catch rate fell as the threshold rose, showing that the model was systematically less
 confident on large-language-model-written mail than on classic phishing — evidence that
-AI-assisted messages were harder, and a direct motivation for adaptation and the optional
-transformer branch. The result was consistent with recent research in which a conventionally
-trained detector still caught the large majority of AI-generated phishing [17].
+AI-assisted messages were harder, and a direct motivation for the adaptive retraining
+mechanism. The result was consistent with recent research in which a conventionally
+trained detector still caught the large majority of AI-generated phishing [16].
 
 [FIGURE 6.3: Line chart of catch rate versus decision threshold on the LLM-phishing set,
 annotated at 0.55 (84%) and the low-threshold point (92%).]
@@ -1226,8 +1206,8 @@ literature, two comparisons were made. The first (Table 6.5) concerned commercia
 providers. Commercial filters were large, proprietary, continuously retrained cloud systems
 operated on billions of messages per day; Google reported blocking more than 99.9% of spam,
 phishing and malware in Gmail with machine-learning models, including a large-language-model
-component that alone blocked about 20% more spam than the previous system [27], and Microsoft
-reported very high efficacy for its Defender for Office 365 e-mail protection [28]. These
+component that alone blocked about 20% more spam than the previous system [14], and Microsoft
+reported very high efficacy for its Defender for Office 365 e-mail protection [15]. These
 figures were aggregate production statistics reported by the vendors rather than accuracy on a
 fixed labelled test set, so they were not directly comparable to an offline benchmark; they are
 shown for context and a dash is recorded where no independent, reproducible figure existed.
@@ -1241,37 +1221,34 @@ controlled benchmark).**
 
 | System | Reported block / detection rate | Basis | Reproducible offline? |
 |---|---|---|---|
-| Gmail (Google) | > 99.9% of spam/phishing/malware | Vendor aggregate production report [27] | No (proprietary) |
-| Outlook / Microsoft 365 Defender | Very high efficacy reported; independent test noted false positives and missed social engineering | Vendor report [28]; independent SE Labs testing | No (proprietary) |
+| Gmail (Google) | > 99.9% of spam/phishing/malware | Vendor aggregate production report [14] | No (proprietary) |
+| Outlook / Microsoft 365 Defender | Very high efficacy reported; independent test noted false positives and missed social engineering | Vendor report [15]; independent SE Labs testing | No (proprietary) |
 | Yahoo Mail | No comparable figure published | — | — |
 | **Proposed model (this project)** | 99.2% accuracy on held-out public corpus; 92% catch on unseen LLM phishing | Measured on a fixed labelled test set (Tables 6.1, 6.3) | **Yes** |
 
 The second comparison (Table 6.6) concerned published academic models evaluated on the same
 family of public corpora used in this project (Enron, SpamAssassin, Ling-Spam, TREC, CEAS-2008,
-Nazario and Nigerian-Fraud). The figures were taken from recent comparative studies [20], [26].
+Nazario and Nigerian-Fraud). The figures were taken from recent comparative studies [8], [9], restricted to the
+classical machine-learning classifiers comparable to the deployed system; deep-learning
+transformer results were excluded because the project did not employ deep learning.
 Because the studies used different splits, preprocessing and corpora combinations, the numbers
 were indicative rather than strictly identical in protocol; the dataset/setting is therefore
 shown for each row. The proposed fusion model reached 99.2% accuracy on a merged 81,152-email
-corpus drawn from exactly these sources — comparable to the strongest reported deep-learning
-result (RoBERTa at roughly 99% merged accuracy) while running on a commodity central processing
-unit at about 16 milliseconds per email, with no graphics processor required, and while exposing
-interpretable metadata signals.
+corpus drawn from exactly these sources, running on a commodity central processing unit at about
+16 milliseconds per email with no graphics processor and while exposing interpretable metadata
+signals.
 
-**Table 6.6 — Comparison with published models on comparable public corpora.**
+**Table 6.6 — Comparison with published classical models on comparable public corpora.**
 
 | Method | Type | Corpus / setting | Reported accuracy |
 |---|---|---|---|
-| Multinomial Naïve Bayes | Classical ML | Spambase / phishing corpora [26] | ~79–88% |
-| Support vector machine | Classical ML | Enron1; merged corpora [20], [26] | ~98–99% |
-| Random forest | Classical ML | Spam/Spambase; phishing corpora [26] | ~97–99.9% |
-| LSTM / CNN | Deep learning | SpamAssassin, Kaggle, Nazario [20], [26] | ~97–99.5% |
-| DistilBERT | Transformer | CEAS-08; merged corpora [20] | ~99.7% / ~86% merged |
-| BERT | Transformer | Enron, SpamAssassin, merged [20] | ~98.9–99.3% |
-| RoBERTa | Transformer | Merged corpora (balanced) [20] | ~99.0% merged; 96% Merged |
+| Multinomial Naïve Bayes | Classical ML | Spambase / phishing corpora [9] | ~79–88% |
+| Support vector machine | Classical ML | Enron1; merged corpora [8], [9] | ~98–99% |
+| Random forest | Classical ML | Spam/Spambase; phishing corpora [9] | ~97–99.9% |
 | **Proposed fusion LR (content word+char TF-IDF + 12 metadata)** | Classical ML (fusion) | Merged Enron/Ling/SpamAssassin/CEAS/Nazario/Nigerian, 81,152 emails | **99.2% (CPU, ~16 ms/email)** |
 
 The interpretation was twofold. First, on the standard public-corpus task the proposed classical
-fusion model was already at the level of the best published results, which was consistent with
+fusion model sat at the level of the strongest reported classical results, which was consistent with
 the observation that stylistically distinct public-corpus classes were relatively easy to
 separate and that most published systems saturated the high-nineties there. Second, the real
 differentiator was not the saturated benchmark number but the system's properties: local and
@@ -1355,17 +1332,17 @@ commercial black boxes.
 
 Several directions were identified for future work:
 
-1. **Transformer fusion.** Fine-tune the optional DistilBERT branch on a graphics processing unit
-   using the provided Colab notebook, and fuse its semantic score with the metadata-aware
-   baseline to reduce residual semantic false positives.
-2. **Live mailbox integration.** Connect the API to a live mailbox through an automation platform
-   or mail-transfer agent, with quarantine and a reviewer dashboard, under appropriate
+1. **Live mailbox integration.** Connect the API to a live mailbox through an automation
+   platform or mail-transfer agent, with quarantine and a reviewer dashboard, under appropriate
    authorisation.
-3. **Authorised commercial comparison.** Conduct a supervisor-approved, controlled black-box
+2. **Authorised commercial comparison.** Conduct a supervisor-approved, controlled black-box
    comparison against a commercial filter on a disposable account, reporting results only on the
    shared labelled test set.
-4. **Operational retraining.** Operationalise periodic scheduled retraining with drift monitoring,
-   retraining on reviewed genuine new-campaign samples rather than synthetic data.
+3. **Operational retraining.** Operationalise periodic scheduled retraining with drift
+   monitoring, retraining on reviewed genuine new-campaign samples rather than synthetic data.
+4. **Feature refinement.** Extend the metadata signal set (e.g. header-routing anomalies and
+   attachment-type analysis) and run a larger ablation over feature groups to quantify each
+   signal's contribution.
 5. **Broader evaluation.** Evaluate on additional organisational and multilingual mail after
    obtaining the necessary approvals, to test generalisation beyond the public-corpus setting.
 
@@ -1388,94 +1365,66 @@ Available: https://www.verizon.com/business/resources/reports/dbir/
 e-mail," in *Proc. AAAI Workshop on Learning for Text Categorization*, Madison, WI, USA, 1998,
 pp. 98–105.
 
-[5] G. Sakkis, I. Androutsopoulos, G. Paliouras, V. Karkaletsis, C. D. Spyropoulos, and P.
-Stamatopoulos, "Stacking classifiers for anti-spam filtering of e-mail," in *Proc. 2003 Conf.
-Empirical Methods in Natural Language Processing (EMNLP)*, Sapporo, Japan, 2003, pp. 44–50.
+[5] L. Wang, "Spam email detection using Naïve Bayes classifier," *ITM Web of Conferences*,
+vol. 70, art. 04028, 2025, doi: 10.1051/itmconf/20257004028.
 
-[6] S. Srinivasan, M. Garg, and N. Gupta, "Spam email detection using deep learning word
-embeddings," *IEEE Access*, vol. 8, pp. 156–167, 2020, doi: 10.1109/ACCESS.2020.2987755.
-
-[7] P. Soni and V. Matsakis, "THEMIS: A deep learning model for phishing email detection using
-RCNN," *Computers & Security*, vol. 92, art. 101749, 2020, doi: 10.1016/j.cose.2020.101749.
-
-[8] W. B. Gansterer, D. Janecek, and R. Neumayer, "Spam filtering based on latent semantic
-indexing," in *Proc. ECML/PKDD Workshop on Spam Filtering*, Warsaw, Poland, 2007, pp. 1–12.
-
-[9] B. Islam, R. Jahan, and M. Rahman, "A novel content and header-based hybrid email spam
-classification using machine learning techniques," *Procedia Computer Science*, vol. 143, pp.
-575–582, 2018, doi: 10.1016/j.procs.2018.10.433.
-
-[10] J. Devlin, M.-W. Chang, K. Lee, and K. Toutanova, "BERT: Pre-training of deep bidirectional
-transformers for language understanding," in *Proc. NAACL-HLT*, Minneapolis, MN, USA, Jun. 2019,
-pp. 4171–4186.
-
-[11] E. G. Dada, J. S. Bassi, H. Chiroma, S. M. Abdulhamid, A. O. Adetunmbi, and O. E. Ajibuwa,
+[6] E. G. Dada, J. S. Bassi, H. Chiroma, S. M. Abdulhamid, A. O. Adetunmbi, and O. E. Ajibuwa,
 "Machine learning for email spam filtering: review, approaches and open research problems,"
 *Heliyon*, vol. 5, no. 6, art. e01802, Jun. 2019, doi: 10.1016/j.heliyon.2019.e01802.
 
-[12] Apache Software Foundation, "SpamAssassin public mail corpus," 2003. [Online]. Available:
-https://spamassassin.apache.org/old/publiccorpus/
-
-[13] T. A. Almeida, J. M. G. Hidalgo, and A. Yamakami, "Contributions to the study of SMS spam
-filtering: new collection and results," in *Proc. 11th ACM Symp. Document Engineering
-(DocEng)*, Mountain View, CA, USA, 2011, pp. 259–262, doi: 10.1145/2034691.2034742.
-
-[14] B. Klimt and Y. Yang, "The Enron corpus: A new dataset for email classification research,"
-in *Proc. 15th European Conf. Machine Learning (ECML)*, Pisa, Italy, 2004, pp. 217–226, doi:
-10.1007/978-3-540-30115-8_22.
-
-[15] G. Egozi and R. Verma, "Phishing email detection using robust NLP techniques," in *Proc.
-IEEE Int. Conf. Data Mining Workshops (ICDMW)*, Singapore, Nov. 2018, pp. 7–12, doi:
-10.1109/ICDMW.2018.00010.
-
-[16] L. Wang, "Spam email detection using Naïve Bayes classifier," *ITM Web of Conferences*,
-vol. 70, art. 04028, 2025, doi: 10.1051/itmconf/20257004028.
-
-[17] "Phish-Master: Leveraging large language models for advanced phishing email generation and
-detection," *Applied Sciences*, vol. 15, no. 22, art. 12203, 2025. [Online]. Available:
-https://www.mdpi.com/2076-3417/15/22/12203
-
-[18] S. Zavrak, "Email spam detection using hierarchical attention hybrid deep learning method,"
-*Research Square* preprint, 2022, doi: 10.21203/rs.3.rs-1393162/v1.
-
-[19] V. Sanh et al., "DistilBERT, a distilled version of BERT: smaller, faster, cheaper and
-lighter," 2019, arXiv:1910.01108.
-
-[20] "In-depth analysis of phishing email detection: Evaluating ML and DL models across multiple
-datasets," *Applied Sciences*, vol. 15, no. 6, art. 3396, 2025. [Online]. Available:
-https://www.mdpi.com/2076-3417/15/6/3396
-
-[21] "Building a business email compromise research dataset with large language models (BEC-2),"
-*Journal of Cyber Security*, 2025. [Online]. Available:
-https://link.springer.com/article/10.1007/s11416-024-00544-y
-
-[22] "Cross-model evaluation of phishing detectors against LLM-generated emails: dataset, code
-and results," Zenodo, 2026. [Online]. Available: https://zenodo.org/records/20250116
-
-[23] F. Pedregosa et al., "Scikit-learn: Machine learning in Python," *Journal of Machine
-Learning Research*, vol. 12, pp. 2825–2830, 2011.
-
-[24] FastAPI, "FastAPI documentation," 2024. [Online]. Available: https://fastapi.tiangolo.com/
-
-[25] E. H. Tusher, M. A. Ismail, M. A. Rahman, A. H. Alenezi, and M. Uddin, "Email spam: A
+[7] E. H. Tusher, M. A. Ismail, M. A. Rahman, A. H. Alenezi, and M. Uddin, "Email spam: A
 comprehensive review of optimize detection methods, challenges, and open research problems,"
 *IEEE Access*, vol. 12, pp. 143627–143657, 2024, doi: 10.1109/ACCESS.2024.3467996.
 
-[26] "Advancing phishing email detection: A comparative study of deep learning models,"
+[8] "In-depth analysis of phishing email detection: Evaluating ML and DL models across multiple
+datasets," *Applied Sciences*, vol. 15, no. 6, art. 3396, 2025. [Online]. Available:
+https://www.mdpi.com/2076-3417/15/6/3396
+
+[9] "Advancing phishing email detection: A comparative study of deep learning models,"
 *Sensors*, vol. 24, no. 7, art. 2077, 2024. [Online]. Available:
 https://www.mdpi.com/1424-8220/24/7/2077
 
-[27] Google, "Email scams surge over the holiday — here's how Gmail keeps you safe," *The
+[10] Z. Hassan, A. A. Ghali, H. G. Goh, and M. L. Gan, "DoS/DDoS threat classification in IoT
+health wearables using Naïve Bayes," in *Proc. 6th Int. Conf. Artificial Intelligence and Data
+Sciences (AiDAS)*, West Java, Indonesia, Sep. 2025, doi: 10.1109/AiDAS67696.2025.11213635.
+
+
+[11] G. Sakkis, I. Androutsopoulos, G. Paliouras, V. Karkaletsis, C. D. Spyropoulos, and P.
+Stamatopoulos, "Stacking classifiers for anti-spam filtering of e-mail," in *Proc. 2003 Conf.
+Empirical Methods in Natural Language Processing (EMNLP)*, Sapporo, Japan, 2003, pp. 44–50.
+
+[12] B. Islam, R. Jahan, and M. Rahman, "A novel content and header-based hybrid email spam
+classification using machine learning techniques," *Procedia Computer Science*, vol. 143, pp.
+575–582, 2018, doi: 10.1016/j.procs.2018.10.433.
+
+[13] S. Zavrak, "Email spam detection using hierarchical attention hybrid deep learning method,"
+*Research Square* preprint, 2022, doi: 10.21203/rs.3.rs-1393162/v1.
+
+[14] Google, "Email scams surge over the holiday — here's how Gmail keeps you safe," *The
 Keyword* (Google Blog), Dec. 18, 2024. [Online]. Available:
 https://blog.google/products/gmail/gmail-holidays-2024-spam-scam/
 
-[28] Microsoft, "Defender for Office 365 overview dashboard," *Microsoft Learn*, 2025.
+[15] Microsoft, "Defender for Office 365 overview dashboard," *Microsoft Learn*, 2025.
 [Online]. Available:
 https://learn.microsoft.com/en-us/defender-office-365/reports-mdo-email-collaboration-dashboard
 
-[29] Z. Hassan, A. A. Ghali, H. G. Goh, and M. L. Gan, "DoS/DDoS threat classification in IoT
-health wearables using Naïve Bayes," in *Proc. 6th Int. Conf. Artificial Intelligence and Data
-Sciences (AiDAS)*, West Java, Indonesia, Sep. 2025, doi: 10.1109/AiDAS67696.2025.11213635.
+[16] "Phish-Master: Leveraging large language models for advanced phishing email generation and
+detection," *Applied Sciences*, vol. 15, no. 22, art. 12203, 2025. [Online]. Available:
+https://www.mdpi.com/2076-3417/15/22/12203
+
+[17] "Building a business email compromise research dataset with large language models (BEC-2),"
+*Journal of Cyber Security*, 2025. [Online]. Available:
+https://link.springer.com/article/10.1007/s11416-024-00544-y
+
+[18] "Cross-model evaluation of phishing detectors against LLM-generated emails: dataset, code
+and results," Zenodo, 2026. [Online]. Available: https://zenodo.org/records/20250116
+
+[19] B. Klimt and Y. Yang, "The Enron corpus: A new dataset for email classification research,"
+in *Proc. 15th European Conf. Machine Learning (ECML)*, Pisa, Italy, 2004, pp. 217–226, doi:
+10.1007/978-3-540-30115-8_22.
+
+[20] Apache Software Foundation, "SpamAssassin public mail corpus," 2003. [Online]. Available:
+https://spamassassin.apache.org/old/publiccorpus/
 
 ---
 
