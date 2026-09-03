@@ -230,7 +230,9 @@ APPENDICES
 - Table 6.2 Classifier and feature-group comparison (Objective 3).
 - Table 6.3 Detection of genuine LLM-generated phishing (n = 4,986).
 - Table 6.4 Before/after adaptive retraining on held-out modern-threat email.
-- Table 6.5 Objectives evaluation summary.
+- Table 6.5 Comparison with commercial mail filters (vendor-reported context).
+- Table 6.6 Comparison with published models on comparable public corpora.
+- Table 6.7 Objectives evaluation summary.
 
 # LIST OF SYMBOLS
 <!-- The report uses few symbols; include those below (or omit this list if unused). -->
@@ -345,8 +347,9 @@ The system was scoped to English-language email, processed and trained locally w
 dependency on external cloud application programming interfaces and no use of private employee
 or customer email. This local-first scope was a privacy and reproducibility decision: because
 no message content left the host, the detector could be evaluated and deployed without exposing
-mail to a third-party service, and every reported figure could be reproduced from public data. All data used for training and testing were public corpora or synthetic data
-generated for controlled experiments. The core detector was a classical machine-learning model
+mail to a third-party service, and every reported figure could be reproduced from public data.
+All data used for training and testing were public corpora or synthetic data generated for
+controlled experiments. The core detector was a classical machine-learning model
 over content and metadata; a deep-learning transformer branch (DistilBERT) was designed and
 provided as an optional, graphics-processing-unit-deployed enhancement, with a ready-to-run
 notebook for free cloud execution.
@@ -458,7 +461,12 @@ could not dominate the normalised text features. Finally, **transformer-based de
 family) modelled context and paraphrase at substantially higher computational cost [10], [19].
 Comprehensive reviews of machine learning for spam filtering confirmed that learned models
 consistently outperformed manually engineered rule systems, and that hybrid combinations of
-feature sources were among the most robust approaches [11], [20]. The choice of logistic
+feature sources were among the most robust approaches [11], [20], [25]. Recent comparative
+studies across many classifiers further showed that both classical models (random forest,
+support vector machines) and deep models reached the high-nineties in accuracy on public
+phishing and spam corpora, with the gap between them narrowing on well-prepared data [20],
+[26]. Naïve Bayes in particular remained a competitive baseline not only for text but also for
+related security-classification tasks, where its simplicity and speed were valued [29]. The choice of logistic
 regression as the deployed classifier reflected three practical requirements of this project:
 it produced a genuine probability that could be compared against an adjustable threshold, it
 accepted balanced class weighting to compensate for the ham/spam ratio, and its linear
@@ -1104,6 +1112,68 @@ deployment.
 [FIGURE 6.4: Two ROC curves on the held-out modern-threat set — before (AUC 0.81) and after
 (AUC 0.945) retraining — on the same axes with a legend.]
 
+### 6.2.5 Comparison with Existing Systems and Commercial Filters
+
+To position the proposed model relative to the systems it was compared against in the
+literature, two comparisons were made. The first (Table 6.5) concerned commercial mail
+providers. Commercial filters were large, proprietary, continuously retrained cloud systems
+operated on billions of messages per day; Google reported blocking more than 99.9% of spam,
+phishing and malware in Gmail with machine-learning models, including a large-language-model
+component that alone blocked about 20% more spam than the previous system [27], and Microsoft
+reported very high efficacy for its Defender for Office 365 e-mail protection [28]. These
+figures were aggregate production statistics reported by the vendors rather than accuracy on a
+fixed labelled test set, so they were not directly comparable to an offline benchmark; they are
+shown for context and a dash is recorded where no independent, reproducible figure existed.
+Yahoo Mail did not publish a comparable detection figure. Importantly, no claim of superiority
+over these services was made: a rigorous comparison would require an authorised, controlled
+black-box test on one shared labelled corpus, which was outside the scope of this project and is
+recommended as future work.
+
+**Table 6.5 — Comparison with commercial mail filters (vendor-reported context; not a
+controlled benchmark).**
+
+| System | Reported block / detection rate | Basis | Reproducible offline? |
+|---|---|---|---|
+| Gmail (Google) | > 99.9% of spam/phishing/malware | Vendor aggregate production report [27] | No (proprietary) |
+| Outlook / Microsoft 365 Defender | Very high efficacy reported; independent test noted false positives and missed social engineering | Vendor report [28]; independent SE Labs testing | No (proprietary) |
+| Yahoo Mail | No comparable figure published | — | — |
+| **Proposed model (this project)** | 99.2% accuracy on held-out public corpus; 92% catch on unseen LLM phishing | Measured on a fixed labelled test set (Tables 6.1, 6.3) | **Yes** |
+
+The second comparison (Table 6.6) concerned published academic models evaluated on the same
+family of public corpora used in this project (Enron, SpamAssassin, Ling-Spam, TREC, CEAS-2008,
+Nazario and Nigerian-Fraud). The figures were taken from recent comparative studies [20], [26].
+Because the studies used different splits, preprocessing and corpora combinations, the numbers
+were indicative rather than strictly identical in protocol; the dataset/setting is therefore
+shown for each row. The proposed fusion model reached 99.2% accuracy on a merged 81,152-email
+corpus drawn from exactly these sources — comparable to the strongest reported deep-learning
+result (RoBERTa at roughly 99% merged accuracy) while running on a commodity central processing
+unit at about 16 milliseconds per email, with no graphics processor required, and while exposing
+interpretable metadata signals.
+
+**Table 6.6 — Comparison with published models on comparable public corpora.**
+
+| Method | Type | Corpus / setting | Reported accuracy |
+|---|---|---|---|
+| Multinomial Naïve Bayes | Classical ML | Spambase / phishing corpora [26] | ~79–88% |
+| Support vector machine | Classical ML | Enron1; merged corpora [20], [26] | ~98–99% |
+| Random forest | Classical ML | Spam/Spambase; phishing corpora [26] | ~97–99.9% |
+| LSTM / CNN | Deep learning | SpamAssassin, Kaggle, Nazario [20], [26] | ~97–99.5% |
+| DistilBERT | Transformer | CEAS-08; merged corpora [20] | ~99.7% / ~86% merged |
+| BERT | Transformer | Enron, SpamAssassin, merged [20] | ~98.9–99.3% |
+| RoBERTa | Transformer | Merged corpora (balanced) [20] | ~99.0% merged; 96% Merged |
+| **Proposed fusion LR (content word+char TF-IDF + 12 metadata)** | Classical ML (fusion) | Merged Enron/Ling/SpamAssassin/CEAS/Nazario/Nigerian, 81,152 emails | **99.2% (CPU, ~16 ms/email)** |
+
+The interpretation was twofold. First, on the standard public-corpus task the proposed classical
+fusion model was already at the level of the best published results, which was consistent with
+the observation that stylistically distinct public-corpus classes were relatively easy to
+separate and that most published systems saturated the high-nineties there. Second, the real
+differentiator was not the saturated benchmark number but the system's properties: local and
+fully reproducible, fast on a central processing unit, explainable through its metadata signals,
+and — through the reviewed retraining loop — able to adapt, with demonstrated improvement on
+unseen modern and AI-generated phishing (Sections 6.2.3 and 6.2.4). This argued for evaluating
+filters primarily on evolving, out-of-distribution threats rather than on the saturated
+in-corpus accuracy alone.
+
 ## 6.3 Project Challenges
 
 Three challenges dominated the evaluation. First, **false positives** were the dominant
@@ -1130,9 +1200,9 @@ loop between classification and the adaptation mechanism.
 
 ## 6.4 Objectives Evaluation
 
-Table 6.5 maps each objective to its outcome and evidence.
+Table 6.7 maps each objective to its outcome and evidence.
 
-**Table 6.5 — Objectives evaluation summary.**
+**Table 6.7 — Objectives evaluation summary.**
 
 | Objective | Status | Evidence |
 |---|---|---|
@@ -1279,6 +1349,26 @@ and results," Zenodo, 2026. [Online]. Available: https://zenodo.org/records/2025
 Learning Research*, vol. 12, pp. 2825–2830, 2011.
 
 [24] FastAPI, "FastAPI documentation," 2024. [Online]. Available: https://fastapi.tiangolo.com/
+
+[25] E. H. Tusher, M. A. Ismail, M. A. Rahman, A. H. Alenezi, and M. Uddin, "Email spam: A
+comprehensive review of optimize detection methods, challenges, and open research problems,"
+*IEEE Access*, vol. 12, pp. 143627–143657, 2024, doi: 10.1109/ACCESS.2024.3467996.
+
+[26] "Advancing phishing email detection: A comparative study of deep learning models,"
+*Sensors*, vol. 24, no. 7, art. 2077, 2024. [Online]. Available:
+https://www.mdpi.com/1424-8220/24/7/2077
+
+[27] Google, "Email scams surge over the holiday — here's how Gmail keeps you safe," *The
+Keyword* (Google Blog), Dec. 18, 2024. [Online]. Available:
+https://blog.google/products/gmail/gmail-holidays-2024-spam-scam/
+
+[28] Microsoft, "Defender for Office 365 overview dashboard," *Microsoft Learn*, 2025.
+[Online]. Available:
+https://learn.microsoft.com/en-us/defender-office-365/reports-mdo-email-collaboration-dashboard
+
+[29] Z. Hassan, A. A. Ghali, H. G. Goh, and M. L. Gan, "DoS/DDoS threat classification in IoT
+health wearables using Naïve Bayes," in *Proc. 6th Int. Conf. Artificial Intelligence and Data
+Sciences (AiDAS)*, West Java, Indonesia, Sep. 2025, doi: 10.1109/AiDAS67696.2025.11213635.
 
 ---
 
