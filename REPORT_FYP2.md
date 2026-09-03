@@ -92,6 +92,27 @@ Intellectual Property Policy.
 
 ---
 
+# REPORT STATUS DECLARATION FORM
+<!-- One page. Use the faculty form (as in the prior supervisor-supervised reports):
+     title, academic session, "I <NAME> (capital letters) declare that I allow this
+     Final Year Project Report to be kept in the UTAR Library...", author signature +
+     address + date, and supervisor signature line for Dr Abdulrahman Aminu Ghali + date.
+     [FILL IN: insert the signed form.] -->
+
+# FYP THESIS SUBMISSION FORM (FM-IAD-004)
+<!-- One page. Faculty form "SUBMISSION OF FINAL YEAR PROJECT / DISSERTATION / THESIS":
+     date, student name and ID, project title in quotes, supervisor name, and the
+     statement consenting to upload the softcopy to the UTAR Institutional Repository,
+     with the student signature. [FILL IN: insert the signed form.] -->
+
+# DECLARATION OF ORIGINALITY
+<!-- One page. Wording: "I declare that this report entitled '<title>' is my own work
+     except as cited in the references. The report has not been accepted for any degree
+     and is not being submitted concurrently in candidature for any degree or other
+     award." Followed by signature / name / date. [FILL IN: sign and date.] -->
+
+---
+
 # ACKNOWLEDGEMENTS
 <!-- One page. Replace/extend as appropriate; third or first person is acceptable on
      this page. A suggestion consistent with Project I: -->
@@ -150,12 +171,17 @@ Learning.
 <!-- Generated automatically in Word (References > Table of Contents). Skeleton:
 TITLE PAGE / COPYRIGHT / ACKNOWLEDGEMENTS / ABSTRACT / TABLE OF CONTENTS /
 LIST OF FIGURES / LIST OF TABLES / LIST OF ABBREVIATIONS
+TITLE PAGE / COPYRIGHT STATEMENT / REPORT STATUS DECLARATION FORM /
+FYP THESIS SUBMISSION FORM (FM-IAD-004) / DECLARATION OF ORIGINALITY /
+ACKNOWLEDGEMENTS / ABSTRACT / TABLE OF CONTENTS / LIST OF FIGURES /
+LIST OF TABLES / LIST OF SYMBOLS / LIST OF ABBREVIATIONS
 CHAPTER 1 INTRODUCTION
   1.1 Problem Statement and Motivation
   1.2 Objectives
   1.3 Project Scope
   1.4 Contributions
   1.5 Report Organisation
+  1.6 Summary
 CHAPTER 2 LITERATURE REVIEW
   2.1 Review of the Technologies
     2.1.1 Hardware Platform
@@ -171,16 +197,24 @@ CHAPTER 2 LITERATURE REVIEW
     2.2.4 Hybrid and Fusion Systems
     2.2.5 Deep-Learning and Commercial Systems
     2.2.6 Summary of the Existing Systems
+  2.3 Limitations of Previous Studies (Table 2.2)
+  2.4 Summary
+  2.5 Proposed Solution
 CHAPTER 3 SYSTEM METHODOLOGY / APPROACH
   3.1 System Design Diagram
     3.1.1 System Architecture Diagram
     3.1.2 Use Case Diagram and Description
     3.1.3 Activity Diagram
+  3.2 Datasets
+  3.3 Feature Extraction and Classification Approach
+  3.4 Evaluation Design and Performance Definitions
+  3.5 Summary
 CHAPTER 4 SYSTEM DESIGN
   4.1 System Block Diagram
   4.2 System Components Specifications
   4.3 Data and Feature Design
   4.4 System Components Interaction Operations
+  4.5 Summary
 CHAPTER 5 SYSTEM IMPLEMENTATION
   5.1 Hardware Setup
   5.2 Software Setup
@@ -199,6 +233,13 @@ CHAPTER 7 CONCLUSION AND RECOMMENDATION
   7.2 Recommendation
 REFERENCES
 APPENDICES
+  Appendix A  Poster
+  Appendix B  Full Classifier Output and Confusion Matrices
+  Appendix C  Example Emails and Metadata Feature Definitions
+  Appendix D  Command Reference and System Screenshots
+  Appendix E  Weekly / Bi-weekly Log
+  Appendix F  Plagiarism Check Result (Turnitin)
+  Appendix G  FYP2 Submission Checklist
 -->
 
 # LIST OF FIGURES
@@ -220,6 +261,7 @@ APPENDICES
 
 # LIST OF TABLES
 - Table 2.1 Comparison of detection paradigms.
+- Table 2.2 Review of existing methods and their limitations.
 - Table 3.1 Use-case descriptions.
 - Table 3.2 Integrated public corpus and class distribution.
 - Table 4.1 Component modules and responsibilities.
@@ -390,6 +432,16 @@ describes the hardware and software setup, configuration, operation and implemen
 challenges. Chapter 6 reports the evaluation setup, results, discussion and an
 objective-by-objective assessment. Chapter 7 concludes the report and recommends future work.
 References and appendices follow.
+
+## 1.6 Summary
+
+This chapter established the background to the project. It described the continued exploitation
+of email for phishing, business-email-compromise and malware delivery, and identified two
+trends that made detection harder: fluent link-less attacks and the availability of large
+language models for generating convincing fraudulent mail. It then set out the four objectives
+carried forward from Project I, defined the scope as a local, English-language, content–metadata
+fusion detector with an adaptive retraining loop, and listed the project's contributions.
+Chapter 2 reviews the technologies and existing systems on which the solution was based.
 
 ---
 
@@ -574,9 +626,32 @@ validity threat explicitly. Second, few systems fused rich metadata with content
 explainable, locally deployable form; the present project standardised and exposed every
 metadata signal and its contribution. Third, few systems demonstrated adaptation to new threat
 types or to large-language-model-generated phishing with honest framing; the present project
-implemented a reviewed retraining loop and reported both its gains and its scope.
+implemented a reviewed retraining loop and reported both its gains and its scope. Table 2.2
+summarises the reviewed approaches and their limitations in relation to this project.
 
-## 2.4 Proposed Solution
+**Table 2.2 — Review of existing methods and their limitations.**
+
+| Approach (representative work) | Technique | Strengths | Limitations for this project |
+|---|---|---|---|
+| Rule / keyword / blocklist | Static signatures and lists | Simple; explainable | Brittle; manual upkeep; evaded by fluent BEC [11], [25] |
+| Content statistical classifiers [4], [5], [16] | TF-IDF / Naïve Bayes / SVM on text | Fast; strong on classic spam | Ignores structure; weak on fluent rewording |
+| Metadata / reputation systems | Header, SPF/DKIM, sender and link analysis | Catches structural anomalies | Weak alone (~93% in preliminary work); evaded by link-less BEC |
+| Hybrid / fusion [9], [18] | Content + header features; attention fusion | More robust; balanced | Fusion design is non-trivial; rarely local/explainable |
+| Deep learning [6], [7], [10], [20] | LSTM/CNN/BERT-family transformers | Context and paraphrase aware | Costly; GPU-dependent; less explainable |
+| Commercial filters [27], [28] | Proprietary cloud ML at scale | Very high reported block rate | Not reproducible; cannot be benchmarked offline |
+
+## 2.4 Summary
+
+This chapter reviewed the technologies used in the project — commodity central-processing-unit
+hardware, a cross-platform Python environment, comma-separated-value storage, and the scikit-learn
+machine-learning stack — and surveyed existing spam-detection systems, from rule-based and
+content-statistical methods through metadata and hybrid/fusion approaches to deep learning and
+proprietary commercial filters. The review established that no single source of evidence was
+sufficient on its own, that fusion of content and metadata was among the most robust approaches,
+and that adaptation to evolving and AI-assisted threats remained under-served by locally
+deployable, explainable systems. These findings motivated the proposed solution described next.
+
+## 2.5 Proposed Solution
 
 The proposed solution was a local, open-source adaptive detector that fused word and character
 TF-IDF content features with twelve standardised structural metadata signals under a
@@ -752,6 +827,17 @@ generated phishing, and a before/after experiment measured the improvement attri
 reviewed retraining. Validity controls were strict train/test separation, no training on any test
 email, and the use of inert placeholder domains in synthetic data.
 
+## 3.5 Summary
+
+This chapter presented the methodology as a development-based, supervised machine-learning
+pipeline. It described the system architecture with its three parallel feature streams and the
+feedback-driven retraining loop, set out the use cases for the reviewer/administrator and
+automation actors, and traced the activity flow from email ingestion through classification,
+review and validated redeployment. It also defined the 81,152-email public corpus and the
+disjoint external and AI-generated test sets, the word/character content and twelve metadata
+features, the fusion and classification approach, and the evaluation metrics and validity
+controls. Chapter 4 details the system design at a level sufficient to rebuild it.
+
 ---
 
 # CHAPTER 4: SYSTEM DESIGN
@@ -861,6 +947,15 @@ reviewed labels with the training data, fitted a new model, validated it on the 
 and replaced the deployed artefact only if performance was maintained. All randomness used fixed
 seeds, and the data-preparation, training and evaluation steps were one-line commands so that the
 entire system could be rebuilt from the public corpus.
+
+## 4.5 Summary
+
+This chapter gave a rebuild-ready description of the system. It presented the five-block
+architecture (ingestion, parsing and feature extraction, fusion classifier, action/decision, and
+adaptation), specified each Python module and the exact scikit-learn pipeline and
+hyper-parameters, defined the twelve structural metadata signals, and described how the
+components interacted end to end, including the review queue, feedback store and validated
+retraining path. Chapter 5 describes how this design was implemented and operated.
 
 ---
 
@@ -1389,3 +1484,27 @@ the twelve extracted metadata values shown.]
 
 ## Appendix D — Command Reference and System Screenshots
 [FILL IN: full command reference and any additional screenshots not placed in Chapter 5.]
+
+## Appendix E — Weekly / Bi-weekly Log
+[FILL IN: insert the at-least-six bi-weekly/weekly progress report forms signed by the
+supervisor, as required by the FYP2 booklet.]
+
+## Appendix F — Plagiarism Check Result (Turnitin)
+[FILL IN: insert the Turnitin originality result. For the similarity check, upload ONLY the
+title page, abstract, Chapters 1–7 and references — remove the cover, declaration forms,
+acknowledgements, table of contents, lists and appendices.]
+
+## Appendix G — FYP2 Submission Checklist
+[FILL IN: insert the completed FYP2 submission form/checklist (FM-IAD-005 and the checklist
+from the booklet).]
+
+<!--
+RUNNING HEADER / FOOTER (seen in both prior supervisor-supervised reports):
+- Header, aligned LEFT on every chapter page:
+    Bachelor of Information Technology (Honours) Communications and Networking
+    Faculty of Information and Communication Technology (Kampar Campus), UTAR
+- Footer, aligned RIGHT: page number (Arabic 1,2,3... from Chapter 1; small Roman i,ii,iii for
+  front matter; A-1, B-1 for appendices).
+- Figure/table captions: numbered per chapter (Figure 2.1, Table 6.6), caption immediately
+  below the figure/table. Times New Roman 12 pt body, 1.5 line spacing, British English.
+-->
