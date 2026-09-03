@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+models/*.joblib
+.env
+
+*.egg-info/
+
+data/
+models/distilbert-email*/
+models/*-checkpoints/
