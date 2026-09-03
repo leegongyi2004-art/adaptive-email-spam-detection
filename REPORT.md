@@ -1,3 +1,6 @@
+# [SUPERSEDED] Use REPORT_FYP2.md for the UTAR FYP2 report.
+This is an earlier generic draft kept only for reference; all official content lives in REPORT_FYP2.md.
+
 # Adaptive Email Spam Detection using AI and Content–Metadata Fusion
 
 > **FYP2 report draft.** Copy the chapters into your faculty's template, add your

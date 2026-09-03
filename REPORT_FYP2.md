@@ -680,6 +680,9 @@ standardised, then passed to the classifier. The resulting probability was compa
 configurable threshold to produce a label and an explanation; decisions and corrections flowed
 through a review queue into the feedback store, which fed scheduled retraining.
 
+
+> **Ready-made image:** `reports/figures/fig3_1_system_architecture.png` (regenerate with `python reports/make_figures.py`).
+
 [FIGURE 3.1: System architecture of the adaptive fusion spam-detection framework. Show seven
 stages left-to-right — Data Input, Email Parsing, parallel Feature Extraction (word TF-IDF,
 char TF-IDF, metadata), Feature Fusion + Standardisation, Classification, Decision/Action
@@ -718,6 +721,9 @@ The primary actor was an IT administrator or reviewer. A secondary, automated ac
 automation workflow that called the service. Figure 3.2 presents the use-case diagram and Table
 3.1 describes each use case.
 
+
+> **Ready-made image:** `reports/figures/fig3_2_use_case.png`.
+
 [FIGURE 3.2: Use-case diagram. Actor "Reviewer / Administrator" uses: Submit Email for Scoring;
 View Verdict and Signals; Review and Quarantine Flagged Mail; Correct Misclassification
 (feedback); Trigger/Schedule Retraining. Actor "Mail Automation" uses: Score via REST API.]
@@ -737,6 +743,9 @@ View Verdict and Signals; Review and Quarantine Flagged Mail; Correct Misclassif
 
 The activity flow began when an email entered the system and ended either with a delivered
 message, a quarantined message, or a redeployed model after retraining.
+
+
+> **Ready-made image:** `reports/figures/fig3_3_activity.png`.
 
 [FIGURE 3.3: Activity diagram. Swimlane "System": parse email → extract features → fuse →
 classify → probability ≥ threshold? —Yes→ label spam / quarantine; —No→ label ham / deliver →
@@ -857,6 +866,9 @@ The system comprised five top-level blocks, shown in Figure 4.1:
    logistic-regression classifier.
 4. **Action and decision** — threshold comparison, labelling, quarantine and signal explanation.
 5. **Adaptation** — the review queue, feedback store and scheduled retraining path.
+
+
+> **Ready-made image:** `reports/figures/fig4_1_block_diagram.png`.
 
 [FIGURE 4.1: System block diagram. Draw five labelled blocks connected by directed arrows:
 Ingestion → Parsing & Features → Fusion Classifier → Action/Decision; Action/Decision writes to
