@@ -171,7 +171,7 @@ References; Appendices A–G. -->
 - Table 6.2 Classifier and feature-group comparison (Objective 3).
 - Table 6.3 Detection of genuine LLM-generated phishing (n = 4,986).
 - Table 6.4 Before/after adaptive retraining on held-out modern-threat email.
-- Table 6.5 Comparison with commercial mail filters (vendor-reported context).
+- Table 6.5 Metric comparison with commercial mail filters.
 - Table 6.6 Comparison with published classical models on comparable public corpora.
 - Table 6.7 Objectives evaluation summary.
 
@@ -1022,21 +1022,23 @@ blocking more than 99.9% of spam, phishing and malware in Gmail with machine-lea
 including a large-language-model component that alone blocked about 20% more spam than the
 previous system [10], and Microsoft reported very high efficacy for its Defender for Office 365
 e-mail protection [11]. These figures were aggregate production statistics reported by the
-vendors rather than accuracy on a fixed labelled test set, so they were not directly
-comparable to an offline benchmark. Yahoo Mail did not publish a comparable detection figure.
-Importantly, no claim of superiority over these services was made: a rigorous comparison
-would require an authorised, controlled black-box test on one shared labelled corpus, which was
-outside the scope of this project and is recommended as future work.
+vendors rather than per-class accuracy, precision, recall or F1 measured on a fixed labelled
+test set; the commercial providers did not publish such metrics, and Yahoo Mail published no
+comparable detection figure at all. Consequently the cells in Table 6.5 that the vendors did not
+disclose are marked "not published" rather than estimated. Importantly, no claim of superiority
+over these services was made: a rigorous, like-for-like metric comparison would require the
+authorised, controlled black-box test described in Recommendation 2 (Section 7.2), in which the
+same labelled messages are submitted to every filter and scored with identical metrics.
 
-**Table 6.5 — Comparison with commercial mail filters (vendor-reported context; not a
-controlled benchmark).**
+**Table 6.5 — Metric comparison with commercial mail filters (only the proposed model is
+measured on a fixed labelled test set).**
 
-| System | Reported block / detection rate | Basis | Reproducible offline? |
-|---|---|---|---|
-| Gmail (Google) | > 99.9% of spam/phishing/malware | Vendor aggregate production report [10] | No (proprietary) |
-| Outlook / Microsoft 365 Defender | Very high efficacy reported; independent test noted false positives and missed social engineering | Vendor report [11]; independent SE Labs testing | No (proprietary) |
-| Yahoo Mail | No comparable figure published | — | — |
-| **Proposed model (this project)** | 99.2% accuracy on held-out public corpus; 92% catch on unseen LLM phishing | Measured on a fixed labelled test set (Tables 6.1, 6.3) | **Yes** |
+| System | Reported block / accuracy | Precision | Recall | F1 | Reproducible offline? |
+|---|---|---|---|---|---|
+| Gmail (Google) | > 99.9% block rate (vendor aggregate) [10] | Not published | Not published | Not published | No (proprietary) |
+| Microsoft 365 / Outlook (Defender) | High efficacy reported; no numeric metric public [11] | Not published | Not published | Not published | No (proprietary) |
+| Yahoo Mail | No figure published | Not published | Not published | Not published | No (proprietary) |
+| **Proposed fusion model (this project)** | **Accuracy 99.2%** (held-out public corpus); 92% catch on unseen LLM phishing | **0.991** | **0.992** | **0.992** | **Yes — Tables 6.1, 6.3** |
 
 The second comparison (Table 6.6) concerned published classical models evaluated on the same
 family of public corpora used in this project (Enron, SpamAssassin, Ling-Spam, CEAS-2008,
