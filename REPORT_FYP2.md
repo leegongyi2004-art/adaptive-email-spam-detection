@@ -944,8 +944,10 @@ python compare_models.py data/reviewed_mail.csv            # full corpus
 python compare_models.py data/reviewed_mail.csv --limit 20000   # faster run
 ```
 
-The command prints accuracy, precision, recall, F1 and ROC-AUC for each configuration. **Run it
-on the prepared corpus and paste the printed numbers into the empty cells of Table 6.2.**
+The command prints accuracy, precision, recall, F1 and ROC-AUC for each configuration,
+and also writes `reports/model_comparison.csv`, a ready-to-paste `reports/table6_2.md` and the
+bar chart `reports/figures/fig6_model_comparison.png`. **Run it on the prepared corpus and paste
+the rows from `reports/table6_2.md` into Table 6.2.**
 
 **Table 6.2 — Classifier and feature-group comparison.**
 
@@ -957,8 +959,9 @@ on the prepared corpus and paste the printed numbers into the empty cells of Tab
 | **Logistic regression (content + metadata fusion — deployed)** | 0.992 | 0.991 | 0.992 | 0.992 | 1.000 |
 | Linear SVM (content + metadata fusion) | [ ] | [ ] | [ ] | [ ] | [ ] |
 
-[FILL IN: run the command and complete the empty cells; insert the printed confusion matrices
-in Appendix B.]
+[FILL IN: run the command and complete the empty cells from `reports/table6_2.md`; insert the
+printed confusion matrices in Appendix B. The comparison bar chart is generated at
+`reports/figures/fig6_model_comparison.png`.]
 
 ### 6.2.3 Detection of Genuine LLM-Generated Phishing
 
