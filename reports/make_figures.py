@@ -1,5 +1,5 @@
 """
-Generate the report figures (Figure 3.1, 3.2, 3.3, 4.1) as PNG images.
+Generate the report figures (Figures 2.1, 3.1, 3.2, 3.3, 4.1) as PNG images.
 
 Usage:
     python reports/make_figures.py
@@ -60,6 +60,53 @@ def save(fig, name):
     fig.savefig(OUT / name, dpi=200, bbox_inches="tight", facecolor="white")
     plt.close(fig)
     print("wrote", OUT / name)
+
+
+# ---------------------------------------------------------------- Figure 2.1
+def fig_2_1():
+    fig, ax = new_ax(12, 8)
+    weak_fc, weak_ec = "#f2dede", "#a94442"
+    xs = [1.35, 3.65, 5.95, 8.25, 10.55]
+
+    # Root
+    box(ax, 6.0, 7.25, 5.6, 0.85, "Spam / Phishing Detection Approaches",
+        fc=BLUE, ec=BLUE, bold=True, fs=12, tc="white")
+
+    # Five family boxes
+    fam = [
+        ("1. Rule- / Keyword-\nBased (blacklists)", ORANGE_LIGHT, ORANGE),
+        ("2. Content Statistical\n(TF-IDF + NB/SVM/LR)", LIGHT, BLUE),
+        ("3. Metadata /\nReputation (headers)", LIGHT, BLUE),
+        ("4. Hybrid / Fusion\n(content + metadata)", GREEN_LIGHT, GREEN),
+        ("5. Commercial Cloud\n(Gmail, Defender)", LIGHT, GREY),
+    ]
+    for x, (t, fc, ec) in zip(xs, fam):
+        box(ax, x, 5.55, 2.15, 1.05, t, fc=fc, ec=ec, bold=True, fs=9)
+        arrow(ax, (6.0, 6.82), (x, 6.1), color=GREY)
+
+    # Leaves under each family
+    leaves = [
+        ("Brittle; evaded by\nrewording; needs\nmanual upkeep", weak_fc, weak_ec),
+        ("Ignores structure;\nweak on fluent,\nlink-less BEC", weak_fc, weak_ec),
+        ("Weak alone (~93%\nin preliminary work);\nspoofed accounts", weak_fc, weak_ec),
+        ("Most robust —\nthe basis of\nthis project", GREEN_LIGHT, GREEN),
+        ("High block rate,\nbut proprietary;\nnot reproducible", LIGHT, GREY),
+    ]
+    for x, (t, fc, ec) in zip(xs, leaves):
+        box(ax, x, 3.75, 2.15, 1.05, t, fc=fc, ec=ec, fs=8.5)
+        arrow(ax, (x, 5.02), (x, 4.3), color=GREY)
+
+    # Highlight: this project
+    box(ax, 5.6, 1.7, 9.6, 1.25,
+        "THIS PROJECT: content–metadata fusion (word + character TF-IDF, 12 metadata\n"
+        "signals, logistic regression)  +  reviewed-feedback adaptive retraining\n"
+        "local  ·  explainable  ·  runs on CPU  ·  reproducible",
+        fc=GREEN_LIGHT, ec=GREEN, bold=True, fs=9.5)
+    arrow(ax, (8.25, 3.22), (7.2, 2.35), color=GREEN, ls=(0, (4, 3)))
+
+    ax.text(6.0, 0.4, "Figure 2.1 — Taxonomy of spam-detection approaches and the position of this project",
+            ha="center", fontsize=10.5, fontweight="bold", color=BLUE)
+    save(fig, "fig2_1_taxonomy.png")
 
 
 # ---------------------------------------------------------------- Figure 3.1
@@ -206,6 +253,7 @@ def fig_4_1():
 
 
 if __name__ == "__main__":
+    fig_2_1()
     fig_3_1()
     fig_3_2()
     fig_3_3()

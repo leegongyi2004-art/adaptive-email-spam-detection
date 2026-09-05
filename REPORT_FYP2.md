@@ -143,6 +143,7 @@ References; Appendices A–G. -->
 
 # LIST OF FIGURES
 
+- Figure 2.1 Taxonomy of spam-detection approaches and the position of this project.
 - Figure 3.1 System architecture of the adaptive fusion spam-detection framework.
 - Figure 3.2 Use-case diagram for the reviewer/administrator actor.
 - Figure 3.3 Activity diagram for scoring, review and adaptive retraining.
@@ -437,6 +438,18 @@ commodity central-processing-unit hardware, with comma-separated-value storage a
 persistence keeping the system portable and free of any special hardware dependency.
 
 ## 2.2 Review of Existing Systems and Applications
+
+Existing spam-detection systems can be grouped into five broad families: rule- and
+keyword-based filters, content-based statistical classifiers, metadata and reputation systems,
+hybrid or fusion approaches, and the large proprietary commercial cloud filters. Figure 2.1
+summarises these families, their principal weaknesses, and the position of the present project
+within the hybrid/fusion family.
+
+> **Ready-made image:** `reports/figures/fig2_1_taxonomy.png`
+> (regenerate with `python reports/make_figures.py`).
+
+[FIGURE 2.1: insert the taxonomy diagram; caption "Taxonomy of spam-detection approaches and
+the position of this project."]
 
 ### 2.2.1 Rule- and Keyword-Based Filters (Existing System A)
 
