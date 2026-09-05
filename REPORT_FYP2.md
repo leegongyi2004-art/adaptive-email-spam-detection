@@ -210,8 +210,6 @@ References; Appendices A–G. -->
 
 # CHAPTER 1: INTRODUCTION
 
-## 1.1 Problem Statement and Motivation
-
 Electronic mail remained one of the most widely used communication channels in organisations
 and, at the same time, one of the most exploited. Cybersecurity had become a pressing global
 concern as internet adoption, cloud services, e-commerce and remote work expanded the exposure
@@ -225,26 +223,51 @@ sophisticated phishing campaigns designed to steal credentials or financial data
 distribute malware [2].
 
 Early spam messages were comparatively simple and could be blocked by keyword filters or
-blacklists. Attackers, however, evolved their techniques continuously. Modern campaigns used
+blacklists, but attackers evolved their techniques continuously. Modern campaigns used
 obfuscation such as inserted characters, misleading links and disguised headers, while phishing
 — the subset of spam that deceived recipients into revealing sensitive information — grew
-particularly dangerous and featured prominently in reported data breaches [2]. Two recent trends
-made the problem materially harder. First, business-email-compromise (BEC) attacks used calm,
-professional, grammatically correct language and frequently contained no malicious link or
-attachment at all, so they evaded signatures designed for obvious, keyword-laden spam. Second,
-large language models allowed attackers to generate fluent, personalised, typo-free fraudulent
-messages at scale, removing the historical language barrier that had made many phishing emails
-easy for a human reader to recognise.
+particularly dangerous and featured prominently in reported data breaches [2]. Two trends made
+the problem materially harder. First, business-email-compromise attacks used calm, professional,
+grammatically correct language and frequently contained no malicious link or attachment, so they
+evaded signatures designed for obvious, keyword-laden spam. Second, large language models allowed
+attackers to generate fluent, personalised, typo-free fraudulent messages at scale. Compounding
+these trends was concept drift: the characteristics of spam evolved over time, so a model
+trained once on older data gradually failed to recognise new tactics unless it was updated.
 
-A further, persistent issue was concept drift: the characteristics of spam evolved over time, so
-a model trained once on older data gradually failed to recognise new tactics unless it was
-updated. Static rule lists and statically trained models therefore degraded in production.
-False positives — legitimate email wrongly marked as spam — were especially costly, because they
-interrupted business communication and damaged trust in the filter; false negatives, on the other
-hand, allowed malicious mail to reach the user. Conventional defences had complementary
-weaknesses: pure content models examined what a message said but ignored how it was constructed;
-pure rule or reputation systems used structural indicators but could be bypassed by well-written
-text; and systems that were never updated could not follow evolving campaigns.
+Machine learning offered a more robust basis than static rules, because a learned model
+generalised from labelled examples rather than matching hand-maintained patterns and could be
+retrained as new campaigns appeared. Even so, no single view of a message was sufficient:
+content-based models examined what a message said but ignored how it was constructed, whereas
+structural and reputation-based signals caught routing and authentication anomalies but were
+bypassed by well-written text. This project therefore developed an adaptive detector that fused
+the textual content of a message with its structural metadata within a classical machine-learning
+pipeline and improved over time through a reviewed-feedback retraining loop. The system was
+designed to run locally on commodity hardware without a graphics processor, to remain
+interpretable through its metadata signals, and to detect malicious intent rather than
+artificial-intelligence authorship.
+
+The remainder of this chapter states the problem and motivation (Section 1.1), lists the
+objectives (Section 1.2), defines the project scope (Section 1.3), states the contributions
+(Section 1.4) and outlines the organisation of the report (Section 1.5).
+
+## 1.1 Problem Statement and Motivation
+
+Despite the widespread deployment of anti-spam filters, email spam remained a persistent and
+evolving problem. Static rule lists and keyword filters were brittle: they required constant
+manual maintenance and were easily evaded by rewording or obfuscation. Learned content models
+were more effective but examined only what a message said and ignored its structure, while
+metadata and reputation systems used structural indicators that were themselves bypassed by
+well-formed, link-less business-email-compromise mail sent from plausibly configured accounts.
+Models that were never updated could not follow evolving campaigns, so their accuracy degraded
+as concept drift accumulated.
+
+These weaknesses produced the two errors that mattered most in practice. False negatives
+allowed malicious mail to reach the user, while false positives — legitimate email wrongly marked
+as spam — interrupted business communication and damaged trust in the filter, and were often
+judged the costlier error in an organisational setting. A detector therefore needed to combine
+complementary views of a message, to keep false positives low, and to be updated as threats
+changed, without depending on the proprietary, non-reproducible models used by large commercial
+providers.
 
 The motivation for this project was therefore to build a detector that (a) fused content and
 metadata so that fluent wording and structural anomalies were judged together, (b) remained fast
