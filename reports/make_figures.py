@@ -109,6 +109,95 @@ def fig_2_1():
     save(fig, "fig2_1_taxonomy.png")
 
 
+def _method_note(ax, text):
+    box(ax, 6.0, 0.45, 11.6, 0.62, text, fc=ORANGE_LIGHT, ec=ORANGE, fs=8.4)
+
+
+# ------------------------------------------------------------ Figure 2.2
+def fig_2_2():
+    """Rule- / keyword-based filter concept."""
+    fig, ax = new_ax(12, 6.5)
+    box(ax, 2.0, 5.6, 2.6, 0.9, "Incoming email", fc=LIGHT, ec=BLUE, bold=True)
+    arrow(ax, (2.0, 5.15), (2.0, 4.65))
+    box(ax, 2.0, 4.2, 3.0, 1.0, "Keyword / regex matching\n+ sender blacklist /\nblocklist lookup", fc=LIGHT, ec=BLUE)
+    arrow(ax, (2.0, 3.7), (2.0, 3.15))
+    box(ax, 2.0, 2.7, 2.6, 0.95, "Rule matched?", fc=ORANGE_LIGHT, ec=ORANGE, bold=True)
+    # Yes -> junk (right); No -> inbox (down)
+    arrow(ax, (3.3, 2.7), (7.6, 2.7), color="#a94442")
+    box(ax, 9.0, 2.7, 2.6, 0.95, "Junk folder\n(blocked)", fc="#f2dede", ec="#a94442", bold=True)
+    ax.text(5.45, 2.95, "yes", fontsize=9, color="#a94442", style="italic")
+    arrow(ax, (2.0, 2.22), (2.0, 2.10), color=GREEN)
+    box(ax, 2.0, 1.65, 2.6, 0.85, "Delivered\nto inbox", fc=GREEN_LIGHT, ec=GREEN, bold=True)
+    ax.text(2.35, 2.32, "no", fontsize=9, color=GREEN, style="italic")
+    _method_note(ax, "Static hand-maintained rules: explainable but brittle — evaded by rewording/obfuscation; needs constant upkeep.")
+    ax.text(6.0, 6.15, "Figure 2.2 — Rule- / keyword-based filtering", ha="center",
+            fontsize=10.5, fontweight="bold", color=BLUE)
+    save(fig, "fig2_2_rule_based.png")
+
+
+# ------------------------------------------------------------ Figure 2.3
+def fig_2_3():
+    """Content-based statistical classifier concept."""
+    fig, ax = new_ax(12, 6.5)
+    steps = [
+        (1.2, "Raw email\ntext (subject\n+ body)", LIGHT, BLUE),
+        (3.5, "Tokenise\nwords /\ncharacters", LIGHT, BLUE),
+        (5.8, "TF-IDF\nfeature\nvector", LIGHT, BLUE),
+        (8.1, "Learned classifier\nNaive Bayes /\nSVM / LR", GREEN_LIGHT, GREEN),
+        (10.4, "Spam\nprobability\n→ label", LIGHT, BLUE),
+    ]
+    for i, (x, t, fc, ec) in enumerate(steps):
+        box(ax, x, 4.3, 2.0, 1.5, t, fc=fc, ec=ec, bold=(i == 3), fs=9)
+        if i < len(steps) - 1:
+            arrow(ax, (x + 1.02, 4.3), (steps[i + 1][0] - 1.02, 4.3))
+    ax.text(6.0, 2.9, "Threshold applied to probability → spam / legitimate",
+            ha="center", fontsize=9, style="italic", color=GREY)
+    _method_note(ax, "Learns wording from labelled data: strong on classic spam, but ignores structure and struggles with fluent, link-less BEC.")
+    ax.text(6.0, 6.0, "Figure 2.3 — Content-based statistical (machine-learning) classification",
+            ha="center", fontsize=10.5, fontweight="bold", color=BLUE)
+    save(fig, "fig2_3_content_statistical.png")
+
+
+# ------------------------------------------------------------ Figure 2.4
+def fig_2_4():
+    """Metadata / reputation system concept."""
+    fig, ax = new_ax(12, 6.5)
+    steps = [
+        (1.6, "Incoming\nemail", LIGHT, BLUE),
+        (4.3, "Parse headers:\nFrom / Reply-To,\nSPF & DKIM, routing,\nlinks, attachments", LIGHT, BLUE),
+        (7.4, "Reputation &\nstructural rule\nchecks", LIGHT, BLUE),
+        (10.3, "Structural\nrisk score\n→ label", GREEN_LIGHT, GREEN),
+    ]
+    for i, (x, t, fc, ec) in enumerate(steps):
+        box(ax, x, 4.3, 2.4, 1.6, t, fc=fc, ec=ec, bold=(i == 3), fs=8.8)
+        if i < len(steps) - 1:
+            arrow(ax, (x + 1.22, 4.3), (steps[i + 1][0] - 1.22, 4.3))
+    _method_note(ax, "Uses only structural/authentication signals: catches routing anomalies, but weak alone and evaded by well-formed, link-less or compromised-account BEC.")
+    ax.text(6.0, 6.0, "Figure 2.4 — Metadata / reputation-based filtering",
+            ha="center", fontsize=10.5, fontweight="bold", color=BLUE)
+    save(fig, "fig2_4_metadata.png")
+
+
+# ------------------------------------------------------------ Figure 2.5
+def fig_2_5():
+    """Hybrid / fusion concept (basis of this project)."""
+    fig, ax = new_ax(12, 6.5)
+    box(ax, 6.0, 5.7, 2.6, 0.85, "Incoming email", fc=LIGHT, ec=BLUE, bold=True)
+    arrow(ax, (5.2, 5.28), (3.4, 4.75))
+    arrow(ax, (6.8, 5.28), (8.6, 4.75))
+    box(ax, 3.2, 4.2, 3.2, 1.1, "Content features\nTF-IDF of subject/body\n(word + character)", fc=LIGHT, ec=BLUE, fs=9)
+    box(ax, 8.8, 4.2, 3.2, 1.1, "Structural features\nheaders / metadata\nsignals", fc=LIGHT, ec=BLUE, fs=9)
+    arrow(ax, (3.6, 3.65), (5.4, 3.0))
+    arrow(ax, (8.4, 3.65), (6.6, 3.0))
+    box(ax, 6.0, 2.6, 3.0, 0.95, "Feature fusion\n(concatenate + scale)", fc=GREEN_LIGHT, ec=GREEN, bold=True, fs=9.5)
+    arrow(ax, (6.0, 2.12), (6.0, 1.6))
+    box(ax, 6.0, 1.15, 3.0, 0.85, "Classifier → label\n(content + structure)", fc=GREEN_LIGHT, ec=GREEN, bold=True, fs=9.5)
+    _method_note(ax, "Judges wording and structure together — the most robust family; adopted here and extended with adaptive retraining.")
+    ax.text(6.0, 6.25, "Figure 2.5 — Hybrid content–metadata fusion classification",
+            ha="center", fontsize=10.5, fontweight="bold", color=BLUE)
+    save(fig, "fig2_5_hybrid_fusion.png")
+
+
 # ---------------------------------------------------------------- Figure 3.1
 def fig_3_1():
     fig, ax = new_ax(12, 9)
@@ -254,6 +343,10 @@ def fig_4_1():
 
 if __name__ == "__main__":
     fig_2_1()
+    fig_2_2()
+    fig_2_3()
+    fig_2_4()
+    fig_2_5()
     fig_3_1()
     fig_3_2()
     fig_3_3()

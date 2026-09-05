@@ -144,6 +144,10 @@ References; Appendices A–G. -->
 # LIST OF FIGURES
 
 - Figure 2.1 Taxonomy of spam-detection approaches and the position of this project.
+- Figure 2.2 Rule- / keyword-based filtering.
+- Figure 2.3 Content-based statistical (machine-learning) classification.
+- Figure 2.4 Metadata / reputation-based filtering.
+- Figure 2.5 Hybrid content–metadata fusion classification.
 - Figure 3.1 System architecture of the adaptive fusion spam-detection framework.
 - Figure 3.2 Use-case diagram for the reviewer/administrator actor.
 - Figure 3.3 Activity diagram for scoring, review and adaptive retraining.
@@ -458,7 +462,11 @@ keyword lists, blacklists and blocklists. Such systems were simple and fully exp
 they were brittle: they required constant manual updating, were easily evaded by rewording or
 obfuscation, and could not generalise to novel campaigns [4], [5]. Their weakness in the face of
 fluent, link-less business-email-compromise messages was a primary motivation for learned
-models.
+models. The operation of such a filter is shown in Figure 2.2.
+
+> **Ready-made image:** `reports/figures/fig2_2_rule_based.png`.
+
+[FIGURE 2.2: insert the rule-/keyword-based filtering concept diagram.]
 
 ### 2.2.2 Content-Based Statistical Classifiers (Existing System B)
 
@@ -468,7 +476,11 @@ from its terms [3]; later work combined TF-IDF representation with classifiers s
 Bayes and support vector machines and reported high accuracy on public corpora [8]. Content
 methods were computationally efficient and effective for well-defined spam vocabulary, but they
 examined only what a message said and were vulnerable to fluent rewording; they ignored message
-structure entirely.
+structure entirely. The statistical-classification pipeline is summarised in Figure 2.3.
+
+> **Ready-made image:** `reports/figures/fig2_3_content_statistical.png`.
+
+[FIGURE 2.3: insert the content-based statistical classification concept diagram.]
 
 ### 2.2.3 Metadata and Reputation-Based Systems (Existing System C)
 
@@ -480,7 +492,11 @@ a metadata-only configuration reached approximately 93.2% accuracy with an F1 sc
 meaningful, but well below content-based methods — confirming that metadata was valuable but
 insufficient on its own and had to be combined with content. Reputation systems were also evaded
 by well-formed, link-less business-email-compromise mail sent from plausibly configured
-accounts.
+accounts. The metadata/reputation approach is depicted in Figure 2.4.
+
+> **Ready-made image:** `reports/figures/fig2_4_metadata.png`.
+
+[FIGURE 2.4: insert the metadata/reputation-based filtering concept diagram.]
 
 ### 2.2.4 Hybrid and Fusion Systems (Existing System D)
 
@@ -492,7 +508,12 @@ Project I preliminary ablation similarly found that the content-plus-metadata fu
 configuration delivered the most balanced precision–recall trade-off and the best coverage
 of spam, even though a strong text-only support-vector-machine baseline was hard to beat with
 simple concatenation — a finding that motivated the richer word-plus-character content
-representation and the standardised metadata used in Project II.
+representation and the standardised metadata used in Project II. The fusion concept adopted by
+the present project is illustrated in Figure 2.5.
+
+> **Ready-made image:** `reports/figures/fig2_5_hybrid_fusion.png`.
+
+[FIGURE 2.5: insert the hybrid content–metadata fusion concept diagram.]
 
 ### 2.2.5 Commercial Systems
 
