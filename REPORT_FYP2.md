@@ -171,7 +171,7 @@ References; Appendices A–G. -->
 - Table 6.2 Classifier and feature-group comparison (Objective 3).
 - Table 6.3 Detection of genuine LLM-generated phishing (n = 4,986).
 - Table 6.4 Before/after adaptive retraining on held-out modern-threat email.
-- Table 6.5 Metric comparison with commercial mail filters.
+- Table 6.5 Commercial-filter comparison: vendor-reported and independently measured AI-phishing detection.
 - Table 6.6 Comparison with published classical models on comparable public corpora.
 - Table 6.7 Objectives evaluation summary.
 
@@ -469,9 +469,12 @@ account. Most relevant to the present threat landscape, recent research showed t
 large-language-model-generated phishing could evade an institutional filter at high rates,
 while a conventional machine-learning detector trained on ordinary phishing data still
 detected the large majority of those AI-generated emails [12]; public cross-model
-large-language-model phishing corpora had also become available for evaluation [13]. These
-results motivated a locally deployable, explainable classical detector of the kind developed
-in this project.
+large-language-model phishing corpora had also become available for evaluation [13]. A
+controlled, independent black-box test that sent the same AI-generated phishing messages to
+Gmail, Outlook and Yahoo confirmed that commercial filters behaved inconsistently on such mail:
+Outlook and Gmail allowed most AI-written phishing to reach the inbox, while Yahoo blocked more
+but also over-flagged legitimate messages [17]. These results motivated a locally deployable,
+explainable classical detector of the kind developed in this project.
 
 ### 2.2.6 Summary of the Existing Systems
 
@@ -1024,21 +1027,34 @@ previous system [10], and Microsoft reported very high efficacy for its Defender
 e-mail protection [11]. These figures were aggregate production statistics reported by the
 vendors rather than per-class accuracy, precision, recall or F1 measured on a fixed labelled
 test set; the commercial providers did not publish such metrics, and Yahoo Mail published no
-comparable detection figure at all. Consequently the cells in Table 6.5 that the vendors did not
-disclose are marked "not published" rather than estimated. Importantly, no claim of superiority
-over these services was made: a rigorous, like-for-like metric comparison would require the
-authorised, controlled black-box test described in Recommendation 2 (Section 7.2), in which the
-same labelled messages are submitted to every filter and scored with identical metrics.
+comparable vendor figure at all.
 
-**Table 6.5 — Metric comparison with commercial mail filters (only the proposed model is
-measured on a fixed labelled test set).**
+Independent, peer-reviewed measurement did exist, however. Opara, Modesti and Golightly created
+controlled accounts on Gmail, Outlook and Yahoo and sent the same set of 63 GPT-4o-generated
+phishing emails to each provider, recording how many each filter flagged [17]. On that test Yahoo
+was the most aggressive, flagging roughly 90% of the AI-phishing messages, Gmail flagged about
+14% and Outlook only about 4%; the same study found that Yahoo's aggressive setting produced a
+high false-positive rate, flagging roughly 60–67% of legitimate AI-written mail, whereas Gmail
+and Outlook rarely over-blocked [17]. These were independent measured values rather than vendor
+claims, but they came from a small, one-shot sample of 63 messages on a different corpus from
+the 4,986 used here, so they were indicative rather than strictly identical in protocol; the
+authors themselves noted the limited scale. Table 6.5 lists both the vendor-reported and the
+independently measured figures. No claim of strict superiority was made because the test sets
+differed; the proposed model's 92% catch on a much larger, unseen AI-phishing set with an
+approximately 0.9% main-corpus false-positive rate nonetheless compared favourably, particularly
+against Gmail and Outlook, and without Yahoo's high false-positive cost. Replicating this
+controlled black-box protocol on one shared labelled corpus was retained as Recommendation 2
+(Section 7.2).
 
-| System | Reported block / accuracy | Precision | Recall | F1 | Reproducible offline? |
-|---|---|---|---|---|---|
-| Gmail (Google) | > 99.9% block rate (vendor aggregate) [10] | Not published | Not published | Not published | No (proprietary) |
-| Microsoft 365 / Outlook (Defender) | High efficacy reported; no numeric metric public [11] | Not published | Not published | Not published | No (proprietary) |
-| Yahoo Mail | No figure published | Not published | Not published | Not published | No (proprietary) |
-| **Proposed fusion model (this project)** | **Accuracy 99.2%** (held-out public corpus); 92% catch on unseen LLM phishing | **0.991** | **0.992** | **0.992** | **Yes — Tables 6.1, 6.3** |
+**Table 6.5 — Commercial-filter comparison: vendor-reported block rates and independently
+measured detection of AI-generated phishing (independent study by Opara et al. [17]).**
+
+| System | Vendor-reported overall block rate | AI-phishing flagged (independent, n = 63) [17] | Legit AI-mail wrongly flagged (false positive) [17] | Reproducible offline? |
+|---|---|---|---|---|
+| Gmail (Google) | > 99.9% block rate (vendor aggregate) [10] | ≈ 14% flagged (≈ 86% bypassed) | Low (≈ 1.6%) | No (proprietary) |
+| Outlook / Microsoft 365 | High efficacy reported; no numeric metric public [11] | ≈ 4% flagged (≈ 97% bypassed) | ≈ 0% | No (proprietary) |
+| Yahoo Mail | No vendor figure published | ≈ 90% flagged (≈ 10% bypassed) | High (≈ 59–67%) | No (proprietary) |
+| **Proposed fusion model (this project)** | — | **92% catch on 4,986 unseen AI-phishing** (Table 6.3) | ≈ 0.9% FPR on held-out main corpus (Table 6.1) | **Yes** |
 
 The second comparison (Table 6.6) concerned published classical models evaluated on the same
 family of public corpora used in this project (Enron, SpamAssassin, Ling-Spam, CEAS-2008,
@@ -1214,6 +1230,10 @@ Learning Research*, vol. 12, pp. 2825–2830, 2011.
 [16] The Apache Software Foundation, "SpamAssassin public corpora," Apache SpamAssassin,
 2003. [Online]. Available: https://spamassassin.apache.org/old/publiccorpus/ (accessed
 Sep. 3, 2026).
+
+[17] C. Opara, P. Modesti, and L. Golightly, "Evaluating spam filters and stylometric
+detection of AI-generated phishing emails," *Expert Systems with Applications*, vol. 276,
+art. 127044, Jun. 2025, doi: 10.1016/j.eswa.2025.127044.
 
 ---
 
