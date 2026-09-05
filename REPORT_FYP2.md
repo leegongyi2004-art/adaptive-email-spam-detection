@@ -908,6 +908,10 @@ reviewed retraining.
 
 ## 6.2 Testing Setup and Result
 
+> **Ready-made figures:** run `python reports/make_result_figures.py data/reviewed_mail.csv --llm data/llm_test.csv`
+> to generate Figures 6.1–6.4 (confusion matrix, ROC, threshold/catch curve and before/after
+> adaptive ROC) as PNGs in `reports/figures/`.
+
 ### 6.2.1 Main Corpus Result
 
 The deployed fused logistic-regression model achieved the performance shown in Table 6.1 on
