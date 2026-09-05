@@ -88,11 +88,11 @@ CONFIGS = [
     ("Logistic Regression (content only)", "content",
      LogisticRegression(max_iter=1000, class_weight="balanced"), False),
     ("Linear SVM (content only)", "content",
-     LinearSVC(class_weight="balanced"), False),
+     LinearSVC(class_weight="balanced", max_iter=10_000), False),
     ("Logistic Regression (content+metadata FUSION)", "fusion",
      LogisticRegression(max_iter=1000, class_weight="balanced", C=1.5), True),
     ("Linear SVM (content+metadata FUSION)", "fusion",
-     LinearSVC(class_weight="balanced"), False),
+     LinearSVC(class_weight="balanced", max_iter=10_000), False),
 ]
 
 METRICS = ["accuracy", "precision", "recall", "f1", "roc_auc"]
