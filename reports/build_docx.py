@@ -1,13 +1,13 @@
 """Build a submission-ready Word (.docx) from REPORT_FYP2.md.
 
-Produces REPORT_FYP2.docx with:
-  * Times New Roman 12 pt body, 1.5 line spacing, UK English
-  * real Word tables (all comparison/results tables included)
-  * chapter headings (each chapter/back-matter section starts on a new page)
+Produces REPORT_FYP2.docx formatted to UTAR FYP house style:
+  * Times New Roman; body 12 pt with 1.5 line spacing, justified
+  * black TNR chapter/section headings (chapter titles on a new page, centred)
+  * centred cover / title pages
+  * real Word tables with bold, shaded header rows
   * ready-made figures embedded automatically where the PNG exists
      (run reports/make_figures.py and reports/make_result_figures.py first)
-  * [FILL IN] and [FIGURE ...] placeholders left visible for the student
-  * code blocks in a monospace font; HTML comment instructions skipped
+  * page numbers in the footer; [FILL IN] / [FIGURE ...] placeholders left visible
 
 Usage (from the project root):
     python reports/build_docx.py
@@ -20,8 +20,9 @@ from pathlib import Path
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.shared import Inches, Pt
+from docx.shared import Inches, Pt, RGBColor
 
 ROOT = Path(__file__).resolve().parent.parent
 MD = ROOT / "REPORT_FYP2.md"
@@ -44,11 +45,13 @@ FIG_MAP = {
     "FIGURE 6.4": "fig6_4_adaptive_roc.png",
 }
 
+CENTER_PAGES = {"FRONT COVER", "TITLE PAGE"}
+TNR = "Times New Roman"
+BLACK = RGBColor(0, 0, 0)
 INLINE = re.compile(r"(\*\*.+?\*\*|\*[^*]+?\*)")
 
 
 def add_runs(par, text):
-    """Add inline **bold** and *italic* runs to a paragraph."""
     for part in INLINE.split(text):
         if not part:
             continue
@@ -60,50 +63,92 @@ def add_runs(par, text):
             par.add_run(part)
 
 
-def style_base(doc):
-    st = doc.styles["Normal"]
-    st.font.name = "Times New Roman"
-    st.font.size = Pt(12)
-    st.element.rPr.rFonts.set(qn("w:eastAsia"), "Times New Roman")
-    pf = st.paragraph_format
+def set_font(style, size, bold=False, italic=False, color=BLACK):
+    style.font.name = TNR
+    style.font.size = Pt(size)
+    style.font.bold = bold
+    style.font.italic = italic
+    style.font.color.rgb = color
+    rpr = style.element.get_or_add_rPr()
+    rfonts = rpr.find(qn("w:rFonts"))
+    if rfonts is None:
+        rfonts = OxmlElement("w:rFonts"); rpr.append(rfonts)
+    for a in ("w:ascii", "w:hAnsi", "w:cs", "w:eastAsia"):
+        rfonts.set(qn(a), TNR)
+
+
+def style_doc(doc):
+    # Page margins: left 1.2 in (binding/cover), right/top/bottom 1 in
+    for sec in doc.sections:
+        sec.left_margin = Inches(1.2)
+        sec.right_margin = Inches(1.0)
+        sec.top_margin = Inches(1.0)
+        sec.bottom_margin = Inches(1.0)
+
+    normal = doc.styles["Normal"]
+    set_font(normal, 12)
+    pf = normal.paragraph_format
     pf.line_spacing_rule = WD_LINE_SPACING.ONE_POINT_FIVE
     pf.space_after = Pt(6)
+    pf.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
+    set_font(doc.styles["Heading 1"], 16, bold=True)
+    set_font(doc.styles["Heading 2"], 14, bold=True)
+    set_font(doc.styles["Heading 3"], 12, bold=True)
+    set_font(doc.styles["Heading 4"], 12, bold=True, italic=True)
+    for nm in ("Heading 1", "Heading 2", "Heading 3", "Heading 4"):
+        doc.styles[nm].paragraph_format.space_before = Pt(12)
+        doc.styles[nm].paragraph_format.space_after = Pt(8)
 
 
-def set_caption(par):
-    for r in par.runs:
-        r.font.size = Pt(10.5)
-        r.bold = True
+def add_page_numbers(doc):
+    for sec in doc.sections:
+        footer = sec.footer
+        p = footer.paragraphs[0]
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        run = p.add_run()
+        fld1 = OxmlElement("w:fldChar"); fld1.set(qn("w:fldCharType"), "begin")
+        instr = OxmlElement("w:instrText"); instr.set(qn("xml:space"), "preserve"); instr.text = "PAGE"
+        fld2 = OxmlElement("w:fldChar"); fld2.set(qn("w:fldCharType"), "end")
+        run._r.append(fld1); run._r.append(instr); run._r.append(fld2)
+        run.font.name = TNR; run.font.size = Pt(10)
+
+
+def shade(cell, hexfill):
+    tcpr = cell._tc.get_or_add_tcPr()
+    shd = OxmlElement("w:shd")
+    shd.set(qn("w:val"), "clear"); shd.set(qn("w:fill"), hexfill)
+    tcpr.append(shd)
+
+
+def caption(par):
     par.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    for r in par.runs:
+        r.font.size = Pt(11); r.bold = True
     par.paragraph_format.space_before = Pt(4)
+    par.paragraph_format.space_after = Pt(8)
 
 
 def add_image(doc, marker):
     key = marker[1:marker.index(":")].strip().upper()
     fname = FIG_MAP.get(key)
-    if fname:
-        path = FIGS / fname
-        if path.exists():
-            doc.add_picture(str(path), width=Inches(6.0))
-            doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
-            cap = marker.split(":", 1)[1].strip().rstrip("].")
-            p = doc.add_paragraph(); add_runs(p, key.title() + " — " + cap); set_caption(p)
-            return
-    # no PNG yet -> placeholder
-    p = doc.add_paragraph(); r = p.add_run("[" + marker[1:] if marker.startswith("[") else marker)
-    r.italic = True
-    for run in p.runs:
-        run.font.color.rgb = None
+    if fname and (FIGS / fname).exists():
+        doc.add_picture(str(FIGS / fname), width=Inches(6.0))
+        doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        cap = marker.split(":", 1)[1].strip().rstrip("].")
+        p = doc.add_paragraph(); add_runs(p, key.title() + " — " + cap); caption(p)
+        return
+    p = doc.add_paragraph()
+    r = p.add_run(marker.strip("[]")); r.italic = True
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
 
 def parse_table(lines, start):
     rows = []
     i = start
     while i < len(lines) and lines[i].strip().startswith("|"):
-        cells = [c.strip() for c in lines[i].strip().strip("|").split("|")]
-        rows.append(cells)
+        rows.append([c.strip() for c in lines[i].strip().strip("|").split("|")])
         i += 1
-    # drop the separator row (---|---)
     rows = [r for r in rows if not all(set(c) <= set("-: ") for c in r)]
     return rows, i
 
@@ -115,114 +160,90 @@ def add_table(doc, rows):
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
     for ri, r in enumerate(rows):
         for ci in range(ncol):
-            txt = r[ci] if ci < len(r) else ""
             cell = table.cell(ri, ci)
             cell.text = ""
             par = cell.paragraphs[0]
             par.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
             par.paragraph_format.space_after = Pt(2)
-            add_runs(par, txt)
+            par.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            add_runs(par, r[ci] if ci < len(r) else "")
             for run in par.runs:
-                run.font.size = Pt(10.5)
+                run.font.name = TNR; run.font.size = Pt(10.5)
                 if ri == 0:
                     run.bold = True
+            if ri == 0:
+                shade(cell, "D9E2F3")
     doc.add_paragraph()
 
 
 def main():
     lines = MD.read_text(encoding="utf-8").splitlines()
     doc = Document()
-    style_base(doc)
+    style_doc(doc)
+    add_page_numbers(doc)
 
     i = 0
     in_code = False
     skip_comment = False
+    in_center = False
     while i < len(lines):
         line = lines[i]
 
-        # HTML comments: <!-- ... -> ... -->  (possibly multi-line)
         if line.strip().startswith("<!--"):
             skip_comment = True
             if "-->" in line:
                 skip_comment = False
-            i += 1
-            continue
+            i += 1; continue
         if skip_comment:
             if "-->" in line:
                 skip_comment = False
-            i += 1
-            continue
+            i += 1; continue
 
-        # code fences
         if line.strip().startswith("```"):
-            in_code = not in_code
-            i += 1
-            continue
+            in_code = not in_code; i += 1; continue
         if in_code:
             p = doc.add_paragraph()
             r = p.add_run(line if line else " ")
             r.font.name = "Consolas"; r.font.size = Pt(9.5)
             p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
             p.paragraph_format.space_after = Pt(0)
-            i += 1
-            continue
+            i += 1; continue
 
-        # table
         if line.strip().startswith("|"):
-            rows, ni = parse_table(lines, i)
-            add_table(doc, rows)
-            i = ni
-            continue
+            rows, ni = parse_table(lines, i); add_table(doc, rows); i = ni; continue
 
-        # figure marker  [FIGURE X.Y: ...]
         if line.strip().startswith("[FIGURE"):
-            add_image(doc, line.strip())
-            i += 1
-            continue
-
-        # ready-made image blockquote  > **Ready-made image:** path
-        if "Ready-made image" in line:
-            i += 1
-            continue
-        if line.strip().startswith(">") and ("reports/figures" in line or "regenerate" in line):
-            i += 1
-            continue
-
-        # horizontal rule
+            add_image(doc, line.strip()); i += 1; continue
+        if "Ready-made image" in line or (line.strip().startswith(">") and "reports/figures" in line):
+            i += 1; continue
         if line.strip() == "---":
-            i += 1
-            continue
+            i += 1; continue
 
-        # headings
         if line.startswith("#"):
             m = re.match(r"^(#+)\s+(.*)", line)
-            level = len(m.group(1))
-            text = m.group(2).strip()
+            level = len(m.group(1)); text = m.group(2).strip()
             if level == 1:
                 doc.add_page_break()
-                h = doc.add_heading(level=1)
-            elif level == 2:
-                h = doc.add_heading(level=2)
+                h = doc.add_heading(level=1); h.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                in_center = text in CENTER_PAGES
             else:
                 h = doc.add_heading(level=min(level - 1, 4))
-            run = h.add_run(text)
-            run.font.name = "Times New Roman"
-            i += 1
-            continue
+                h.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            run = h.add_run(text); run.font.name = TNR; run.font.color.rgb = BLACK
+            i += 1; continue
 
-        # blank
         if not line.strip():
-            i += 1
-            continue
+            i += 1; continue
 
-        # table caption  **Table X.Y — ...**
         if line.strip().startswith("**Table"):
-            p = doc.add_paragraph(); add_runs(p, line.strip()); set_caption(p)
-            i += 1
-            continue
+            p = doc.add_paragraph(); add_runs(p, line.strip()); caption(p); i += 1; continue
 
-        # normal paragraph
         p = doc.add_paragraph(); add_runs(p, line.strip())
+        if in_center:
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p.paragraph_format.space_after = Pt(10)
+            for r in p.runs:
+                r.bold = True
         i += 1
 
     doc.save(OUT)
