@@ -173,8 +173,9 @@ References; Appendices A–G. -->
 - Table 3.2 Integrated public corpus and class distribution.
 - Table 4.1 Component modules and responsibilities.
 - Table 4.2 The twelve structural metadata signals.
-- Table 5.1 Development hardware and software.
-- Table 5.2 Model and feature hyper-parameters.
+- Table 5.1 Specifications of the development machine.
+- Table 5.2 Software and libraries used in the project.
+- Table 5.3 Model and feature hyper-parameters.
 - Table 6.1 Held-out performance of the deployed fused model.
 - Table 6.2 Classifier and feature-group comparison (Objective 3).
 - Table 6.3 Detection of genuine LLM-generated phishing (n = 4,986).
@@ -954,10 +955,10 @@ small enough to be loaded instantly by the service.
 
 The deployed decision threshold defaulted to 0.55 in the mailbox tool and was re-tuned per
 deployment using the threshold sweep; lowering the threshold increased recall at the cost of
-more false positives, which was useful when prioritising catch rate for AI-style mail. Table 5.2
+more false positives, which was useful when prioritising catch rate for AI-style mail. Table 5.3
 lists the model and feature hyper-parameters.
 
-**Table 5.2 — Model and feature hyper-parameters.**
+**Table 5.3 — Model and feature hyper-parameters.**
 
 | Component | Setting |
 |---|---|
@@ -1112,7 +1113,7 @@ with this setting the metrics were stable and effectively unchanged beyond that 
 All configurations were trained and evaluated on the same 75/25 stratified split, using the
 classifier's default 0.5 decision threshold so that the five configurations were compared under
 identical conditions. The deployed mailbox tool instead operates at a tuned threshold of 0.55
-(Table 5.2), which is why the deployed-fusion precision/recall pair reported for the production
+(Table 5.3), which is why the deployed-fusion precision/recall pair reported for the production
 operating point in Table 6.1 (precision 0.991, recall 0.992) differs slightly from the
 default-threshold figures here; accuracy and F1 are identical at 0.992.
 
