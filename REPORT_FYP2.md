@@ -274,12 +274,12 @@ objectives (Section 1.2), defines the project scope (Section 1.3), states the co
 
 Despite the widespread deployment of anti-spam filters, email spam remained a persistent and
 evolving problem. Static rule lists and keyword filters were brittle: they required constant
-manual maintenance and were easily evaded by rewording or obfuscation. Learned content models
-were more effective but examined only what a message said and ignored its structure, while
+manual maintenance and were easily evaded by rewording or obfuscation [4], [5]. Learned content
+models were more effective but examined only what a message said and ignored its structure, while
 metadata and reputation systems used structural indicators that were themselves bypassed by
-well-formed, link-less business-email-compromise mail sent from plausibly configured accounts.
-Models that were never updated could not follow evolving campaigns, so their accuracy degraded
-as concept drift accumulated.
+well-formed, link-less business-email-compromise mail sent from plausibly configured accounts
+[19]. Models that were never updated could not follow evolving campaigns, so their accuracy
+degraded as concept drift accumulated [4], [5].
 
 These weaknesses produced the two errors that mattered most in practice. False negatives
 allowed malicious mail to reach the user, while false positives — legitimate email wrongly marked
