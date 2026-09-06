@@ -626,6 +626,8 @@ Table 3.1 describes each use case.
 
 > **Ready-made image:** `reports/figures/fig3_2_use_case.png`.
 
+[FIGURE 3.2: insert the use-case diagram for the reviewer/administrator actor.]
+
 **Table 3.1 — Use-case descriptions.**
 
 | Use case | Actor | Description |
@@ -643,6 +645,8 @@ The activity flow began when an email entered the system and ended either with a
 message, a quarantined message, or a redeployed model after retraining.
 
 > **Ready-made image:** `reports/figures/fig3_3_activity.png`.
+
+[FIGURE 3.3: insert the activity diagram for scoring, review and adaptive retraining.]
 
 Emails were parsed and feature-extracted; the model produced a probability that was compared
 against the configurable threshold; high-risk mail was quarantined or labelled; uncertain or
@@ -752,6 +756,8 @@ The system comprised five top-level blocks, shown in Figure 4.1:
 5. **Adaptation** — the review queue, feedback store and scheduled retraining path.
 
 > **Ready-made image:** `reports/figures/fig4_1_block_diagram.png`.
+
+[FIGURE 4.1: insert the system block diagram (ingestion, features, fusion, action, adaptation).]
 
 Each block was implemented as an independent, testable Python module under the
 `spam_detection` package, which allowed individual stages to be updated and retrained without
