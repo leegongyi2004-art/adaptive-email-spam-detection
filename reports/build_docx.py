@@ -31,6 +31,7 @@ FIGS = ROOT / "reports" / "figures"
 
 FIG_MAP = {
     "FIGURE 1.1": "fig1_1_spam_share.png",
+    "FIGURE 1.2": "fig1_2_phishing_attacks.png",
     "FIGURE 2.1": "fig2_1_taxonomy.png",
     "FIGURE 2.2": "fig2_2_rule_based.png",
     "FIGURE 2.3": "fig2_3_content_statistical.png",

@@ -144,6 +144,7 @@ References; Appendices A–G. -->
 # LIST OF FIGURES
 
 - Figure 1.1 Spam as a share of worldwide email traffic in 2024 (Kaspersky Securelist).
+- Figure 1.2 Phishing attacks recorded per quarter in 2024 (Anti-Phishing Working Group).
 - Figure 2.1 Taxonomy of spam-detection approaches and the position of this project.
 - Figure 2.2 Rule- / keyword-based filtering.
 - Figure 2.3 Content-based statistical (machine-learning) classification.
@@ -240,10 +241,18 @@ obfuscation such as inserted characters, misleading links and disguised headers,
 particularly dangerous and featured prominently in reported data breaches [2]. Two trends made
 the problem materially harder. First, business-email-compromise attacks used calm, professional,
 grammatically correct language and frequently contained no malicious link or attachment, so they
-evaded signatures designed for obvious, keyword-laden spam. Second, large language models allowed
+evaded signatures designed for obvious, keyword-laden spam. These link-less impersonation
+attacks were also among the costliest of cybercrimes: the Federal Bureau of Investigation
+recorded business-email-compromise losses of USD 2.77 billion across 21,442 complaints in 2024
+[19], and the Anti-Phishing Working Group recorded close to 3.8 million phishing attacks over
+the same year [20], as shown in Figure 1.2. Second, large language models allowed
 attackers to generate fluent, personalised, typo-free fraudulent messages at scale. Compounding
 these trends was concept drift: the characteristics of spam evolved over time, so a model
 trained once on older data gradually failed to recognise new tactics unless it was updated.
+
+> **Ready-made image:** `reports/figures/fig1_2_phishing_attacks.png`.
+
+[FIGURE 1.2: Phishing attacks recorded per quarter in 2024 (Anti-Phishing Working Group [20]).]
 
 Machine learning offered a more robust basis than static rules, because a learned model
 generalised from labelled examples rather than matching hand-maintained patterns and could be
@@ -1330,6 +1339,12 @@ art. 127044, Jun. 2025, doi: 10.1016/j.eswa.2025.127044.
 
 [18] Kaspersky, "Spam and phishing in 2024," *Securelist*, Kaspersky Lab, Feb. 2025.
 [Online]. Available: https://securelist.com/spam-and-phishing-report-2024/115536/
+
+[19] Federal Bureau of Investigation, "2024 Internet Crime Report," Internet Crime Complaint
+Center (IC3), 2025. [Online]. Available: https://www.ic3.gov/AnnualReport/Reports
+
+[20] Anti-Phishing Working Group, "Phishing Activity Trends Report, 2024," APWG, 2024–2025.
+[Online]. Available: https://apwg.org/resources/phishingactivitytrends/
 
 ---
 

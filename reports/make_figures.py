@@ -87,6 +87,27 @@ def fig_1_1():
     save(fig, "fig1_1_spam_share.png")
 
 
+# ---------------------------------------------------------------- Figure 1.2
+def fig_1_2():
+    fig, ax = plt.subplots(figsize=(7.2, 4.6))
+    quarters = ["Q1", "Q2", "Q3", "Q4"]
+    attacks = [963994, 877536, 932923, 989123]  # APWG Phishing Activity Trends, 2024
+    bars = ax.bar(quarters, attacks, color=BLUE, width=0.6)
+    for b, v in zip(bars, attacks):
+        ax.text(b.get_x() + b.get_width() / 2, v + 12000, f"{v/1000:.0f}k",
+                ha="center", va="bottom", fontsize=10, fontweight="bold", color=BLUE)
+    ax.set_ylabel("Phishing attacks recorded")
+    ax.set_ylim(0, max(attacks) * 1.16)
+    ax.set_title("Phishing attacks recorded per quarter, 2024 (≈3.8 million for the year)",
+                 fontsize=12.5, fontweight="bold", color=BLUE)
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{x/1000:.0f}k"))
+    ax.grid(axis="y", alpha=0.3)
+    fig.text(0.5, 0.005, "Source: Anti-Phishing Working Group (APWG), Phishing Activity Trends Report [20]",
+             ha="center", fontsize=8.5, style="italic", color=GREY)
+    fig.tight_layout(rect=[0, 0.04, 1, 1])
+    save(fig, "fig1_2_phishing_attacks.png")
+
+
 # ---------------------------------------------------------------- Figure 2.1
 def fig_2_1():
     fig, ax = new_ax(12, 8)
@@ -368,6 +389,7 @@ def fig_4_1():
 
 if __name__ == "__main__":
     fig_1_1()
+    fig_1_2()
     fig_2_1()
     fig_2_2()
     fig_2_3()
