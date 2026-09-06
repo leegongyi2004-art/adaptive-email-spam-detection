@@ -487,11 +487,12 @@ structure entirely. The statistical-classification pipeline is summarised in Fig
 A second family exploited structural information: sender domain and reputation,
 received-header routing, presence of sender-policy-framework and DomainKeys-Identified-Mail
 authentication, reply-to mismatches and link analysis. These signals caught structural
-anomalies that content models missed. In the preliminary ablation conducted during Project I,
-a metadata-only configuration reached approximately 93.2% accuracy with an F1 score of 83.6% —
-meaningful, but well below content-based methods — confirming that metadata was valuable but
-insufficient on its own and had to be combined with content. Reputation systems were also evaded
-by well-formed, link-less business-email-compromise mail sent from plausibly configured
+anomalies that content models missed. The preliminary ablation conducted during Project I on
+its smaller prototype corpus (a lighter feature set than the final system described here) found
+that a metadata-only configuration reached approximately 93.2% accuracy with an F1 score of
+83.6% — meaningful, but well below content-based methods — confirming that metadata was valuable
+but insufficient on its own and had to be combined with content. Reputation systems were also
+evaded by well-formed, link-less business-email-compromise mail sent from plausibly configured
 accounts. The metadata/reputation approach is depicted in Figure 2.4.
 
 > **Ready-made image:** `reports/figures/fig2_4_metadata.png`.
