@@ -912,12 +912,16 @@ role of each component are summarised in Table 5.2.
 |---|---|
 | Python 3.11 | Programming language for all scripts and the detection service |
 | scikit-learn 1.4+ | Core machine-learning library: TF-IDF vectorisation, Naive Bayes, logistic regression, support-vector machine, feature scaling |
-| NumPy | Numerical array and matrix operations (used alongside scikit-learn) |
-| Joblib | Serialising (saving) the trained model and loading it for prediction |
-| FastAPI | Web framework that exposes the detector as a representational-state-transfer (REST) service |
-| Uvicorn | Server that runs the FastAPI service and accepts prediction requests |
-| Pydantic | Validates the data received in each request to the service |
-| Matplotlib | Generates the result charts and figures used in Chapter 6 |
+| NumPy (bundled with scikit-learn) | Numerical array and matrix operations used alongside scikit-learn |
+| Joblib 1.3+ | Serialising (saving) the trained model and loading it for prediction |
+| FastAPI 0.110+ | Web framework that exposes the detector as a representational-state-transfer (REST) service |
+| Uvicorn 0.27+ | Server that runs the FastAPI service and accepts prediction requests |
+| Pydantic 2.0+ | Validates the data received in each request to the service |
+| Matplotlib 3.7+ | Generates the result charts and figures used in Chapter 6 |
+
+The version numbers in Table 5.2 matched the minimum versions recorded in the requirements
+file, so the environment could be recreated exactly. The python-docx library (1.1+) was used
+only to generate this report document and was not part of the detection system.
 
 Based on Table 5.2, scikit-learn provided every machine-learning component, so no separate
 deep-learning framework was needed, which kept the installation light and the training fast on
