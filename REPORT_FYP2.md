@@ -223,9 +223,10 @@ damages reaching into the trillions of United States dollars, with ransomware, p
 breaches and identity theft among the principal causes [1]. Among the available attack vectors,
 email continued to be favoured because it was ubiquitous, trusted and inexpensive to abuse.
 Unsolicited or fraudulent messages, broadly termed spam, had for many years accounted for a
-substantial fraction of global email traffic, ranging from nuisance advertisements to
-sophisticated phishing campaigns designed to steal credentials or financial data or to
-distribute malware [2].
+large share of global email traffic — Kaspersky measured spam at roughly 47 per cent of all
+email sent worldwide in 2024 [18] — and ranged from nuisance advertisements to sophisticated
+phishing campaigns designed to steal credentials or financial data or to distribute malware
+[2].
 
 Early spam messages were comparatively simple and could be blocked by keyword filters or
 blacklists, but attackers evolved their techniques continuously. Modern campaigns used
@@ -1321,6 +1322,9 @@ Sep. 3, 2026).
 [17] C. Opara, P. Modesti, and L. Golightly, "Evaluating spam filters and stylometric
 detection of AI-generated phishing emails," *Expert Systems with Applications*, vol. 276,
 art. 127044, Jun. 2025, doi: 10.1016/j.eswa.2025.127044.
+
+[18] Kaspersky, "Spam and phishing in 2024," *Securelist*, Kaspersky Lab, Feb. 2025.
+[Online]. Available: https://securelist.com/spam-and-phishing-report-2024/115536/
 
 ---
 
