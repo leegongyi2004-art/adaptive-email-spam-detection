@@ -625,7 +625,7 @@ This chapter gave a rebuild-ready description of the system: the five-block arch
 
 [5.1 Hardware Setup]
 
-This section outlines the physical hardware used to develop, train and evaluate the spam-detection system. A deliberate design objective was that the detector should run on ordinary, inexpensive hardware rather than on specialised accelerators. Because the system used classical machine-learning models - logistic regression and support-vector machines over TF-IDF features - instead of deep neural networks, all training, evaluation and inference were performed on the central processing unit, and no discrete graphics processing unit was required. This contrasted with deep-learning spam detectors, whose training and inference typically demand a graphics processor, and it supported the project goal of a system that could be reproduced on a consumer laptop and deployed on modest on-premises or edge mail infrastructure. The specifications of the development machine are summarised in Table 5.1.
+This section outlines the hardware used to develop, train and evaluate the spam-detection system. Because the detector used classical machine-learning models rather than deep neural networks, it trained and ran entirely on the central processing unit and needed no graphics processing unit, so it could be reproduced on an ordinary consumer laptop. The specifications of the development machine are summarised in Table 5.1.
 
 Table 5.1 - Specifications of the development machine.
 
@@ -633,13 +633,13 @@ Table 5.1 - Specifications of the development machine.
 Description	Specifications
 Model	[FILL IN: laptop brand and model, e.g. Acer Aspire 5 A514]
 Processor	[FILL IN: exact CPU model, e.g. Intel Core i5-1135G7] - central processing unit only
-Operating system	Windows 11 (workflow also validated on Linux)
-Graphic	Integrated graphics; no discrete GPU (not required)
+Operating system	Windows 11
+Graphic	[FILL IN: integrated graphics name, e.g. Intel Iris Xe Graphics] (integrated; no discrete GPU)
 Memory	[FILL IN: installed RAM, e.g. 16 GB DDR4]
 Storage	[FILL IN: disk capacity, e.g. 512 GB SSD]
 --- TABLE END ---
 
-Based on Table 5.1, the development and evaluation machine was a consumer laptop powered by an [FILL IN: processor] processor with [FILL IN: RAM] of memory and [FILL IN: disk] storage, running Windows 11. The machine had integrated graphics and no discrete graphics processing unit, which was fully sufficient because the classical models trained and served predictions entirely on the central processing unit: training on the full corpus completed within minutes, and the median inference latency was approximately 16 milliseconds per email, as reported in Chapter 6. The complete workflow was additionally validated on a Linux environment to confirm that it did not depend on a single platform.
+Based on Table 5.1, the development and evaluation machine was a consumer laptop powered by an [FILL IN: processor] processor with [FILL IN: RAM] of memory and [FILL IN: disk] storage, running Windows 11. The machine used integrated graphics and had no discrete graphics processing unit, which was fully sufficient because the classical models trained and served predictions entirely on the central processing unit: training on the full corpus completed within minutes, and the median inference latency was approximately 16 milliseconds per email, as reported in Chapter 6.
 
 
 <<<  FIGURE 5.1: Screenshot of the terminal showing the Python virtual environment created and the  >>>
