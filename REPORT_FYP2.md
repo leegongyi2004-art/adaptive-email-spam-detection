@@ -898,16 +898,35 @@ requirements installed successfully.]
 
 ## 5.2 Software Setup
 
-A dedicated Python virtual environment was created and the core dependencies were installed
-from `requirements.txt` (scikit-learn, Joblib, FastAPI, Uvicorn and Pydantic). The public
-corpus was prepared with the dataset-preparation script, which merged the source CSV files,
-raised the CSV field-size limit for long bodies, handled multiple encodings and label formats,
-and de-duplicated the records. De-duplication was performed on normalised message content so
-that identical emails repeated across the merged corpora were counted once; this prevented the
-same message from appearing in both training and held-out split, which would have inflated the
-reported metrics. Training on the full corpus completed within minutes on the central
-processing unit, and the resulting artefact was small enough to be loaded instantly by the
-service.
+The system was implemented entirely in Python using a dedicated virtual environment, into
+which the dependencies listed in `requirements.txt` were installed. Only mature, widely used
+open-source libraries were chosen so that the project could be understood and reproduced
+without proprietary software. The software stack and the role of each component are summarised
+in Table 5.2.
+
+**Table 5.2 — Software and libraries used in the project.**
+
+| Software / library | Purpose in the project |
+|---|---|
+| Python 3.11 | Programming language for all scripts and the detection service |
+| scikit-learn 1.4+ | Core machine-learning library: TF-IDF vectorisation, Naive Bayes, logistic regression, support-vector machine, feature scaling |
+| NumPy | Numerical array and matrix operations (used alongside scikit-learn) |
+| Joblib | Serialising (saving) the trained model and loading it for prediction |
+| FastAPI | Web framework that exposes the detector as a representational-state-transfer (REST) service |
+| Uvicorn | Server that runs the FastAPI service and accepts prediction requests |
+| Pydantic | Validates the data received in each request to the service |
+| Matplotlib | Generates the result charts and figures used in Chapter 6 |
+
+Based on Table 5.2, scikit-learn provided every machine-learning component, so no separate
+deep-learning framework was needed, which kept the installation light and the training fast on
+the central processing unit. The public corpus was prepared with a dataset-preparation script
+that merged the source comma-separated-value files, raised the field-size limit for long email
+bodies, handled multiple encodings and label formats, and de-duplicated the records.
+De-duplication was performed on normalised message content so that identical emails repeated
+across the merged corpora were counted once; this prevented the same message from appearing in
+both the training and the held-out split, which would otherwise have inflated the reported
+metrics. Training on the full corpus completed within minutes, and the resulting model file was
+small enough to be loaded instantly by the service.
 
 ## 5.3 Setting and Configuration
 
