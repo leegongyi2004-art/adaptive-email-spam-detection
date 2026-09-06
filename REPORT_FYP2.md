@@ -145,6 +145,7 @@ References; Appendices A–G. -->
 
 - Figure 1.1 Spam as a share of worldwide email traffic in 2024 (Kaspersky Securelist).
 - Figure 1.2 Phishing attacks recorded per quarter in 2024 (Anti-Phishing Working Group).
+- Figure 1.3 Key email-security threat statistics summary.
 - Figure 2.1 Taxonomy of spam-detection approaches and the position of this project.
 - Figure 2.2 Rule- / keyword-based filtering.
 - Figure 2.3 Content-based statistical (machine-learning) classification.
@@ -253,6 +254,15 @@ trained once on older data gradually failed to recognise new tactics unless it w
 > **Ready-made image:** `reports/figures/fig1_2_phishing_attacks.png`.
 
 [FIGURE 1.2: Phishing attacks recorded per quarter in 2024 (Anti-Phishing Working Group [20]).]
+
+Such threats also acted faster than manual review could: the 2024 Verizon study found that the
+median time for a user to click a phishing link was 21 seconds and that a non-malicious human
+element was involved in 68% of breaches [2], reinforcing the case for automatic detection. The
+key threat statistics are summarised in Figure 1.3.
+
+> **Ready-made image:** `reports/figures/fig1_3_threat_stats.png`.
+
+[FIGURE 1.3: Summary of key email-security threat statistics from recent official reports.]
 
 Machine learning offered a more robust basis than static rules, because a learned model
 generalised from labelled examples rather than matching hand-maintained patterns and could be

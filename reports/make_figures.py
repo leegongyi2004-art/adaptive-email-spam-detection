@@ -108,6 +108,34 @@ def fig_1_2():
     save(fig, "fig1_2_phishing_attacks.png")
 
 
+# ---------------------------------------------------------------- Figure 1.3
+def fig_1_3():
+    fig, ax = plt.subplots(figsize=(11.5, 4.2))
+    ax.set_xlim(0, 12); ax.set_ylim(0, 4.4); ax.axis("off")
+    cards = [
+        ("47%",    "of all email\nwas spam (2024)",             "Kaspersky [18]"),
+        ("3.8M",   "phishing attacks\nrecorded in 2024",        "APWG [20]"),
+        ("$2.77B", "business-email-\ncompromise losses\n(2024)","FBI IC3 [19]"),
+        ("21 s",   "median time to click\na phishing link",     "Verizon DBIR [2]"),
+        ("68%",    "of breaches involved\na human element",     "Verizon DBIR [2]"),
+    ]
+    w = 2.2; gap = 0.18; x = 0.14
+    for value, label, src in cards:
+        patch = FancyBboxPatch((x, 0.55), w, 3.2,
+                               boxstyle="round,pad=0.02,rounding_size=0.12",
+                               linewidth=1.6, edgecolor=BLUE, facecolor=LIGHT)
+        ax.add_patch(patch)
+        ax.text(x + w / 2, 3.05, value, ha="center", va="center",
+                fontsize=21, fontweight="bold", color=BLUE)
+        ax.text(x + w / 2, 2.0, label, ha="center", va="center", fontsize=9, color="#222222")
+        ax.text(x + w / 2, 0.9, src, ha="center", va="center", fontsize=8,
+                style="italic", color=GREY)
+        x += w + gap
+    ax.text(6.0, 4.1, "Figure 1.3 — Key email-security threat statistics (recent official reports)",
+            ha="center", fontsize=11, fontweight="bold", color=BLUE)
+    save(fig, "fig1_3_threat_stats.png")
+
+
 # ---------------------------------------------------------------- Figure 2.1
 def fig_2_1():
     fig, ax = new_ax(12, 8)
@@ -390,6 +418,7 @@ def fig_4_1():
 if __name__ == "__main__":
     fig_1_1()
     fig_1_2()
+    fig_1_3()
     fig_2_1()
     fig_2_2()
     fig_2_3()
