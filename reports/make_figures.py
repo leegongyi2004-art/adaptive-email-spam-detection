@@ -62,6 +62,31 @@ def save(fig, name):
     print("wrote", OUT / name)
 
 
+# ---------------------------------------------------------------- Figure 1.1
+def fig_1_1():
+    fig, ax = plt.subplots(figsize=(6.4, 5.2))
+    spam = 47.27
+    other = 100 - spam
+    wedges, _ = ax.pie(
+        [spam, other],
+        colors=[ORANGE, LIGHT],
+        startangle=90, counterclock=False,
+        wedgeprops=dict(width=0.40, edgecolor="white", linewidth=2),
+    )
+    ax.text(0, 0.10, f"{spam:.1f}%", ha="center", va="center",
+            fontsize=26, fontweight="bold", color=ORANGE)
+    ax.text(0, -0.16, "of global email\nwas spam", ha="center", va="center",
+            fontsize=11, color="#333333")
+    ax.legend(wedges, [f"Spam  ({spam:.1f}%)", f"Legitimate / other  ({other:.1f}%)"],
+              loc="lower center", bbox_to_anchor=(0.5, -0.14), ncol=1, frameon=False, fontsize=10)
+    ax.set_title("Spam as a share of worldwide email traffic, 2024",
+                 fontsize=12.5, fontweight="bold", color=BLUE, pad=14)
+    fig.text(0.5, 0.02, "Source: Kaspersky Securelist, Spam and Phishing Report 2024 [18]",
+             ha="center", fontsize=8.5, style="italic", color=GREY)
+    fig.tight_layout(rect=[0, 0.04, 1, 1])
+    save(fig, "fig1_1_spam_share.png")
+
+
 # ---------------------------------------------------------------- Figure 2.1
 def fig_2_1():
     fig, ax = new_ax(12, 8)
@@ -342,6 +367,7 @@ def fig_4_1():
 
 
 if __name__ == "__main__":
+    fig_1_1()
     fig_2_1()
     fig_2_2()
     fig_2_3()

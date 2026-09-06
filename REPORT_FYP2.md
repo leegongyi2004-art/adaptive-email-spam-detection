@@ -143,6 +143,7 @@ References; Appendices A–G. -->
 
 # LIST OF FIGURES
 
+- Figure 1.1 Spam as a share of worldwide email traffic in 2024 (Kaspersky Securelist).
 - Figure 2.1 Taxonomy of spam-detection approaches and the position of this project.
 - Figure 2.2 Rule- / keyword-based filtering.
 - Figure 2.3 Content-based statistical (machine-learning) classification.
@@ -226,7 +227,11 @@ Unsolicited or fraudulent messages, broadly termed spam, had for many years acco
 large share of global email traffic — Kaspersky measured spam at roughly 47 per cent of all
 email sent worldwide in 2024 [18] — and ranged from nuisance advertisements to sophisticated
 phishing campaigns designed to steal credentials or financial data or to distribute malware
-[2].
+[2]. The scale of the problem is illustrated in Figure 1.1.
+
+> **Ready-made image:** `reports/figures/fig1_1_spam_share.png`.
+
+[FIGURE 1.1: Spam as a share of worldwide email traffic in 2024 (Kaspersky Securelist [18]).]
 
 Early spam messages were comparatively simple and could be blocked by keyword filters or
 blacklists, but attackers evolved their techniques continuously. Modern campaigns used
