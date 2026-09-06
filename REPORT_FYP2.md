@@ -1013,7 +1013,7 @@ also writes `reports/model_comparison.csv`, a ready-to-paste `reports/table6_2.m
 chart `reports/figures/fig6_model_comparison.png`. Running it on the full 81,152-email corpus
 produced the figures shown in Table 6.2. The support-vector-machine iteration limit was raised
 to 10,000 because the default 1,000 raised a convergence warning on the large fused feature set;
-with this setting all five configurations converged.
+with this setting the metrics were stable and effectively unchanged beyond that point.
 
 **Table 6.2 — Classifier and feature-group comparison (held-out split, default 0.5 threshold).**
 
