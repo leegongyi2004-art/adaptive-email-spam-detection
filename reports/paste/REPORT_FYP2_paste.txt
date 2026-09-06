@@ -625,22 +625,21 @@ This chapter gave a rebuild-ready description of the system: the five-block arch
 
 [5.1 Hardware Setup]
 
-A deliberate design objective was that the detector should train and run on ordinary, inexpensive hardware rather than on specialised accelerators. Because the system used classical machine-learning models - logistic regression and support-vector machines over TF-IDF features - rather than deep neural networks, all training, evaluation and inference were performed on the central processing unit, and no graphics processing unit was required. This contrasted with deep-learning spam detectors, whose training and inference typically demand a graphics processor, and it directly supported the project goal of a system that could be reproduced on a consumer laptop and deployed on modest on-premises or edge mail infrastructure. The per-message timing measured on this hardware is reported in Chapter 6, where the median inference latency was approximately 16 milliseconds per email.
+This section outlines the physical hardware used to develop, train and evaluate the spam-detection system. A deliberate design objective was that the detector should run on ordinary, inexpensive hardware rather than on specialised accelerators. Because the system used classical machine-learning models - logistic regression and support-vector machines over TF-IDF features - instead of deep neural networks, all training, evaluation and inference were performed on the central processing unit, and no discrete graphics processing unit was required. This contrasted with deep-learning spam detectors, whose training and inference typically demand a graphics processor, and it supported the project goal of a system that could be reproduced on a consumer laptop and deployed on modest on-premises or edge mail infrastructure. The specifications of the development machine are summarised in Table 5.1.
 
-The development and evaluation machine was a consumer laptop; the exact processor model and installed memory are noted in Table 5.1. The complete workflow was also validated on a Linux environment to confirm that it did not depend on a single platform. Table 5.1 summarises the hardware and software environment.
-
-Table 5.1 - Development hardware and software.
+Table 5.1 - Specifications of the development machine.
 
 --- TABLE START (tab-separated -> Convert Text to Table) ---
-Item	Specification
-Operating system	Windows 11 (also validated on Linux)
+Description	Specifications
+Model	[FILL IN: laptop brand and model, e.g. Acer Aspire 5 A514]
 Processor	[FILL IN: exact CPU model, e.g. Intel Core i5-1135G7] - central processing unit only
-Memory (RAM)	[FILL IN: installed RAM, e.g. 8 GB / 16 GB]
-Graphics	Integrated graphics; no discrete GPU (not required)
-Python	3.11+ virtual environment
-Core libraries	scikit-learn 1.4+, Joblib, FastAPI, Uvicorn, Pydantic
-Storage	Local CSV files; Joblib-serialised model
+Operating system	Windows 11 (workflow also validated on Linux)
+Graphic	Integrated graphics; no discrete GPU (not required)
+Memory	[FILL IN: installed RAM, e.g. 16 GB DDR4]
+Storage	[FILL IN: disk capacity, e.g. 512 GB SSD]
 --- TABLE END ---
+
+Based on Table 5.1, the development and evaluation machine was a consumer laptop powered by an [FILL IN: processor] processor with [FILL IN: RAM] of memory and [FILL IN: disk] storage, running Windows 11. The machine had integrated graphics and no discrete graphics processing unit, which was fully sufficient because the classical models trained and served predictions entirely on the central processing unit: training on the full corpus completed within minutes, and the median inference latency was approximately 16 milliseconds per email, as reported in Chapter 6. The complete workflow was additionally validated on a Linux environment to confirm that it did not depend on a single platform.
 
 
 <<<  FIGURE 5.1: Screenshot of the terminal showing the Python virtual environment created and the  >>>
