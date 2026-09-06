@@ -705,10 +705,14 @@ domains, were used for the controlled adaptation experiment.
 
 ## 3.3 Feature Extraction and Classification Approach
 
-*Content features.* Subject and body text were concatenated and vectorised with TF-IDF over
-word unigrams/bigrams (up to 40,000 terms) and over character n-grams of length three to five
-(up to 30,000 features), using sub-linear term-frequency scaling. The word stream captured
-phrasing while the character stream tolerated obfuscation.
+*Content features.* Subject and body text were concatenated and converted into numerical
+features using term frequency–inverse document frequency (TF-IDF). In plain terms, TF-IDF gave
+each word a high score when it appeared often in a particular email but rarely across all
+emails, so distinctive spam vocabulary stood out while common words such as "the" or "and"
+were down-weighted. The text was vectorised with TF-IDF over word unigrams/bigrams (up to
+40,000 terms) and over character n-grams of length three to five (up to 30,000 features), using
+sub-linear term-frequency scaling. The word stream captured phrasing while the character stream
+tolerated obfuscation.
 
 *Metadata features.* Twelve structural signals were extracted from the parsed message and
 encoded with a dictionary vectoriser: subject length, body length, URL count, number of unique
@@ -739,9 +743,16 @@ was evaluated.
 Performance was measured using accuracy, precision, recall, the F1 score and the
 receiver-operating-characteristic area under the curve, together with the confusion matrix and
 false-positive rate, because a legitimate message wrongly quarantined was the most costly
-error. Precision and recall were defined as TP/(TP+FP) and TP/(TP+FN), and the F1 score as their
-harmonic mean. A threshold sweep reported phishing recall at a low (≤5%) false-positive
-operating point. Per-message latency (50th and 95th percentiles) was measured on the central
+error. These terms were defined as follows. A true positive (TP) was a spam message correctly
+caught; a false negative (FN) was spam that reached the user; a false positive (FP) was a
+legitimate message wrongly marked as spam; and a true negative (TN) was legitimate mail
+correctly allowed through. Accuracy was the overall fraction of messages classified correctly;
+precision was the fraction of flagged messages that were truly spam (so a high precision meant
+few legitimate emails were blocked); recall was the fraction of real spam that was caught (so a
+high recall meant little spam slipped through); and the F1 score was the harmonic mean of
+precision and recall, summarising the balance between them. Formally, precision was
+TP/(TP+FP), recall was TP/(TP+FN), and the F1 score was their harmonic mean. A threshold sweep
+reported phishing recall at a low (≤5%) false-positive operating point. Per-message latency (50th and 95th percentiles) was measured on the central
 processing unit. External tests assessed generalisation to large-language-model-generated
 phishing, and a before/after experiment measured the improvement attributable to reviewed
 retraining. Validity controls were strict train/test separation, no training on any test email,
@@ -865,6 +876,11 @@ implemented and operated.
 ---
 
 # CHAPTER 5: SYSTEM IMPLEMENTATION
+
+This chapter explains how the design presented in Chapter 4 was implemented and operated. It
+describes the hardware used, the software environment and the role of each library, the
+configuration settings of the deployed model, and the commands used to train, evaluate and run
+the system, before discussing the implementation issues encountered and how they were resolved.
 
 ## 5.1 Hardware Setup
 
@@ -1014,6 +1030,12 @@ in the evaluation in Chapter 6 and satisfying the four project objectives.
 ---
 
 # CHAPTER 6: SYSTEM EVALUATION AND DISCUSSION
+
+This chapter reports and discusses the experimental results. It describes the testing setup and
+the metrics used, presents the performance of the three classifiers in both content-only and
+fused configurations, examines precision, recall, the false-positive rate, latency and the
+effect of the decision threshold, evaluates the adaptive-retraining mechanism, and assesses each
+objective against the measured evidence.
 
 ## 6.1 System Testing and Performance Metrics
 
@@ -1276,6 +1298,12 @@ retraining cycle, while keeping false positives low and every decision interpret
 ---
 
 # CHAPTER 7: CONCLUSION AND RECOMMENDATION
+
+This final chapter concludes the project. It first summarises what was achieved and how the
+results satisfied each of the four objectives stated in Chapter 1, then reflects on the
+limitations of the present system and recommends directions for future work, including a
+direct comparison with commercial filters on the same emails and deployment in a live mail
+environment.
 
 ## 7.1 Conclusion
 
