@@ -278,21 +278,18 @@ The motivation for this project was therefore to build a detector that (a) fused
 metadata so that fluent wording and structural anomalies were judged together, (b) remained fast
 and interpretable enough to run locally on ordinary hardware without dependence on external
 cloud services, and (c) adapted to new threats through a reviewed retraining loop rather than
-through manual editing of rules. The project carried forward the proposal established in
-Project I — an adaptive content–metadata fusion spam-detection framework — and implemented and
-evaluated it as a complete, deployable system. Project I established feasibility on a smaller
-corpus; Project II scaled the pipeline to a larger and more varied public corpus, hardened the
-implementation against malformed real-world input, added a service and quarantine layer, built
-the reviewed retraining loop end to end, and tested generalisation against genuinely
-AI-generated phishing. The relationship between the two phases was one of realisation and
-validation rather than redirection: the same four objectives defined in the proposal drove the
-implementation, and the results reported in Chapter 6 measured the extent to which each was met.
+through manual editing of rules. The project therefore designed, implemented and evaluated a
+complete, deployable adaptive content–metadata fusion spam-detection system: the pipeline was
+built at scale on a varied public corpus, hardened against malformed real-world input, wrapped
+in a service and quarantine layer, equipped with a reviewed retraining loop, and tested for
+generalisation against genuinely AI-generated phishing. The remainder of this report describes
+that system and measures the extent to which each stated objective was met.
 
 ## 1.2 Objectives
 
 The aim of this project was to design and implement an adaptive spam detection system that
 leveraged content–metadata fusion for enhanced email security. To achieve this aim, the project
-was guided by four specific objectives, carried forward unchanged from Project I:
+was guided by four specific objectives:
 
 1. To extract and process content-based features (body text, subject lines and embedded URLs) and
    metadata features (sender information and header attributes) from raw email datasets.
@@ -356,7 +353,7 @@ References and appendices follow.
 This chapter established the background to the project, described the continued exploitation of
 email for phishing and malware delivery, and identified two trends that made detection harder:
 fluent link-less attacks and the use of large language models to generate convincing fraudulent
-mail. It set out the four objectives carried forward from Project I, defined the scope as a
+mail. It set out the four project objectives, defined the scope as a
 local, English-language, content–metadata fusion detector with an adaptive retraining loop, and
 listed the contributions. Chapter 2 reviews the technologies and existing systems on which the
 solution was based.
@@ -392,7 +389,7 @@ storage used for email and model artefacts.
 
 No database server was deployed. Emails, labels and reviewed feedback were stored as
 comma-separated-value files, and the trained model was serialised to disk with Joblib. This
-choice was consistent with the lightweight, script-based approach proposed in Project I, kept
+choice followed the lightweight, script-based design of the system, kept
 the system portable and easy to back up, and avoided the operational overhead of a database for
 a dataset processed in batch. The comma-separated-value format also allowed the public corpora
 to be merged and de-duplicated with simple, auditable scripts.
@@ -432,8 +429,8 @@ requirements: it produced a genuine probability that could be compared against a
 threshold, it accepted balanced class weighting to compensate for the ham/spam ratio, and its
 linear coefficients allowed the contribution of each feature to be inspected, supporting the
 explainability requirement. Naïve Bayes and the linear support vector machine were retained as
-comparators because together they spanned the generative-to-discriminative spectrum evaluated
-during Project I.
+comparators because together they spanned the generative-to-discriminative spectrum, with Naïve
+Bayes a generative baseline and the support vector machine a maximum-margin discriminative one.
 
 ### 2.1.6 Summary of the Technologies Review
 
@@ -487,11 +484,10 @@ structure entirely. The statistical-classification pipeline is summarised in Fig
 A second family exploited structural information: sender domain and reputation,
 received-header routing, presence of sender-policy-framework and DomainKeys-Identified-Mail
 authentication, reply-to mismatches and link analysis. These signals caught structural
-anomalies that content models missed. The preliminary ablation conducted during Project I on
-its smaller prototype corpus (a lighter feature set than the final system described here) found
-that a metadata-only configuration reached approximately 93.2% accuracy with an F1 score of
-83.6% — meaningful, but well below content-based methods — confirming that metadata was valuable
-but insufficient on its own and had to be combined with content. Reputation systems were also
+anomalies that content models missed. Structural and sender-based signals were valuable but
+generally weaker than well-trained content models on their own, confirming that metadata was
+complementary rather than sufficient and was most effective when combined with content
+[4], [5]. Reputation systems were also
 evaded by well-formed, link-less business-email-compromise mail sent from plausibly configured
 accounts. The metadata/reputation approach is depicted in Figure 2.4.
 
@@ -505,12 +501,12 @@ Hybrid approaches combined content and structural features and were repeatedly r
 more robust than either source alone. Studies using content- and header-based features with
 machine-learning classifiers demonstrated improved reliability, and attention-based fusion
 mechanisms had been proposed to weight complementary feature streams adaptively [9]. The
-Project I preliminary ablation similarly found that the content-plus-metadata fusion
-configuration delivered the most balanced precision–recall trade-off and the best coverage
-of spam, even though a strong text-only support-vector-machine baseline was hard to beat with
-simple concatenation — a finding that motivated the richer word-plus-character content
-representation and the standardised metadata used in Project II. The fusion concept adopted by
-the present project is illustrated in Figure 2.5.
+Studies of combined feature sets similarly reported that content-plus-metadata fusion
+delivered a more balanced precision–recall trade-off and better coverage than either source
+alone, although a strong text-only support-vector-machine baseline could be hard to improve on
+with simple concatenation [9]. This motivated the richer word-plus-character content
+representation and the standardised metadata used in the present system. The fusion concept
+adopted is illustrated in Figure 2.5.
 
 > **Ready-made image:** `reports/figures/fig2_5_hybrid_fusion.png`.
 
@@ -548,7 +544,7 @@ concept drift, and evaluated the resulting system explicitly against AI-assisted
 |---|---|---|
 | Rules / keywords | Simple; fully explainable | Brittle; easily evaded; needs manual upkeep |
 | Content (TF-IDF + NB/SVM) | Fast; learns wording; strong on classic spam | Ignores structure; vulnerable to fluent rewording |
-| Metadata / reputation | Catches structural anomalies | Weak alone (~93% in preliminary work); evaded by link-less BEC |
+| Metadata / reputation | Catches structural anomalies | Weaker than content alone; evaded by link-less BEC |
 | Hybrid fusion | Robust; balanced precision–recall | More features to manage; fusion design matters |
 | Commercial filter | Very high reported block rate | Proprietary; cannot be benchmarked offline |
 | This project (fusion + adaptation) | Robust, fast on CPU, explainable; updates from feedback | Semantic edge cases require review feedback |
@@ -572,7 +568,7 @@ summarises the reviewed approaches and their limitations in relation to this pro
 |---|---|---|---|
 | Rule / keyword / blocklist | Static signatures and lists | Simple; explainable | Brittle; manual upkeep; evaded by fluent BEC [4], [5] |
 | Content statistical classifiers [3], [8] | TF-IDF / Naïve Bayes / SVM on text | Fast; strong on classic spam | Ignores structure; weak on fluent rewording |
-| Metadata / reputation systems | Header, SPF/DKIM, sender and link analysis | Catches structural anomalies | Weak alone (~93% in preliminary work); evaded by link-less BEC |
+| Metadata / reputation systems | Header, SPF/DKIM, sender and link analysis | Catches structural anomalies | Weaker than content alone; evaded by link-less BEC |
 | Hybrid / fusion [9] | Content + header features | More robust; balanced | Fusion design is non-trivial; rarely local/explainable |
 | Commercial filters [10], [11] | Proprietary cloud ML at scale | Very high reported block rate | Not reproducible; cannot be benchmarked offline |
 
@@ -1237,8 +1233,7 @@ AI-assisted phishing without any AI-specific training. After a single reviewed r
 cycle it improved from ROC-AUC 0.81 to 0.945 on held-out modern-threat email while preserving
 main-corpus accuracy, evidencing an effective and practical adaptation mechanism. The system
 was delivered as a local, open-source service with a browser review console, mailbox
-quarantine and feedback-driven retraining, satisfying all four objectives carried forward from
-Project I.
+quarantine and feedback-driven retraining, satisfying all four stated objectives.
 
 ## 7.2 Recommendation
 
