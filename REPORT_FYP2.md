@@ -404,8 +404,7 @@ by other researchers without specialist infrastructure.
 
 ### 2.1.2 Firmware / Operating System
 
-All core components were written in cross-platform Python and were developed and tested on
-Windows 11; the same code was also executed successfully in a Linux-based environment. No
+All core components were written in Python and were developed and tested on Windows 11. No
 special firmware was required, and no hardware programming was involved. The operating system
 served only as the host for the Python runtime, the virtual environment and the local file
 storage used for email and model artefacts.
@@ -600,7 +599,7 @@ summarises the reviewed approaches and their limitations in relation to this pro
 ## 2.4 Summary
 
 This chapter reviewed the technologies used in the project — commodity central-processing-unit
-hardware, a cross-platform Python environment, comma-separated-value storage, and the
+hardware, a Python virtual environment, comma-separated-value storage, and the
 scikit-learn machine-learning stack — and surveyed existing spam-detection systems, from
 rule-based and content-statistical methods through metadata and hybrid/fusion approaches to
 proprietary commercial filters. The review established that no single source of evidence was
@@ -880,15 +879,15 @@ of the development machine are summarised in Table 5.1.
 | Description | Specifications |
 |---|---|
 | Model | [FILL IN: laptop brand and model, e.g. Acer Aspire 5 A514] |
-| Processor | [FILL IN: exact CPU model, e.g. Intel Core i5-1135G7] — central processing unit only |
+| Processor | Intel Core i5-13420H (central processing unit only) |
 | Operating system | Windows 11 |
-| Graphic | [FILL IN: integrated graphics name, e.g. Intel Iris Xe Graphics] (integrated; no discrete GPU) |
-| Memory | [FILL IN: installed RAM, e.g. 16 GB DDR4] |
-| Storage | [FILL IN: disk capacity, e.g. 512 GB SSD] |
+| Graphic | Intel UHD Graphics (integrated; no discrete GPU) |
+| Memory | 24 GB |
+| Storage | 475 GB SSD |
 
 Based on Table 5.1, the development and evaluation machine was a consumer laptop powered by an
-[FILL IN: processor] processor with [FILL IN: RAM] of memory and [FILL IN: disk] storage,
-running Windows 11. The machine used integrated graphics and had no discrete graphics
+Intel Core i5-13420H processor with 24 GB of memory and 475 GB solid-state storage, running
+Windows 11. The machine used integrated Intel UHD graphics and had no discrete graphics
 processing unit, which was fully sufficient because the classical models trained and served
 predictions entirely on the central processing unit: training on the full corpus completed
 within minutes, and the median inference latency was approximately 16 milliseconds per email,
