@@ -651,7 +651,7 @@ requirements installed successfully.]
 
 [5.2 Software Setup]
 
-The system was implemented entirely in Python using a dedicated virtual environment, into which the dependencies listed in requirements.txt were installed. Only mature, widely used open-source libraries were chosen so that the project could be understood and reproduced without proprietary software. The software stack and the role of each component are summarised in Table 5.2.
+The system was implemented entirely in Python using a dedicated virtual environment. The libraries used by the project, together with their version numbers, were recorded in a requirements text file (requirements.txt) so that the same software environment could be recreated on another machine, and these dependencies were installed into the virtual environment. Only mature, widely used open-source libraries were chosen so that the project could be understood and reproduced without proprietary software. The software stack and the role of each component are summarised in Table 5.2.
 
 Table 5.2 - Software and libraries used in the project.
 
