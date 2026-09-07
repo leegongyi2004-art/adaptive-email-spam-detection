@@ -962,6 +962,14 @@ Objective	Status	Evidence
 4. Adaptive retraining maintains accuracy	Achieved	ROC-AUC 0.81 → 0.945; recall 20% → 85% (Table 6.4)
 --- TABLE END ---
 
+Objective 1, extracting content and metadata features, was achieved. The system extracted both word- and character-level content features using term-frequency inverse-document-frequency weighting, together with twelve structural metadata signals (Section 4.2, Table 4.2) such as link counts, the mismatch between the sender domain and linked domains, and authentication indicators; a message was therefore judged on both what it said and how it was structured, rather than on either source alone.
+
+Objective 2, a content-metadata fusion framework, was achieved. The content and metadata streams were combined in a single sparse pipeline in which the metadata signals were standardised before being fused with the text features (Sections 3.3 and 4.2), allowing one classifier to reason over content and metadata jointly rather than as separate decisions.
+
+Objective 3, training and evaluating Naïve Bayes, logistic regression and the support-vector machine, was achieved. All three classifiers were trained and evaluated on the same stratified 75/25 split under identical settings (Table 6.2); the fused logistic-regression model was selected for deployment because it matched the best reported accuracy while also providing calibrated probabilities and a tunable decision threshold.
+
+Objective 4, adaptive retraining that maintained accuracy, was achieved. After one reviewed retraining cycle on modern threat email, ranking performance on a held-out modern-threat set rose from ROC-AUC 0.81 to 0.945 and recall at a near-zero false-positive point rose from approximately 20% to 85%, while accuracy on the main corpus was maintained at 0.991 (Table 6.4), demonstrating measurable adaptation to new threat styles without degrading normal performance.
+
 
 [6.5 Concluding Remark]
 
