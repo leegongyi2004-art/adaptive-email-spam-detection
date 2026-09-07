@@ -185,45 +185,71 @@ def main():
     style_doc(doc)
     add_page_numbers(doc)
 
-    i = 0
+    buf: list[str] = []
+    in_center = False
     in_code = False
     skip_comment = False
-    in_center = False
-    while i < len(lines):
-        line = lines[i]
+    list_re = re.compile(r"^(\s*)([-*]|\d+\.)\s+")
+    n = len(lines)
 
-        if line.strip().startswith("<!--"):
-            skip_comment = True
-            if "-->" in line:
-                skip_comment = False
+    def flush_prose():
+        nonlocal buf
+        if not buf:
+            return
+        text = " ".join(x.strip() for x in buf).strip()
+        if text:
+            p = doc.add_paragraph()
+            add_runs(p, text)
+            if in_center:
+                p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                p.paragraph_format.space_after = Pt(10)
+                for r in p.runs:
+                    r.bold = True
+        buf = []
+
+    i = 0
+    while i < n:
+        raw = lines[i]
+        s = raw.strip()
+
+        if s.startswith("<!--"):
+            flush_prose()
+            skip_comment = ("-->" not in s)
             i += 1; continue
         if skip_comment:
-            if "-->" in line:
+            if "-->" in s:
                 skip_comment = False
             i += 1; continue
 
-        if line.strip().startswith("```"):
+        if s.startswith("```"):
+            flush_prose()
             in_code = not in_code; i += 1; continue
         if in_code:
             p = doc.add_paragraph()
-            r = p.add_run(line if line else " ")
+            r = p.add_run(raw if raw else " ")
             r.font.name = "Consolas"; r.font.size = Pt(9.5)
             p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
             p.paragraph_format.space_after = Pt(0)
             i += 1; continue
 
-        if line.strip().startswith("|"):
-            rows, ni = parse_table(lines, i); add_table(doc, rows); i = ni; continue
+        if s.startswith("|"):
+            flush_prose(); rows, ni = parse_table(lines, i); add_table(doc, rows); i = ni; continue
 
-        if line.strip().startswith("[FIGURE"):
-            add_image(doc, line.strip()); i += 1; continue
-        if "Ready-made image" in line or (line.strip().startswith(">") and "reports/figures" in line):
-            i += 1; continue
-        if line.strip() == "---":
-            i += 1; continue
+        if s.startswith("[FIGURE"):
+            flush_prose()
+            marker = s
+            while "]" not in marker and i + 1 < n:
+                i += 1; marker += " " + lines[i].strip()
+            add_image(doc, marker); i += 1; continue
 
-        if line.startswith("#"):
-            m = re.match(r"^(#+)\s+(.*)", line)
+        if s.startswith(">") or "Ready-made image" in s:
+            flush_prose(); i += 1; continue
+        if s == "---":
+            flush_prose(); i += 1; continue
+
+        if s.startswith("#"):
+            flush_prose()
+            m = re.match(r"^(#+)\s+(.*)", s)
             level = len(m.group(1)); text = m.group(2).strip()
             if level == 1:
                 doc.add_page_break()
@@ -232,23 +258,24 @@ def main():
             else:
                 h = doc.add_heading(level=min(level - 1, 4))
                 h.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                in_center = False
             run = h.add_run(text); run.font.name = TNR; run.font.color.rgb = BLACK
             i += 1; continue
 
-        if not line.strip():
-            i += 1; continue
+        if not s:
+            flush_prose(); i += 1; continue
 
-        if line.strip().startswith("**Table"):
-            p = doc.add_paragraph(); add_runs(p, line.strip()); caption(p); i += 1; continue
+        if s.startswith("**Table"):
+            flush_prose(); p = doc.add_paragraph(); add_runs(p, s); caption(p); i += 1; continue
 
-        p = doc.add_paragraph(); add_runs(p, line.strip())
-        if in_center:
-            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            p.paragraph_format.space_after = Pt(10)
-            for r in p.runs:
-                r.bold = True
+        # A bullet/number list marker starts a NEW paragraph; wrapped lines below
+        # it (and ordinary prose) accumulate into the current paragraph.
+        if list_re.match(s):
+            flush_prose()
+        buf.append(s)
         i += 1
 
+    flush_prose()
     doc.save(OUT)
     print("Wrote", OUT)
 
