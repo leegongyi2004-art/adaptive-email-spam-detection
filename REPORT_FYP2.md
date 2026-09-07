@@ -1095,7 +1095,11 @@ through its service interface, it returned a structured response containing the 
 the spam probability, a confidence value and the list of contributing signals, as shown in
 Figure 5.3. Finally, the mailbox watcher could monitor a folder and, in quarantine mode, move
 each flagged message into a quarantine directory while logging the decision to the review queue,
-as shown in Figure 5.4.
+as shown in Figure 5.4. The same automatic score-and-quarantine loop could also run against a
+real, network-connected mailbox using the Internet Message Access Protocol: the filter logged
+into the account, fetched new messages as they arrived, moved flagged mail into a dedicated
+quarantine folder within the mailbox, and left legitimate mail in the inbox, so the system
+operated as a live adaptive filter rather than only as an offline tool.
 
 [FIGURE 5.2: Browser check-and-review console showing a phishing verdict and fired signals.]
 
@@ -1452,15 +1456,15 @@ quarantine and feedback-driven retraining, satisfying all four stated objectives
 
 Several directions were identified for future work:
 
-1. **Live mailbox integration.** Connect the running service to a live email account over the
-   Internet Message Access Protocol (IMAP) — the standard protocol email clients use to read a
-   mailbox — or through the mail provider's application programming interface, optionally
-   mediated by an automation platform or a mail-transfer agent. New messages would then be
-   fetched and scored automatically as they arrived, spam moved to a quarantine folder within
-   the real mailbox, and the reviewer console used to confirm corrections, all under the account
-   holder's authorisation. The present system already performs this score-and-quarantine loop on
-   a monitored local folder; this recommendation replaces that local folder with a live,
-   network-connected mailbox.
+1. **Hardened, production-grade mail-server deployment.** The system already connects to a live
+   mailbox over the Internet Message Access Protocol (IMAP) — the standard protocol email
+   clients use to read a mailbox — fetching new messages automatically, moving spam to a
+   quarantine folder and logging decisions for review (Section 5.4). The remaining deployment
+   work is to harden this connector for continuous production use: integration directly with a
+   mail-transfer agent or a provider application programming interface, encrypted storage of
+   the account credentials, automatic reconnection and error recovery, and server-level
+   quarantine/restore controls, so the filter can run unattended on an organisational mail
+   server under formal authorisation.
 2. **Controlled black-box comparison with live filters.** As directed during supervision, run a
    controlled black-box test in which one fixed, labelled set of emails is submitted
    simultaneously to the proposed detector and to live commercial filters (such as Gmail and
@@ -1593,6 +1597,11 @@ python -m uvicorn spam_detection.api:app --host 0.0.0.0 --port 8000
 
 # 4. Monitor a folder and quarantine flagged mail as it arrives
 python -m spam_detection.scan_mailbox mail_inbox --action quarantine --watch
+
+# 5. Connect to a LIVE mailbox over IMAP and filter real incoming mail
+#    (set IMAP_HOST / IMAP_USER / IMAP_PASS first, using an app password)
+python -m spam_detection.imap_watch --action report --watch        # read-only check
+python -m spam_detection.imap_watch --action quarantine --watch    # move spam to Spam_Quarantine
 ```
 
 [FILL IN: add any further screenshots not placed in Chapter 5, e.g. the training output and the
