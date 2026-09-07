@@ -1356,12 +1356,16 @@ controlled black-box protocol on one shared labelled corpus was retained as Reco
 **Table 6.5 — Commercial-filter comparison: vendor-reported block rates and independently
 measured detection of AI-generated phishing (independent study by Opara et al. [17]).**
 
-| System | Vendor-reported overall block rate | AI-phishing flagged (independent, n = 63) [17] | Legit AI-mail wrongly flagged (false positive) [17] | Reproducible offline? |
-|---|---|---|---|---|
-| Gmail (Google) | > 99.9% block rate (vendor aggregate) [10] | ≈ 14% flagged (≈ 86% bypassed) | Low (≈ 1.6%) | No (proprietary) |
-| Outlook / Microsoft 365 | High efficacy reported; no numeric metric public [11] | ≈ 4% flagged (≈ 97% bypassed) | ≈ 0% | No (proprietary) |
-| Yahoo Mail | No vendor figure published | ≈ 90% flagged (≈ 10% bypassed) | High (≈ 59–67%) | No (proprietary) |
-| **Proposed fusion model (this project)** | — | **92% catch on 4,986 unseen AI-phishing** (Table 6.3) | ≈ 0.9% FPR on held-out main corpus (Table 6.1) | **Yes** |
+| System | Vendor-reported overall block rate | AI-phishing flagged (independent, n = 63) [17] | Legit AI-mail wrongly flagged (false positive) [17] |
+|---|---|---|---|
+| Gmail (Google) | > 99.9% block rate (vendor aggregate) [10] | ≈ 14% flagged (≈ 86% bypassed) | Low (≈ 1.6%) |
+| Outlook / Microsoft 365 | High efficacy reported; no numeric metric public [11] | ≈ 4% flagged (≈ 97% bypassed) | ≈ 0% |
+| Yahoo Mail | No vendor figure published | ≈ 90% flagged (≈ 10% bypassed) | High (≈ 59–67%) |
+| **Proposed fusion model (this project)** | — | **92% catch on 4,986 unseen AI-phishing** (Table 6.3) | ≈ 0.9% FPR on held-out main corpus (Table 6.1) |
+
+Unlike the proprietary commercial filters, the proposed system is open-source and runs entirely
+locally, so its results are reproducible and can be benchmarked offline, whereas the providers'
+models cannot be independently re-tested.
 
 The second comparison (Table 6.6) concerned published classical models evaluated on the same
 family of public corpora used in this project (Enron, SpamAssassin, Ling-Spam, CEAS-2008,
