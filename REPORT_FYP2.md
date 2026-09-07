@@ -1059,6 +1059,18 @@ lists the model and feature hyper-parameters.
 | Decision threshold | 0.55 default; sweep-tunable |
 | Random state | Fixed seed for reproducibility |
 
+In plain terms, the word and character TF-IDF rows controlled how the email text was turned into
+numbers: single words and two-word pairs (and three-to-five-character fragments) were counted,
+up to a fixed vocabulary size, with very frequent words dampened. The dictionary vectoriser
+turned the twelve metadata signals into numerical features, and the standard scaler rescaled
+those signals so that a raw value such as body length could not outweigh the word features. The
+classifier used class-balanced weighting so that the spam and legitimate classes were treated
+fairly even if one was more common, with a regularisation strength of C = 1.5. The decision
+threshold of 0.55 meant an email was flagged as spam only when the model's spam probability
+exceeded 0.55; lowering it caught more spam but produced more false positives, and the threshold
+sweep used in evaluation chose a suitable operating point. A fixed random seed ensured that the
+same training run could be reproduced exactly.
+
 ## 5.4 System Operation (with Screenshots)
 
 The system was operated through four stages. First, the public corpus was merged and
