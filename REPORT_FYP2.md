@@ -1228,16 +1228,41 @@ identical conditions. The deployed mailbox tool instead operates at a tuned thre
 operating point in Table 6.1 (precision 0.991, recall 0.992) differs slightly from the
 default-threshold figures here; accuracy and F1 are identical at 0.992.
 
-The results supported the design choices. All learned classifiers comfortably exceeded the
-Naïve Bayes baseline, which, despite the highest standalone precision, sacrificed recall and
-recorded the lowest accuracy (0.968). Content-only logistic regression and the linear support
-vector machine were already strong (0.988 and 0.992 accuracy), confirming that the
-word/character TF-IDF representation was effective on the public corpus. Fusing the twelve
-structural metadata signals improved both fusion classifiers relative to their content-only
-forms, with the fusion support vector machine reaching the highest raw accuracy (0.993) and the
-deployed fusion logistic regression reaching 0.992 accuracy, 0.994 recall and ROC-AUC of 1.000
-— evidence that the fusion bought additional phishing recall while all learned configurations
-saturated the high-nineties on the stylistically distinct public corpus.
+The five configurations were compared metric by metric on the same held-out split.
+
+In terms of accuracy, the Naïve Bayes baseline was the weakest at 0.968, while all learned
+classifiers reached the high nineties: content-only logistic regression improved to 0.988, the
+content-only support vector machine reached 0.992, and fusing the structural metadata raised the
+two linear classifiers further, with the fusion support vector machine at 0.993 and the deployed
+fusion logistic regression at 0.992. The differences above 0.99 were small, indicating that the
+word/character TF-IDF representation already separated the classes very well on the public
+corpus, but fusion consistently removed a few additional errors.
+
+For precision, Naïve Bayes actually recorded the highest standalone value (0.988) because it
+predicted spam conservatively; however, this conservatism came at the cost of the lowest recall
+(0.950), meaning it missed roughly five percent of phishing. Among the learned classifiers the
+fusion support vector machine had the highest precision (0.992) and the fusion logistic
+regression 0.990, so almost every message flagged as spam was genuinely malicious.
+
+Recall was the operationally important metric for a filter, because it measured how much
+phishing was actually caught. Here the fusion models were best, with the fusion support vector
+machine at 0.995 and the deployed fusion logistic regression at 0.994, both above their
+content-only forms (0.993 and 0.990). Adding the twelve metadata signals therefore bought
+additional phishing recall, as intended in the fusion design. The F1 score, which balances
+precision and recall, followed the same ordering, with the two fusion classifiers highest (0.993
+and 0.992). Finally, the ROC-AUC measured how reliably each model ranked spam above legitimate
+mail regardless of threshold; every learned configuration reached 0.999 or 1.000, indicating
+near-perfect ranking on the held-out corpus.
+
+The fusion support vector machine had the marginally highest raw numbers, but the fusion
+logistic-regression model was selected for deployment for two operational reasons. First,
+logistic regression outputs a calibrated probability, which allowed the decision threshold to be
+tuned (the deployed 0.55) and a confidence value and signal explanation to be shown, whereas the
+support vector machine's decision scores are not directly interpretable as probabilities.
+Second, the two fusion models were effectively tied in performance (accuracy 0.992 versus 0.993),
+so the model that provided a tunable threshold, explainable outputs and equally strong results
+was preferred. The results therefore supported the fusion design and the choice of a calibrated,
+explainable classifier over the marginally higher-scoring alternative.
 
 The support-vector-machine fusion model edged logistic regression by one to two thousandths in
 the reported metrics, but logistic regression was selected for deployment for operational rather
