@@ -1452,9 +1452,15 @@ quarantine and feedback-driven retraining, satisfying all four stated objectives
 
 Several directions were identified for future work:
 
-1. **Live mailbox integration.** Connect the API to a live mailbox through an automation
-   platform or mail-transfer agent, with quarantine and a reviewer dashboard, under appropriate
-   authorisation.
+1. **Live mailbox integration.** Connect the running service to a live email account over the
+   Internet Message Access Protocol (IMAP) — the standard protocol email clients use to read a
+   mailbox — or through the mail provider's application programming interface, optionally
+   mediated by an automation platform or a mail-transfer agent. New messages would then be
+   fetched and scored automatically as they arrived, spam moved to a quarantine folder within
+   the real mailbox, and the reviewer console used to confirm corrections, all under the account
+   holder's authorisation. The present system already performs this score-and-quarantine loop on
+   a monitored local folder; this recommendation replaces that local folder with a live,
+   network-connected mailbox.
 2. **Controlled black-box comparison with live filters.** As directed during supervision, run a
    controlled black-box test in which one fixed, labelled set of emails is submitted
    simultaneously to the proposed detector and to live commercial filters (such as Gmail and
