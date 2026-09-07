@@ -61,7 +61,7 @@ def fig_confusion(cm, out):
     ax.set_xticks([0, 1]); ax.set_xticklabels(classes)
     ax.set_yticks([0, 1]); ax.set_yticklabels(classes)
     ax.set_xlabel("Predicted"); ax.set_ylabel("Actual")
-    ax.set_title("Figure 6.1 — Confusion matrix (held-out test split)")
+    # chart title is provided by the Word figure caption (no baked-in title)
     names = [["TN", "FP"], ["FN", "TP"]]
     for i in range(2):
         for j in range(2):
@@ -77,7 +77,7 @@ def fig_roc(y, probs, auc, out):
     ax.plot(fpr, tpr, lw=2, label=f"Fusion LR (AUC = {auc:.3f})")
     ax.plot([0, 1], [0, 1], "--", color="grey", lw=1, label="Random (AUC = 0.5)")
     ax.set_xlabel("False-positive rate"); ax.set_ylabel("True-positive rate (recall)")
-    ax.set_title("Figure 6.2 — ROC curve on the held-out split")
+    # chart title is provided by the Word figure caption (no baked-in title)
     ax.legend(loc="lower right"); ax.grid(alpha=0.3)
     fig.tight_layout(); fig.savefig(out, dpi=150); plt.close(fig)
 
@@ -93,7 +93,7 @@ def fig_threshold(probs, out):
     ax.annotate(f"0.55 → {at55:.0f}% caught", (0.55, at55),
                 textcoords="offset points", xytext=(8, -14), color="red")
     ax.set_xlabel("Decision threshold"); ax.set_ylabel("Catch rate (%)")
-    ax.set_title(f"Figure 6.3 — AI-phishing catch rate vs threshold (n = {len(probs):,})")
+    # chart title is provided by the Word figure caption (no baked-in title)
     ax.grid(alpha=0.3); ax.set_ylim(0, 105)
     fig.tight_layout(); fig.savefig(out, dpi=150); plt.close(fig)
 
@@ -106,7 +106,7 @@ def fig_adaptive(y, before, after, auc_b, auc_a, out):
         ax.plot(fpr, tpr, lw=2, color=c, label=lab)
     ax.plot([0, 1], [0, 1], "--", color="grey", lw=1)
     ax.set_xlabel("False-positive rate"); ax.set_ylabel("True-positive rate (recall)")
-    ax.set_title("Figure 6.4 — ROC before/after one adaptive retraining cycle")
+    # chart title is provided by the Word figure caption (no baked-in title)
     ax.legend(loc="lower right"); ax.grid(alpha=0.3)
     fig.tight_layout(); fig.savefig(out, dpi=150); plt.close(fig)
 

@@ -621,7 +621,8 @@ The pipeline proceeded from incoming email to action and feedback. Three paralle
 streams — word content, character content and structural metadata — were extracted, fused and
 standardised, then passed to the classifier. The resulting probability was compared against a
 configurable threshold to produce a label and an explanation; decisions and corrections flowed
-through a review queue into the feedback store, which fed scheduled retraining.
+through a review queue into the feedback store, which fed scheduled retraining. The end-to-end
+data flow and the retraining feedback loop are shown in Figure 3.1.
 
 
 [FIGURE 3.1: System architecture of the adaptive fusion spam-detection framework.]
@@ -656,7 +657,10 @@ and Table 3.1 describes each use case.
 ### 3.1.3 Activity Diagram
 
 The activity flow began when an email entered the system and ended either with a delivered
-message, a quarantined message, or a redeployed model after retraining.
+message, a quarantined message, or a redeployed model after retraining. Each message was
+parsed and scored, a threshold decision routed it to the inbox or quarantine, and a reviewer
+correction on the rare misclassified message triggered the validate-and-redeploy loop. The
+full sequence, including the feedback path, is illustrated in Figure 3.3.
 
 
 [FIGURE 3.3: Activity diagram for scoring, review and adaptive retraining.]
@@ -996,8 +1000,6 @@ predictions entirely on the central processing unit: training on the full corpus
 within minutes, and the median inference latency was approximately 16 milliseconds per email,
 as reported in Chapter 6.
 
-[FIGURE 5.1: Software and virtual-environment setup.]
-
 ## 5.2 Software Setup
 
 The system was implemented entirely in Python using a dedicated virtual environment. The
@@ -1027,7 +1029,10 @@ role of each component are summarised in Table 5.2.
 
 The versions in Table 5.2 are the minimum versions recorded in the requirements file, and the
 exact installed versions can be listed with the `pip list` command. The python-docx library was
-used only to generate this report document and was not part of the detection system.
+used only to generate this report document and was not part of the detection system. The
+virtual environment and the successful installation of the libraries are shown in Figure 5.1.
+
+[FIGURE 5.1: Software and virtual-environment setup.]
 
 Based on Table 5.2, scikit-learn provided every machine-learning component, so no separate
 deep-learning framework was needed, which kept the installation light and the training fast on
@@ -1169,9 +1174,14 @@ the held-out split.
 Of approximately 9,809 legitimate test messages, 9,719 were passed and 90 were wrongly flagged;
 of approximately 10,479 phishing test messages, 10,399 were caught and 80 were missed. The low
 false-positive count was the operationally important result, because legitimate mail was rarely
-interrupted.
+interrupted. The full confusion matrix on the held-out test split is shown in Figure 6.1.
 
 [FIGURE 6.1: Confusion matrix of the fused model on the held-out test split.]
+
+The overall trade-off of the fused model was summarised by its receiver-operating-characteristic
+curve, and the relationship between the decision threshold and recall was examined in a
+threshold sweep; both are plotted in Figure 6.2, with the ROC-AUC of 1.000 indicating nearly
+perfect ranking of spam above legitimate mail.
 
 [FIGURE 6.2: ROC curve and threshold sweep for the fused model.]
 
@@ -1243,7 +1253,8 @@ The catch rate fell as the threshold rose, showing that the model was systematic
 confident on large-language-model-written mail than on classic phishing — evidence that
 AI-assisted messages were harder, and a direct motivation for the adaptive retraining
 mechanism. The result was consistent with recent research in which a conventionally trained
-detector still caught the large majority of AI-generated phishing [12].
+detector still caught the large majority of AI-generated phishing [12]. The decline of catch
+rate with the decision threshold is plotted in Figure 6.3.
 
 [FIGURE 6.3: Catch rate versus decision threshold on the LLM-phishing set.]
 
@@ -1271,7 +1282,8 @@ this scope was reported honestly rather than claiming universal adaptation. The 
 path was fully automated but gated on a held-out validation check, so a new model was
 redeployed only if it maintained main-corpus accuracy while improving the target threat
 ranking. This prevented a small feedback batch from degrading the detector and distinguished
-the system from both a static model and an uncontrolled online-learning loop.
+the system from both a static model and an uncontrolled online-learning loop. The improvement
+in ranking is visualised by the two ROC curves, before and after retraining, in Figure 6.4.
 
 [FIGURE 6.4: ROC curves before and after one adaptive retraining cycle.]
 

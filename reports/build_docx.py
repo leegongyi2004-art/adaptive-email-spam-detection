@@ -277,9 +277,14 @@ def main():
             p.alignment = WD_ALIGN_PARAGRAPH.CENTER
             p.paragraph_format.space_before = Pt(4)
             p.paragraph_format.space_after = Pt(4)
-            run = p.add_run(eq + ("        " + num if num else ""))
+            run = p.add_run(eq)
             run.font.name = "Cambria Math"
             run.font.size = Pt(12)
+            run.italic = True
+            rnum = p.add_run("        " + num)
+            rnum.font.name = "Times New Roman"
+            rnum.font.size = Pt(12)
+            rnum.italic = False
             i += 1; continue
 
         # A bullet/number list marker starts a NEW paragraph; wrapped lines below
