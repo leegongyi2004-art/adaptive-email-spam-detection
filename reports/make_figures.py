@@ -156,7 +156,7 @@ def fig_2_1():
     leaves = [
         ("Brittle; evaded by\nrewording; needs\nmanual upkeep", weak_fc, weak_ec),
         ("Ignores structure;\nweak on fluent,\nlink-less BEC", weak_fc, weak_ec),
-        ("Weak alone (~93%\nin preliminary work);\nspoofed accounts", weak_fc, weak_ec),
+        ("Weaker alone;\nevaded by well-formed,\nlink-less BEC", weak_fc, weak_ec),
         ("Most robust —\nthe basis of\nthis project", GREEN_LIGHT, GREEN),
         ("High block rate,\nbut proprietary;\nnot reproducible", LIGHT, GREY),
     ]
@@ -195,7 +195,6 @@ def fig_2_2():
     arrow(ax, (2.0, 2.22), (2.0, 2.10), color=GREEN)
     box(ax, 2.0, 1.65, 2.6, 0.85, "Delivered\nto inbox", fc=GREEN_LIGHT, ec=GREEN, bold=True)
     ax.text(2.35, 2.32, "no", fontsize=9, color=GREEN, style="italic")
-    _method_note(ax, "Static hand-maintained rules: explainable but brittle — evaded by rewording/obfuscation; needs constant upkeep.")
     save(fig, "fig2_2_rule_based.png")
 
 
@@ -216,7 +215,6 @@ def fig_2_3():
             arrow(ax, (x + 1.02, 4.3), (steps[i + 1][0] - 1.02, 4.3))
     ax.text(6.0, 2.9, "Threshold applied to probability → spam / legitimate",
             ha="center", fontsize=9, style="italic", color=GREY)
-    _method_note(ax, "Learns wording from labelled data: strong on classic spam, but ignores structure and struggles with fluent, link-less BEC.")
     save(fig, "fig2_3_content_statistical.png")
 
 
@@ -234,7 +232,6 @@ def fig_2_4():
         box(ax, x, 4.3, 2.4, 1.6, t, fc=fc, ec=ec, bold=(i == 3), fs=8.8)
         if i < len(steps) - 1:
             arrow(ax, (x + 1.22, 4.3), (steps[i + 1][0] - 1.22, 4.3))
-    _method_note(ax, "Uses only structural/authentication signals: catches routing anomalies, but weak alone and evaded by well-formed, link-less or compromised-account BEC.")
     save(fig, "fig2_4_metadata.png")
 
 
@@ -252,7 +249,6 @@ def fig_2_5():
     box(ax, 6.0, 2.6, 3.0, 0.95, "Feature fusion\n(concatenate + scale)", fc=GREEN_LIGHT, ec=GREEN, bold=True, fs=9.5)
     arrow(ax, (6.0, 2.12), (6.0, 1.6))
     box(ax, 6.0, 1.15, 3.0, 0.85, "Classifier → label\n(content + structure)", fc=GREEN_LIGHT, ec=GREEN, bold=True, fs=9.5)
-    _method_note(ax, "Judges wording and structure together — the most robust family; adopted here and extended with adaptive retraining.")
     save(fig, "fig2_5_hybrid_fusion.png")
 
 
