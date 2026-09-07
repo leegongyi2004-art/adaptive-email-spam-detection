@@ -45,7 +45,7 @@ def box(ax, x, y, w, h, text, fc=LIGHT, ec=BLUE, fs=10.5, bold=False, tc="#1a1a1
 def arrow(ax, p1, p2, color=BLUE, style="-|>", lw=1.6, ls="-"):
     ax.add_patch(FancyArrowPatch(
         p1, p2, arrowstyle=style, mutation_scale=14, linewidth=lw,
-        color=color, linestyle=ls, shrinkA=2, shrinkB=2))
+        color=color, linestyle=ls, shrinkA=0, shrinkB=0))
 
 
 def new_ax(w=12, h=8):
@@ -213,8 +213,6 @@ def fig_2_3():
         box(ax, x, 4.3, 2.0, 1.5, t, fc=fc, ec=ec, bold=(i == 3), fs=9)
         if i < len(steps) - 1:
             arrow(ax, (x + 1.02, 4.3), (steps[i + 1][0] - 1.02, 4.3))
-    ax.text(6.0, 2.9, "Threshold applied to probability → spam / legitimate",
-            ha="center", fontsize=9, style="italic", color=GREY)
     save(fig, "fig2_3_content_statistical.png")
 
 
