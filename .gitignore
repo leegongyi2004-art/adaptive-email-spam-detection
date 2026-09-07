@@ -9,3 +9,8 @@ models/*.joblib
 data/
 models/distilbert-email*/
 models/*-checkpoints/
+
+# mailbox watcher runtime outputs (sample inputs in mail_inbox/ are kept)
+mail_quarantine/
+review_queue.csv
+imap_seen.txt

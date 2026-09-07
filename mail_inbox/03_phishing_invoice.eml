@@ -1,0 +1,14 @@
+From: accounts@invoice-payment.example
+To: me@company.example
+Subject: Invoice 8842 requires urgent payment
+Date: Mon, 7 Sep 2026 09:40:00 +0800
+
+Hello,
+
+Please find attached invoice 8842 which is now overdue. To avoid late fees,
+submit payment immediately via the remittance link and confirm your online
+banking details.
+
+Pay now: https://invoice-payment.example/remit
+
+Accounts payable
