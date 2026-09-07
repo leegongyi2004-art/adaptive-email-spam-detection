@@ -18,7 +18,7 @@ import sys
 
 import build_docx as B          # reuse styling + table helpers (guarded main)
 from docx.shared import Pt, RGBColor
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 
 from make_changes_sheet import BLOCKS, slice_lines, references_block
 
@@ -44,24 +44,26 @@ def banner(doc, n, total, title):
     cell = table.cell(0, 0)
     B.shade(cell, BLUE)
     p = cell.paragraphs[0]
+    p.paragraph_format.space_after = Pt(2)
     r = p.add_run(f"REPLACE IN YOUR REPORT  ({n} of {total})")
     r.bold = True
     r.font.size = Pt(11)
     r.font.name = B.TNR
     r.font.color.rgb = DARK
     p2 = cell.add_paragraph()
+    p2.paragraph_format.space_after = Pt(2)
     r2 = p2.add_run(title)
     r2.font.size = Pt(10)
     r2.font.name = B.TNR
     r2.font.color.rgb = GREY
     p3 = cell.add_paragraph()
+    p3.paragraph_format.space_after = Pt(0)
     r3 = p3.add_run("Go to this section in your own report, delete its old contents, "
                     "then copy everything under this banner (tables copy as tables).")
     r3.italic = True
     r3.font.size = Pt(9)
     r3.font.name = B.TNR
     r3.font.color.rgb = GREY
-    doc.add_paragraph()
 
 
 def figure_box(doc, num, caption):
@@ -73,15 +75,17 @@ def figure_box(doc, num, caption):
         # ready-made image: embed it so it copies as a picture
         p = doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.paragraph_format.space_before = Pt(6)
+        p.paragraph_format.space_after = Pt(2)
         p.add_run().add_picture(str(path), width=Inches(5.8))
         cap = doc.add_paragraph()
         cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        cap.paragraph_format.space_after = Pt(8)
         rc = cap.add_run(f"Figure {num}: {caption}")
         rc.italic = True
         rc.font.size = Pt(9)
         rc.font.name = B.TNR
         rc.font.color.rgb = GREY
-        doc.add_paragraph()
     else:
         # user-supplied figure (screenshots / their-PC charts): yellow placeholder
         table = doc.add_table(rows=1, cols=1)
@@ -90,24 +94,47 @@ def figure_box(doc, num, caption):
         B.shade(cell, YELLOW)
         p = cell.paragraphs[0]
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.paragraph_format.space_after = Pt(0)
         r = p.add_run(f"INSERT YOUR OWN PICTURE HERE  \u2014  Figure {num}: {caption}")
         r.bold = True
         r.font.size = Pt(10)
         r.font.name = B.TNR
         r.font.color.rgb = RGBColor(0x80, 0x60, 0x00)
-        doc.add_paragraph()
 
 
 def code_block(doc, code_lines):
-    for ln in code_lines:
+    for j, ln in enumerate(code_lines):
         p = doc.add_paragraph()
-        p.paragraph_format.space_after = Pt(0)
+        p.paragraph_format.space_after = Pt(0 if j < len(code_lines) - 1 else 6)
         p.paragraph_format.line_spacing = 1.0
         r = p.add_run(ln if ln else " ")
         r.font.name = "Consolas"
         r.font.size = Pt(9)
         r.font.color.rgb = RGBColor(0x22, 0x22, 0x22)
-    doc.add_paragraph()
+
+
+def table_no_trailing_blank(doc, rows):
+    from docx.enum.table import WD_TABLE_ALIGNMENT
+    ncol = max(len(r) for r in rows)
+    table = doc.add_table(rows=len(rows), cols=ncol)
+    table.style = "Table Grid"
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    for ri, r in enumerate(rows):
+        for ci in range(ncol):
+            cell = table.cell(ri, ci)
+            cell.text = ""
+            par = cell.paragraphs[0]
+            par.paragraph_format.line_spacing = 1.0
+            par.paragraph_format.space_after = Pt(2)
+            par.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            B.add_runs(par, r[ci] if ci < len(r) else "")
+            for run in par.runs:
+                run.font.name = B.TNR
+                run.font.size = Pt(10.5)
+                if ri == 0:
+                    run.bold = True
+            if ri == 0:
+                B.shade(cell, "D9E2F3")
 
 
 def parse_tokens(lines):
@@ -180,13 +207,19 @@ def render_tokens(doc, tokens):
     for kind, payload in tokens:
         if kind == "h":
             level, text = payload
-            doc.add_heading(text, level=min(level, 4))
+            h = doc.add_heading(text, level=min(level, 4))
+            h.paragraph_format.space_before = Pt(10)
+            h.paragraph_format.space_after = Pt(6)
         elif kind == "p":
             p = doc.add_paragraph()
             p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            pf = p.paragraph_format
+            pf.line_spacing_rule = WD_LINE_SPACING.ONE_POINT_FIVE
+            pf.space_after = Pt(6)
+            pf.space_before = Pt(0)
             B.add_runs(p, payload)
         elif kind == "table":
-            B.add_table(doc, payload)
+            table_no_trailing_blank(doc, payload)
         elif kind == "figure":
             figure_box(doc, payload[0], payload[1])
         elif kind == "code":
@@ -214,15 +247,20 @@ def main():
 
     total = len(BLOCKS)
     for n, (title, start, end) in enumerate(BLOCKS, 1):
+        if n > 1:
+            doc.add_page_break()
         banner(doc, n, total, title)
         if start is None:
             for entry in references_block(lines):
                 if entry.strip():
                     p = doc.add_paragraph()
+                    p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+                    pf = p.paragraph_format
+                    pf.line_spacing_rule = WD_LINE_SPACING.ONE_POINT_FIVE
+                    pf.space_after = Pt(6)
                     B.add_runs(p, strip_inline(entry))
         else:
             render_tokens(doc, parse_tokens(slice_lines(lines, start, end)))
-        doc.add_page_break()
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     doc.save(OUT)
