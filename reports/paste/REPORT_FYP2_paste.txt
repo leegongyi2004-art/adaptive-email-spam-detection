@@ -846,7 +846,7 @@ annotated at 0.55 (84%) and the low-threshold point (92%).]
 
   [6.2.4 Adaptive Improvement (Objective 4)]
 
-After retraining on a disjoint, reviewed batch of modern AI-style and business-email-compromise emails, detection ranking on a held-out modern-threat set improved from ROC-AUC 0.81 to 0.945, and phishing recall at a near-zero false-positive point rose from approximately 20% to 85%, while main-corpus accuracy was maintained (0.991). Table 6.4 summarises the change; a controlled before/after demonstration used a held-out new campaign that going from 0/6 to 5/6 caught after a single reviewed retraining cycle.
+After retraining on a disjoint, reviewed batch of modern AI-style and business-email-compromise emails, detection ranking on a held-out modern-threat set improved from ROC-AUC 0.81 to 0.945, and phishing recall at a near-zero false-positive point rose from approximately 20% to 85%, while main-corpus accuracy was maintained (0.991). Table 6.4 summarises the change; in a controlled before/after demonstration on a held-out new campaign, the number of campaign messages caught rose from 0 out of 6 before retraining to 5 out of 6 after a single reviewed retraining cycle.
 
 Table 6.4 - Before/after one adaptive retraining cycle on held-out modern-threat email.
 
