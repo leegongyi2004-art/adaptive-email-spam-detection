@@ -1051,7 +1051,11 @@ small enough to be loaded instantly by the service.
 
 ## 5.3 Setting and Configuration
 
-The deployed decision threshold defaulted to 0.55 in the mailbox tool and was re-tuned per
+The system was entirely self-contained: all classification was performed locally by the trained
+model, so no external application-programming-interface keys, cloud look-up services or
+device-level permissions were required to run it. Configuration therefore consisted of the
+feature-extraction and classifier settings fixed at training time, together with the decision
+threshold used at deployment. The deployed decision threshold defaulted to 0.55 in the mailbox tool and was re-tuned per
 deployment using the threshold sweep; lowering the threshold increased recall at the cost of
 more false positives, which was useful when prioritising catch rate for AI-style mail. Table 5.3
 lists the model and feature hyper-parameters.
