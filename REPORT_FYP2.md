@@ -1113,8 +1113,10 @@ as shown in Figure 5.4.
 5. **Single-class external sets.** Body-only AI-generated test sets contained only phishing,
    which broke metric routines that assumed both classes; the external-evaluation script was
    corrected to report catch rate and threshold sweeps without requiring legitimate samples.
-6. **Environment policy.** A Windows application-control policy initially blocked a
-   scientific-library binary; installing official prebuilt packages resolved the issue.
+6. **Mixed text encodings in the public corpora.** Source CSV files were not all encoded the
+   same way, so opening them as UTF-8 caused decoding errors on some emails; the
+   data-preparation step read each file with UTF-8 first and fell back to latin-1 (a byte-safe
+   encoding), after which every corpus loaded without errors.
 
 ## 5.6 Concluding Remark
 
