@@ -1534,12 +1534,14 @@ pp. 98–105.
 comprehensive review of optimize detection methods, challenges, and open research problems,"
 *IEEE Access*, vol. 12, pp. 143627–143657, 2024, doi: 10.1109/ACCESS.2024.3467996.
 
-[6] "In-depth analysis of phishing email detection: Evaluating ML and DL models across multiple
-datasets," *Applied Sciences*, vol. 15, no. 6, art. 3396, 2025. [Online]. Available:
-https://www.mdpi.com/2076-3417/15/6/3396
+[6] A. Alhuzali, A. Alloqmani, M. Aljabri, and F. Alharbi, "In-depth analysis of phishing
+email detection: Evaluating the performance of machine learning and deep learning models
+across multiple datasets," *Applied Sciences*, vol. 15, no. 6, art. 3396, Mar. 2025, doi:
+10.3390/app15063396.
 
-[7] "Advancing phishing email detection: A comparative study of deep learning models," *Sensors*,
-vol. 24, no. 7, art. 2077, 2024. [Online]. Available: https://www.mdpi.com/1424-8220/24/7/2077
+[7] N. Altwaijry, I. Al-Turaiki, R. Alotaibi, and F. Alakeel, "Advancing phishing email
+detection: A comparative study of deep learning models," *Sensors*, vol. 24, no. 7,
+art. 2077, Mar. 2024, doi: 10.3390/s24072077.
 
 [8] G. Sakkis, I. Androutsopoulos, G. Paliouras, V. Karkaletsis, C. D. Spyropoulos, and P.
 Stamatopoulos, "Stacking classifiers for anti-spam filtering of e-mail," in *Proc. 2003 Conf.
@@ -1556,12 +1558,14 @@ https://blog.google/products/gmail/gmail-holidays-2024-spam-scam/
 [11] Microsoft, "Defender for Office 365 overview dashboard," *Microsoft Learn*, 2025. [Online].
 Available: https://learn.microsoft.com/en-us/defender-office-365/reports-mdo-email-collaboration-dashboard
 
-[12] "Phish-Master: Leveraging large language models for advanced phishing email generation and
-detection," *Applied Sciences*, vol. 15, no. 22, art. 12203, 2025. [Online]. Available:
-https://www.mdpi.com/2076-3417/15/22/12203
+[12] W. Han, J. Zhu, C. Zhang, Z. Zhang, Y. Mei, and L. Wang, "Phish-Master: Leveraging
+large language models for advanced phishing email generation and detection," *Applied
+Sciences*, vol. 15, no. 22, art. 12203, Nov. 2025, doi: 10.3390/app152212203.
 
-[13] "Cross-model evaluation of phishing detectors against LLM-generated emails: dataset, code
-and results," Zenodo, 2026. [Online]. Available: https://zenodo.org/records/20250116
+[13] R. Gutierrez, W. Villegas-Ch, and J. Govea, "Cross-model evaluation of phishing detectors
+against LLM-generated emails," *Frontiers in Big Data*, vol. 9, art. 1883452, Jul. 2026,
+doi: 10.3389/fdata.2026.1883452; associated dataset/code: Zenodo, 2026, doi:
+10.5281/zenodo.20250116.
 
 [14] B. Klimt and Y. Yang, "The Enron corpus: A new dataset for email classification research,"
 in *Proc. 15th European Conf. Machine Learning (ECML)*, Pisa, Italy, 2004, pp. 217–226, doi:
