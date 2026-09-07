@@ -461,12 +461,13 @@ Table 3.1 - Use-case descriptions.
 
 --- TABLE START (tab-separated -> Convert Text to Table) ---
 Use case	Actor	Description
-Submit email for scoring	Reviewer; automation	An email is pasted in the review console, submitted to the prediction service, or picked up by the mailbox watcher.
-View verdict and signals	Reviewer	The system returns a label, spam probability and the structural signals that fired.
-Quarantine flagged mail	Reviewer; watcher	Messages above threshold are moved to a quarantine folder in quarantine mode.
-Correct misclassification	Reviewer	The reviewer marks a result as spam/ham/correct; the correction is appended to the labelled feedback store.
-Retrain on feedback	Reviewer; scheduler	Reviewed labels are merged with training data and a new model is fitted, validated and redeployed.
-Serve predictions	Automation	External workflows obtain scores through the REST API.
+Submit email for scoring	Reviewer / Administrator	The reviewer pastes an email into the browser console, submits it through the service, or drops a message file into the folder watched by the mailbox scanner. The system parses the message and prepares it for classification.
+View prediction and fired signals	Reviewer / Administrator	The system displays the predicted label (spam or legitimate), the spam probability, and the structural signals that contributed to the decision, so the reviewer can understand and check the verdict.
+Correct a misclassification (provide feedback)	Reviewer / Administrator	When a verdict is wrong, the reviewer marks the message as spam or legitimate. The correction is saved to the labelled feedback store for the next retraining cycle.
+Train and evaluate models	Reviewer / Administrator	The reviewer trains the fusion classifier on the labelled corpus and the system reports its accuracy, precision, recall, F1 score and ROC-AUC on a held-out test split.
+Run the detection service	Reviewer / Administrator	The reviewer starts the detection service so that emails can be submitted and scored through the web console or the service interface.
+Scan mailbox and quarantine	Reviewer / Administrator	The system scans a mail folder and, in quarantine mode, moves messages judged to be spam into a quarantine folder while logging every decision to the review queue.
+Review feedback and retrain	Reviewer / Administrator	The reviewer triggers adaptive retraining: reviewed feedback is merged with the training data, the new model is validated on the held-out split, and it is redeployed only if performance is maintained.
 --- TABLE END ---
 
 
