@@ -115,6 +115,10 @@ def main():
             flush()
             blocks.append(("fig", clean(s)))
             continue
+        if s.startswith("EQ#"):
+            flush()
+            blocks.append(("p", "    " + s[3:].strip()))
+            continue
         # normal prose: accumulate wrapped lines
         buf.append(s)
     flush()

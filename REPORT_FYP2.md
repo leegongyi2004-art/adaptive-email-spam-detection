@@ -704,7 +704,17 @@ emails, so distinctive spam vocabulary stood out while common words such as "the
 were down-weighted. The text was vectorised with TF-IDF over word unigrams/bigrams (up to
 40,000 terms) and over character n-grams of length three to five (up to 30,000 features), using
 sub-linear term-frequency scaling. The word stream captured phrasing while the character stream
-tolerated obfuscation.
+tolerated obfuscation. The weight assigned to a term t in an email d was computed as in
+Equations (3.1) and (3.2):
+
+EQ# w(t, d) = tf(t, d) · idf(t)											(3.1)
+
+EQ# idf(t) = ln ( N / (1 + df(t)) ) + 1									(3.2)
+
+where tf(t, d) is the frequency of term t in email d, df(t) is the number of emails in the
+training set that contain t, and N is the total number of emails. A term that is frequent in one
+email but rare across all emails therefore receives a high weight, while common words receive a
+low weight.
 
 *Metadata features.* Twelve structural signals were extracted from the parsed message and
 encoded with a dictionary vectoriser: subject length, body length, URL count, number of unique
@@ -712,7 +722,12 @@ link domains, attachment count, a sender-has-domain flag, a sender-domain/link-d
 flag, reply-to presence, sender-policy-framework pass indicator, DomainKeys-Identified-Mail
 presence indicator, subject all-capitals ratio, exclamation count and a suspicious/urgency-term
 count. These metadata values were standardised (with a sparse-safe standard scaler) so that
-raw lengths could not dominate the normalised text features.
+raw lengths could not dominate the normalised text features. Each metadata value x was
+standardised to z as in Equation (3.3):
+
+EQ# z = ( x − μ ) / σ											(3.3)
+
+where μ is the mean and σ the standard deviation of that signal over the training set.
 
 *Preprocessing.* Raw messages were parsed with the Python standard-library `email` package so
 that multipart bodies, HTML and headers were handled uniformly. The visible text of each part was
@@ -728,7 +743,20 @@ features for a fair comparison. Logistic regression was selected for deployment 
 produced a probability, supported balanced class weighting and exposed interpretable signal
 contributions. The pipeline was fitted on training data only and serialised as a single
 artefact, eliminating train/test leakage and making the deployed model exactly the model that
-was evaluated.
+was evaluated. The deployed logistic-regression classifier combined the fused feature vector x
+into a linear score, which the logistic function converted to a spam probability, as in
+Equations (3.4) and (3.5):
+
+EQ# z = w₀ + w₁x₁ + w₂x₂ + … + wₘxₘ										(3.4)
+
+EQ# P(spam | x) = 1 / ( 1 + e^(−z) )										(3.5)
+
+The probability was compared with a configurable decision threshold θ (0.55 by default) to
+produce the label, as in Equation (3.6):
+
+EQ# label = { spam  if P(spam | x) ≥ θ;   legitimate  otherwise }					(3.6)
+
+where w₀ is the bias term and w₁ … wₘ are the weights learned for the fused features.
 
 ## 3.4 Evaluation Design and Performance Definitions
 
@@ -742,9 +770,23 @@ correctly allowed through. Accuracy was the overall fraction of messages classif
 precision was the fraction of flagged messages that were truly spam (so a high precision meant
 few legitimate emails were blocked); recall was the fraction of real spam that was caught (so a
 high recall meant little spam slipped through); and the F1 score was the harmonic mean of
-precision and recall, summarising the balance between them. Formally, precision was
-TP/(TP+FP), recall was TP/(TP+FN), and the F1 score was their harmonic mean. A threshold sweep
-reported phishing recall at a low (≤5%) false-positive operating point. Per-message latency (50th and 95th percentiles) was measured on the central
+precision and recall, summarising the balance between them. The metrics were computed as in
+Equations (3.7) to (3.11):
+
+EQ# Accuracy = ( TP + TN ) / ( TP + TN + FP + FN )							(3.7)
+
+EQ# Precision = TP / ( TP + FP )										(3.8)
+
+EQ# Recall = TP / ( TP + FN )											(3.9)
+
+EQ# F1 = 2 · ( Precision · Recall ) / ( Precision + Recall )						(3.10)
+
+EQ# False-positive rate = FP / ( FP + TN )								(3.11)
+
+A threshold sweep reported phishing recall at a low (≤5%) false-positive operating point. The
+receiver-operating-characteristic area under the curve (ROC-AUC) summarised the
+true-positive/false-positive trade-off across all thresholds, with a value of 1.0 indicating
+perfect ranking. Per-message latency (50th and 95th percentiles) was measured on the central
 processing unit. External tests assessed generalisation to large-language-model-generated
 phishing, and a before/after experiment measured the improvement attributable to reviewed
 retraining. Validity controls were strict train/test separation, no training on any test email,

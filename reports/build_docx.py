@@ -268,6 +268,20 @@ def main():
         if s.startswith("**Table"):
             flush_prose(); p = doc.add_paragraph(); add_runs(p, s); caption(p); i += 1; continue
 
+        if s.startswith("EQ#"):
+            flush_prose()
+            body = s[3:].strip()
+            m = re.match(r"^(.*?)(\s*\(\d+\.\d+\))\s*$", body)
+            eq, num = (m.group(1).strip(), m.group(2).strip()) if m else (body, "")
+            p = doc.add_paragraph()
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p.paragraph_format.space_before = Pt(4)
+            p.paragraph_format.space_after = Pt(4)
+            run = p.add_run(eq + ("        " + num if num else ""))
+            run.font.name = "Cambria Math"
+            run.font.size = Pt(12)
+            i += 1; continue
+
         # A bullet/number list marker starts a NEW paragraph; wrapped lines below
         # it (and ordinary prose) accumulate into the current paragraph.
         if list_re.match(s):

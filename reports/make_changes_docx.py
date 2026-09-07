@@ -178,6 +178,9 @@ def parse_tokens(lines):
                 i += 1
             tokens.append(("table", rows))
             continue
+        elif s.startswith("EQ#"):
+            flush()
+            tokens.append(("eq", strip_inline(s[3:].strip())))
         elif s.startswith("[FIGURE"):
             flush()
             joined = s
@@ -220,6 +223,14 @@ def render_tokens(doc, tokens):
             B.add_runs(p, payload)
         elif kind == "table":
             table_no_trailing_blank(doc, payload)
+        elif kind == "eq":
+            pe = doc.add_paragraph()
+            pe.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            pe.paragraph_format.space_before = Pt(4)
+            pe.paragraph_format.space_after = Pt(4)
+            re_ = pe.add_run(payload)
+            re_.font.name = "Cambria Math"
+            re_.font.size = Pt(12)
         elif kind == "figure":
             figure_box(doc, payload[0], payload[1])
         elif kind == "code":

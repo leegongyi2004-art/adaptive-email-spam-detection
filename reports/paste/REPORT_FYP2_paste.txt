@@ -505,18 +505,50 @@ One further data source was used only for testing, never for training: a cross-m
 
 [3.3 Feature Extraction and Classification Approach]
 
-Content features. Subject and body text were concatenated and converted into numerical features using term frequency-inverse document frequency (TF-IDF). In plain terms, TF-IDF gave each word a high score when it appeared often in a particular email but rarely across all emails, so distinctive spam vocabulary stood out while common words such as "the" or "and" were down-weighted. The text was vectorised with TF-IDF over word unigrams/bigrams (up to 40,000 terms) and over character n-grams of length three to five (up to 30,000 features), using sub-linear term-frequency scaling. The word stream captured phrasing while the character stream tolerated obfuscation.
+Content features. Subject and body text were concatenated and converted into numerical features using term frequency-inverse document frequency (TF-IDF). In plain terms, TF-IDF gave each word a high score when it appeared often in a particular email but rarely across all emails, so distinctive spam vocabulary stood out while common words such as "the" or "and" were down-weighted. The text was vectorised with TF-IDF over word unigrams/bigrams (up to 40,000 terms) and over character n-grams of length three to five (up to 30,000 features), using sub-linear term-frequency scaling. The word stream captured phrasing while the character stream tolerated obfuscation. The weight assigned to a term t in an email d was computed as in Equations (3.1) and (3.2):
 
-Metadata features. Twelve structural signals were extracted from the parsed message and encoded with a dictionary vectoriser: subject length, body length, URL count, number of unique link domains, attachment count, a sender-has-domain flag, a sender-domain/link-domain mismatch flag, reply-to presence, sender-policy-framework pass indicator, DomainKeys-Identified-Mail presence indicator, subject all-capitals ratio, exclamation count and a suspicious/urgency-term count. These metadata values were standardised (with a sparse-safe standard scaler) so that raw lengths could not dominate the normalised text features.
+    w(t, d) = tf(t, d) · idf(t)											(3.1)
+
+    idf(t) = ln ( N / (1 + df(t)) ) + 1									(3.2)
+
+where tf(t, d) is the frequency of term t in email d, df(t) is the number of emails in the training set that contain t, and N is the total number of emails. A term that is frequent in one email but rare across all emails therefore receives a high weight, while common words receive a low weight.
+
+Metadata features. Twelve structural signals were extracted from the parsed message and encoded with a dictionary vectoriser: subject length, body length, URL count, number of unique link domains, attachment count, a sender-has-domain flag, a sender-domain/link-domain mismatch flag, reply-to presence, sender-policy-framework pass indicator, DomainKeys-Identified-Mail presence indicator, subject all-capitals ratio, exclamation count and a suspicious/urgency-term count. These metadata values were standardised (with a sparse-safe standard scaler) so that raw lengths could not dominate the normalised text features. Each metadata value x was standardised to z as in Equation (3.3):
+
+    z = ( x − μ ) / σ											(3.3)
+
+where μ is the mean and σ the standard deviation of that signal over the training set.
 
 Preprocessing. Raw messages were parsed with the Python standard-library email package so that multipart bodies, HTML and headers were handled uniformly. The visible text of each part was extracted, HTML markup was reduced to its text content, and the subject was prefixed to the body. Structural values were derived without reading attachment content, and no message body left the local machine. Malformed or plain-text inputs were handled by a fallback path that treated the entire input as body text and zeroed the header-derived metadata.
 
-Fusion and classification. A scikit-learn feature union concatenated the three streams into a single sparse vector. Three classifiers were evaluated - multinomial Naïve Bayes, class-balanced logistic regression and a linear support-vector classifier - all on identical features for a fair comparison. Logistic regression was selected for deployment because it produced a probability, supported balanced class weighting and exposed interpretable signal contributions. The pipeline was fitted on training data only and serialised as a single artefact, eliminating train/test leakage and making the deployed model exactly the model that was evaluated.
+Fusion and classification. A scikit-learn feature union concatenated the three streams into a single sparse vector. Three classifiers were evaluated - multinomial Naïve Bayes, class-balanced logistic regression and a linear support-vector classifier - all on identical features for a fair comparison. Logistic regression was selected for deployment because it produced a probability, supported balanced class weighting and exposed interpretable signal contributions. The pipeline was fitted on training data only and serialised as a single artefact, eliminating train/test leakage and making the deployed model exactly the model that was evaluated. The deployed logistic-regression classifier combined the fused feature vector x into a linear score, which the logistic function converted to a spam probability, as in Equations (3.4) and (3.5):
+
+    z = w₀ + w₁x₁ + w₂x₂ + … + wₘxₘ										(3.4)
+
+    P(spam | x) = 1 / ( 1 + e^(−z) )										(3.5)
+
+The probability was compared with a configurable decision threshold θ (0.55 by default) to produce the label, as in Equation (3.6):
+
+    label = { spam  if P(spam | x) ≥ θ;   legitimate  otherwise }					(3.6)
+
+where w₀ is the bias term and w₁ … wₘ are the weights learned for the fused features.
 
 
 [3.4 Evaluation Design and Performance Definitions]
 
-Performance was measured using accuracy, precision, recall, the F1 score and the receiver-operating-characteristic area under the curve, together with the confusion matrix and false-positive rate, because a legitimate message wrongly quarantined was the most costly error. These terms were defined as follows. A true positive (TP) was a spam message correctly caught; a false negative (FN) was spam that reached the user; a false positive (FP) was a legitimate message wrongly marked as spam; and a true negative (TN) was legitimate mail correctly allowed through. Accuracy was the overall fraction of messages classified correctly; precision was the fraction of flagged messages that were truly spam (so a high precision meant few legitimate emails were blocked); recall was the fraction of real spam that was caught (so a high recall meant little spam slipped through); and the F1 score was the harmonic mean of precision and recall, summarising the balance between them. Formally, precision was TP/(TP+FP), recall was TP/(TP+FN), and the F1 score was their harmonic mean. A threshold sweep reported phishing recall at a low (≤5%) false-positive operating point. Per-message latency (50th and 95th percentiles) was measured on the central processing unit. External tests assessed generalisation to large-language-model-generated phishing, and a before/after experiment measured the improvement attributable to reviewed retraining. Validity controls were strict train/test separation, no training on any test email, and the use of inert placeholder domains in synthetic data.
+Performance was measured using accuracy, precision, recall, the F1 score and the receiver-operating-characteristic area under the curve, together with the confusion matrix and false-positive rate, because a legitimate message wrongly quarantined was the most costly error. These terms were defined as follows. A true positive (TP) was a spam message correctly caught; a false negative (FN) was spam that reached the user; a false positive (FP) was a legitimate message wrongly marked as spam; and a true negative (TN) was legitimate mail correctly allowed through. Accuracy was the overall fraction of messages classified correctly; precision was the fraction of flagged messages that were truly spam (so a high precision meant few legitimate emails were blocked); recall was the fraction of real spam that was caught (so a high recall meant little spam slipped through); and the F1 score was the harmonic mean of precision and recall, summarising the balance between them. The metrics were computed as in Equations (3.7) to (3.11):
+
+    Accuracy = ( TP + TN ) / ( TP + TN + FP + FN )							(3.7)
+
+    Precision = TP / ( TP + FP )										(3.8)
+
+    Recall = TP / ( TP + FN )											(3.9)
+
+    F1 = 2 · ( Precision · Recall ) / ( Precision + Recall )						(3.10)
+
+    False-positive rate = FP / ( FP + TN )								(3.11)
+
+A threshold sweep reported phishing recall at a low (≤5%) false-positive operating point. The receiver-operating-characteristic area under the curve (ROC-AUC) summarised the true-positive/false-positive trade-off across all thresholds, with a value of 1.0 indicating perfect ranking. Per-message latency (50th and 95th percentiles) was measured on the central processing unit. External tests assessed generalisation to large-language-model-generated phishing, and a before/after experiment measured the improvement attributable to reviewed retraining. Validity controls were strict train/test separation, no training on any test email, and the use of inert placeholder domains in synthetic data.
 
 
 [3.5 Summary]
