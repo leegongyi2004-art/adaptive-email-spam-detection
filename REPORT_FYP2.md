@@ -1010,20 +1010,24 @@ role of each component are summarised in Table 5.2.
 
 **Table 5.2 — Software and libraries used in the project.**
 
-| Software / library | Purpose in the project |
-|---|---|
-| Python 3.11 | Programming language for all scripts and the detection service |
-| scikit-learn 1.4+ | Core machine-learning library: TF-IDF vectorisation, Naive Bayes, logistic regression, support-vector machine, feature scaling |
-| NumPy (bundled with scikit-learn) | Numerical array and matrix operations used alongside scikit-learn |
-| Joblib 1.3+ | Serialising (saving) the trained model and loading it for prediction |
-| FastAPI 0.110+ | Web framework that exposes the detector as a representational-state-transfer (REST) service |
-| Uvicorn 0.27+ | Server that runs the FastAPI service and accepts prediction requests |
-| Pydantic 2.0+ | Validates the data received in each request to the service |
-| Matplotlib 3.7+ | Generates the result charts and figures used in Chapter 6 |
+| Software / package | Version | Purpose |
+|---|---|---|
+| Python | 3.11+ | Main programming language for the detector, the service and the evaluation scripts |
+| pip | built-in (24.x) | Package manager used to install the required libraries from the requirements file |
+| scikit-learn | 1.4+ | Core machine-learning library: TF-IDF vectorisation, Naïve Bayes, logistic regression, support-vector machine and feature scaling |
+| NumPy | bundled with scikit-learn | Numerical array and matrix operations used alongside scikit-learn |
+| SciPy | bundled with scikit-learn | Sparse-matrix and scientific routines relied on by scikit-learn |
+| Joblib | 1.3+ | Serialising (saving) the trained model and loading it for prediction |
+| FastAPI | 0.110+ | Web framework that exposes the detector as a representational-state-transfer (REST) service |
+| Uvicorn | 0.27+ | Server that runs the FastAPI service and accepts prediction requests |
+| Pydantic | 2.0+ | Validates the data received in each request to the service |
+| Matplotlib | 3.7+ | Generates the result charts and figures used in Chapter 6 |
+| python-docx | 1.1+ | Builds this report document; not part of the detection system |
+| Python standard library (email, csv, re, json, argparse, pathlib) | built-in | RFC-5322 email parsing, comma-separated-value handling, regular expressions, request/response data and the command-line interface |
 
-The version numbers in Table 5.2 matched the minimum versions recorded in the requirements
-file, so the environment could be recreated exactly. The python-docx library (1.1+) was used
-only to generate this report document and was not part of the detection system.
+The versions in Table 5.2 are the minimum versions recorded in the requirements file, and the
+exact installed versions can be listed with the `pip list` command. The python-docx library was
+used only to generate this report document and was not part of the detection system.
 
 Based on Table 5.2, scikit-learn provided every machine-learning component, so no separate
 deep-learning framework was needed, which kept the installation light and the training fast on
