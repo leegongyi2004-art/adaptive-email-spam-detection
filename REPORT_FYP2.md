@@ -778,35 +778,87 @@ The system comprised five top-level blocks, shown in Figure 4.1:
 
 [FIGURE 4.1: insert the system block diagram (ingestion, features, fusion, action, adaptation).]
 
-Each block was implemented as an independent, testable Python module under the
-the detector package, which allowed individual stages to be updated and retrained without
-rebuilding the pipeline.
+Each block was implemented as an independent, testable module within the detector
+package, which allowed individual stages to be updated and retrained without rebuilding the
+whole pipeline. The following section specifies each block in turn.
 
 ## 4.2 System Components Specifications
 
-Table 4.1 lists the modules and their responsibilities.
+The five blocks of Figure 4.1 were realised as eight functional components, summarised in
+Table 4.1 and then described in detail in Sections 4.2.1 to 4.2.5. Each component was kept
+independent so that it could be modified or replaced without affecting the others.
 
 **Table 4.1 — System components and their responsibilities.**
 
-| Component | Responsibility |
-|---|---|
-| Email parsing and feature extraction | Robustly parsed each message, extracted the text for content analysis and the twelve structural metadata signals, handled malformed links safely, and fell back gracefully for plain-text or malformed mail. |
-| Fusion classification engine | The core detector: it combined word-level and character-level TF-IDF content features with the standardised metadata into one fused representation, fitted the logistic-regression classifier (with Naïve Bayes and a support-vector machine also evaluated for comparison), and produced for each message a label, a spam probability, a confidence value and the list of fired signals. |
-| Detection service | Exposed the trained engine as a web service with a health check, a prediction endpoint and a feedback endpoint, together with a browser page in which a reviewer could paste an email, see the decision and its signals, and correct it. |
-| Mailbox scanner | Monitored a mail folder and operated in three modes — report only, quarantine, or continuous watch — logging every decision to the review queue and moving flagged mail to a quarantine folder. |
-| Review and feedback store | Recorded each reviewer correction as a labelled example, accumulating human-verified data for the next retraining cycle. |
-| Data preparation | Merged the public source corpora into one reviewed dataset, de-duplicated repeated messages, and handled different text encodings, long email bodies and differing label formats. |
-| Training and evaluation | Fitted a model on the training split, evaluated it on the held-out split, produced the confusion matrix, metrics, threshold sweep and latency measurements, and saved the trained model for deployment. |
-| External (AI-mail) evaluation | Scored external and AI-generated message sets — which could contain only one class — reporting catch rate across thresholds rather than requiring both classes. |
+| Component | Block (Figure 4.1) | Responsibility |
+|---|---|---|
+| Email parsing and feature extraction | Parsing and feature extraction | Parsed each message and produced the content text together with the twelve structural metadata signals. |
+| Data preparation | Ingestion | Merged and de-duplicated the public corpora into one reviewed dataset. |
+| Fusion classification engine | Fusion classifier | Combined content and metadata features and produced the label, probability and fired signals. |
+| Detection service | Action and decision | Exposed the trained engine through a web interface with a review console. |
+| Mailbox scanner | Action and decision | Monitored a mail folder and quarantined flagged messages. |
+| Review and feedback store | Adaptation | Recorded reviewer corrections as labelled examples for retraining. |
+| Training and evaluation | Fusion classifier | Fitted, validated and saved the model, and reported the metrics. |
+| External (AI-mail) evaluation | Fusion classifier | Scored external and AI-generated sets and reported catch rate. |
 
-The deployed classifier was a scikit-learn `Pipeline`. Its feature stage was a
-`FeatureUnion` of three branches: a word `TfidfVectorizer` with `ngram_range=(1,2)`,
-`max_features=40,000` and `sublinear_tf=True`; a character `TfidfVectorizer` with
-`analyzer="char_wb"`, `ngram_range=(3,5)`, `max_features=30,000` and `sublinear_tf=True`; and a
-metadata branch that extracted the metadata dictionary, encoded it with `DictVectorizer` and
-scaled it with `StandardScaler(with_mean=False)`. The classifier was a
-`LogisticRegression(class_weight="balanced", C=1.5, max_iter=1000)`. A configurable threshold
-(default 0.55 in the mailbox tool) compared the predicted probability to produce the label.
+### 4.2.1 Data Ingestion and Preparation
+
+The input to the system was an electronic-mail message, which could arrive in three ways:
+pasted into the review console, submitted to the detection service, or present as a file in a
+monitored mailbox folder. Before training, a data-preparation stage combined the several public
+source corpora into a single reviewed dataset. Because the same message sometimes appeared in
+more than one source corpus, the preparation stage de-duplicated the records on the normalised
+message content so that no email could appear in both the training and the held-out split; such
+leakage would otherwise have inflated the reported metrics. The stage also tolerated the
+practical inconsistencies of public data by handling several text encodings, raising the limit
+on very long email bodies, and accepting the different label conventions used by each source.
+
+### 4.2.2 Email Parsing and Feature Extraction
+
+Each message was parsed according to the standard Internet message format (RFC 5322) to
+separate the headers, the subject, the body and any attachments. Parsing was deliberately
+defensive: malformed links were handled without aborting, and a message that was plain text
+with no headers (as in the body-only AI-generated test sets) was still accepted, with the
+header-derived signals set to neutral values so that the feature structure was preserved. From
+the parsed message the extractor produced two outputs: the textual content (subject and body
+concatenated) for the content features, and a set of twelve structural metadata signals
+described in Section 4.3.
+
+### 4.2.3 Fusion Classification Engine
+
+The classification engine was the core of the system and is specified in full in Table 5.3. It
+joined three feature branches into one sparse vector. Two branches described the text using
+term frequency–inverse document frequency: a word branch over one- and two-word terms (capped at
+40,000 features) that captured phrasing, and a character branch over three- to five-character
+sequences (capped at 30,000 features) that tolerated obfuscation such as inserted symbols. The
+third branch encoded the twelve metadata signals and scaled them so that their magnitudes did
+not overwhelm the text features. The scaled, combined vector was passed to a class-balanced
+logistic-regression classifier (regularisation strength C = 1.5), which output a spam
+probability; multinomial Naïve Bayes and a linear support-vector machine were also implemented
+and evaluated for comparison. A configurable decision threshold (0.55 by default) converted the
+probability into a spam-or-legitimate label, and the metadata signals that contributed most to
+a positive decision were returned as an explanation.
+
+### 4.2.4 Detection Service and Mailbox Scanner
+
+The trained engine was exposed in two ways. The detection service provided a web interface with
+a health check, a prediction endpoint and a feedback endpoint, together with a browser console
+in which a reviewer could paste an email, immediately see its label, probability and fired
+signals, and confirm or correct the decision. The mailbox scanner instead monitored a folder on
+disk and operated in one of three modes: report only (log decisions), quarantine (move flagged
+messages to a quarantine folder), or continuous watch (act on new mail as it arrived). Every
+decision, whether from the service or the scanner, was written to a review queue with a blank
+correction field awaiting human review.
+
+### 4.2.5 Review, Feedback and Adaptive Retraining
+
+The adaptation block closed the learning loop. When a reviewer corrected a decision in the
+console, the correction was saved as a labelled example in the feedback store. A scheduled
+retraining stage merged these reviewed labels with the original training data, fitted a new
+model, and validated it on the held-out split; the new model replaced the deployed one only if
+it maintained accuracy on the main corpus while improving performance on the target threat.
+This validation gate prevented a small batch of feedback from degrading the detector, and it
+distinguished the system from both a static model and an uncontrolled online-learning loop.
 
 ## 4.3 Data and Feature Design
 
@@ -816,25 +868,26 @@ The twelve structural metadata signals are defined in Table 4.2.
 
 | Signal | Meaning / rationale |
 |---|---|
-| `subject_len` | Subject length; phishing often uses unusually short or long subjects. |
-| `body_len` | Body length in characters. |
-| `url_count` | Number of URLs in the body. |
-| `unique_url_domains` | Number of distinct link domains; many domains suggest bulk campaigns. |
-| `attachment_count` | Number of attachments. |
-| `sender_has_domain` | Whether the sender address contained a usable domain. |
-| `sender_url_domain_mismatch` | Sender domain absent from the body's link domains — a classic phishing signal. |
-| `has_reply_to` | Whether a Reply-To header was present (potential redirect of replies). |
-| `spf_pass` | Sender-policy-framework pass indicated in authentication headers. |
-| `dkim_present` | Presence of a DomainKeys-Identified-Mail signature header. |
-| `all_caps_ratio` | Fraction of upper-case letters in the subject. |
-| `exclamation_count` / `suspicious_term_count` | Exclamation marks and count of urgency/verification terms. |
+| Subject length | Phishing often uses unusually short or long subjects. |
+| Body length | Length of the body in characters. |
+| Number of links | Count of URLs in the body. |
+| Distinct link domains | Number of different domains linked; many distinct domains suggest bulk campaigns. |
+| Number of attachments | Count of attached files. |
+| Sender has a domain | Whether the sender address contained a usable domain. |
+| Sender–link domain mismatch | The sender's domain was absent from the body's link domains — a classic phishing signal. |
+| Reply-To present | Whether a Reply-To header was present (a possible redirect of replies). |
+| SPF authentication result | Whether a sender-policy-framework pass was indicated in the authentication headers. |
+| DKIM signature present | Whether a DomainKeys-Identified-Mail signature header was present. |
+| Capitals ratio in subject | Fraction of upper-case letters in the subject line. |
+| Urgency markers | Count of exclamation marks and of urgent/verification terms. |
 
-The content text was normalised to a `subject: ... body: ...` form so that the subject and body
-were both represented. For plain-text inputs without headers (such as the body-only external
-sets), the parser fell back to treating the whole input as the body and zeroed the
-header-derived metadata, preserving the feature-vector structure. The model artefact was
-serialised with Joblib so that the service and the mailbox watcher loaded an identical
-predictor. Keeping the count to twelve deliberately avoided a large, fragile handcrafted rule
+The subject and body were concatenated into a single content string so that both parts were
+represented in the text features. For plain-text inputs without headers (such as the body-only
+external sets), the parser treated the whole input as the body and set the header-derived
+signals to neutral values, preserving the feature-vector structure. Once trained, the model was
+saved to a single file so that the service and the mailbox watcher loaded an identical
+predictor. Keeping the metadata to twelve signals deliberately avoided a large, fragile
+handcrafted rule
 set: unlike a keyword blocklist, each signal contributed a numeric feature whose weight was
 learned by the classifier rather than maintained by hand, satisfying the objective of an
 adaptive, learning-based system rather than a static rule engine.
@@ -849,8 +902,9 @@ directory. Every decision was appended to a review queue with a blank correction
 reviewer's corrections were written to the labelled feedback store; the retraining path
 merged those reviewed labels with the training data, fitted a new model, validated it on the
 held-out split, and replaced the deployed model only if performance was maintained. All
-randomness used fixed seeds, and the data-preparation, training and evaluation steps were
-one-line commands so that the entire system could be rebuilt from the public corpus.
+randomness used fixed seeds for reproducibility, and the data-preparation, training and
+evaluation stages were each implemented as a single repeatable procedure, so that the entire
+system could be rebuilt from the public corpus by following Sections 4.2 and 4.3.
 
 ## 4.5 Summary
 
