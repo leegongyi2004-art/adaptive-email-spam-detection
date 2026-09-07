@@ -1095,11 +1095,11 @@ through its service interface, it returned a structured response containing the 
 the spam probability, a confidence value and the list of contributing signals, as shown in
 Figure 5.3. Finally, the mailbox watcher could monitor a folder and, in quarantine mode, move
 each flagged message into a quarantine directory while logging the decision to the review queue,
-as shown in Figure 5.4. The same automatic score-and-quarantine loop could also run against a
-real, network-connected mailbox using the Internet Message Access Protocol: the filter logged
-into the account, fetched new messages as they arrived, moved flagged mail into a dedicated
-quarantine folder within the mailbox, and left legitimate mail in the inbox, so the system
-operated as a live adaptive filter rather than only as an offline tool.
+as shown in Figure 5.4. The same automatic score-and-quarantine loop was also implemented for a
+live, network-connected mailbox over the Internet Message Access Protocol: a connector logs into
+the account, fetches new messages as they arrive, moves flagged mail into a dedicated quarantine
+folder within the mailbox and leaves legitimate mail in the inbox, allowing the system to be
+deployed as a live adaptive filter rather than only as an offline tool.
 
 [FIGURE 5.2: Browser check-and-review console showing a phishing verdict and fired signals.]
 
@@ -1456,15 +1456,15 @@ quarantine and feedback-driven retraining, satisfying all four stated objectives
 
 Several directions were identified for future work:
 
-1. **Hardened, production-grade mail-server deployment.** The system already connects to a live
-   mailbox over the Internet Message Access Protocol (IMAP) — the standard protocol email
-   clients use to read a mailbox — fetching new messages automatically, moving spam to a
-   quarantine folder and logging decisions for review (Section 5.4). The remaining deployment
-   work is to harden this connector for continuous production use: integration directly with a
-   mail-transfer agent or a provider application programming interface, encrypted storage of
-   the account credentials, automatic reconnection and error recovery, and server-level
-   quarantine/restore controls, so the filter can run unattended on an organisational mail
-   server under formal authorisation.
+1. **Hardened, production-grade mail-server deployment.** A connector for a live mailbox over
+   the Internet Message Access Protocol (IMAP) — the standard protocol email clients use to read
+   a mailbox — was implemented, allowing the system to fetch new messages automatically, move
+   spam to a quarantine folder and log decisions for review (Section 5.4). The remaining work is
+   to harden this connector for continuous production use: integration directly with a
+   mail-transfer agent or a provider application programming interface, encrypted storage of the
+   account credentials, automatic reconnection and error recovery, and server-level
+   quarantine/restore controls, so the filter can run unattended on an organisational mail server
+   under formal authorisation.
 2. **Controlled black-box comparison with live filters.** As directed during supervision, run a
    controlled black-box test in which one fixed, labelled set of emails is submitted
    simultaneously to the proposed detector and to live commercial filters (such as Gmail and
