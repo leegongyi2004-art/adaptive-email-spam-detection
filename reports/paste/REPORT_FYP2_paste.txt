@@ -703,21 +703,21 @@ Table 5.2 - Software and libraries used in the project.
 
 --- TABLE START (tab-separated -> Convert Text to Table) ---
 Software / package	Version	Purpose
-Python	3.11+	Main programming language for the detector, the service and the evaluation scripts
-pip	built-in (24.x)	Package manager used to install the required libraries from the requirements file
-scikit-learn	1.4+	Core machine-learning library: TF-IDF vectorisation, Naïve Bayes, logistic regression, support-vector machine and feature scaling
-NumPy	bundled with scikit-learn	Numerical array and matrix operations used alongside scikit-learn
-SciPy	bundled with scikit-learn	Sparse-matrix and scientific routines relied on by scikit-learn
-Joblib	1.3+	Serialising (saving) the trained model and loading it for prediction
-FastAPI	0.110+	Web framework that exposes the detector as a representational-state-transfer (REST) service
-Uvicorn	0.27+	Server that runs the FastAPI service and accepts prediction requests
-Pydantic	2.0+	Validates the data received in each request to the service
-Matplotlib	3.7+	Generates the result charts and figures used in Chapter 6
-python-docx	1.1+	Builds this report document; not part of the detection system
+Python	3.13	Main programming language for the detector, the service and the evaluation scripts
+pip	26.2.1	Package manager used to install the required libraries from the requirements file
+scikit-learn	1.9.0	Core machine-learning library: TF-IDF vectorisation, Naïve Bayes, logistic regression, support-vector machine and feature scaling
+NumPy	2.5.2	Numerical array and matrix operations used alongside scikit-learn
+SciPy	1.18.1	Sparse-matrix and scientific routines relied on by scikit-learn
+Joblib	1.5.3	Serialising (saving) the trained model and loading it for prediction
+FastAPI	0.141.1	Web framework that exposes the detector as a representational-state-transfer (REST) service
+Uvicorn	0.52.4	Server that runs the FastAPI service and accepts prediction requests
+Pydantic	2.13.4	Validates the data received in each request to the service
+Matplotlib	3.11.1	Generates the result charts and figures used in Chapter 6
+python-docx	1.2.0	Builds this report document; not part of the detection system
 Python standard library (email, csv, re, json, argparse, pathlib)	built-in	RFC-5322 email parsing, comma-separated-value handling, regular expressions, request/response data and the command-line interface
 --- TABLE END ---
 
-The versions in Table 5.2 are the minimum versions recorded in the requirements file, and the exact installed versions can be listed with the pip list command. The python-docx library was used only to generate this report document and was not part of the detection system. The virtual environment and the successful installation of the libraries are shown in Figure 5.1.
+Table 5.2 lists the primary libraries the project was built on. The additional packages shown by the package manager (such as Starlette, AnyIO, Click, h11, httptools, watchfiles, websockets, pydantic-core, lxml, contourpy, kiwisolver and pillow) are supporting dependencies installed automatically alongside FastAPI, Uvicorn, scikit-learn and Matplotlib, rather than components used directly. The Python standard library provided email parsing, comma-separated-value handling, regular expressions and the command-line interface with no further installation. The python-docx library was used only to generate this report document and was not part of the detection system. The virtual environment and the successful installation of the libraries are shown in Figure 5.1.
 
 
 <<<  FIGURE 5.1: Software and virtual-environment setup.  >>>
