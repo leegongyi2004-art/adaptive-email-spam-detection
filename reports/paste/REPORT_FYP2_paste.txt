@@ -712,12 +712,11 @@ Joblib	1.5.3	Serialising (saving) the trained model and loading it for predictio
 FastAPI	0.141.1	Web framework that exposes the detector as a representational-state-transfer (REST) service
 Uvicorn	0.52.4	Server that runs the FastAPI service and accepts prediction requests
 Pydantic	2.13.4	Validates the data received in each request to the service
-Matplotlib	3.11.1	Generates the result charts and figures used in Chapter 6
-python-docx	1.2.0	Builds this report document; not part of the detection system
-Python standard library (email, csv, re, json, argparse, pathlib)	built-in	RFC-5322 email parsing, comma-separated-value handling, regular expressions, request/response data and the command-line interface
+Matplotlib	3.11.1	Plots the evaluation and benchmarking results (classifier-comparison charts, ROC curves and the confusion matrix) used in the performance analysis
+Python standard library (email, csv, re, urllib, pathlib, argparse, shutil, imaplib and others)	built-in	RFC-5322 email parsing, dataset and review-queue file handling, regular expressions, URL parsing, folder and command-line operations, quarantine moves and the secure live-mailbox connection
 --- TABLE END ---
 
-Table 5.2 lists the primary libraries the project was built on. The additional packages shown by the package manager (such as Starlette, AnyIO, Click, h11, httptools, watchfiles, websockets, pydantic-core, lxml, contourpy, kiwisolver and pillow) are supporting dependencies installed automatically alongside FastAPI, Uvicorn, scikit-learn and Matplotlib, rather than components used directly. The Python standard library provided email parsing, comma-separated-value handling, regular expressions and the command-line interface with no further installation. The python-docx library was used only to generate this report document and was not part of the detection system. The virtual environment and the successful installation of the libraries are shown in Figure 5.1.
+Table 5.2 lists the primary libraries the detection, evaluation and benchmarking work was built on. The performance measures themselves (accuracy, precision, recall, F1 score and latency) were computed with scikit-learn, while Matplotlib was used to visualise those results. The additional packages shown by the package manager (such as Starlette, AnyIO, Click, h11, httptools, watchfiles, websockets, pydantic-core, lxml, contourpy, kiwisolver and pillow) are supporting dependencies installed automatically alongside FastAPI, Uvicorn, scikit-learn and Matplotlib, rather than components used directly. A separate document-generation library was used only to assemble this report document and formed no part of the detection system. The virtual environment and the successful installation of the libraries are shown in Figure 5.1.
 
 
 <<<  FIGURE 5.1: Software and virtual-environment setup.  >>>
