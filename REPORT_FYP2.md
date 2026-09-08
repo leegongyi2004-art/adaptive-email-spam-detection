@@ -108,7 +108,7 @@ attacks. This project developed an adaptive email spam detection system that fus
 complementary views of a message — its textual content and its structural metadata — within a
 machine-learning pipeline that improved over time through reviewed-feedback retraining. Raw
 emails were parsed to extract word and character term-frequency–inverse-document-frequency
-(TF-IDF) content features together with twelve structural metadata signals, including link and
+(TF-IDF) content features together with thirteen structural metadata signals, including link and
 attachment counts, sender-to-link domain mismatch, reply-to presence, sender-policy-framework
 and DomainKeys-Identified-Mail indicators, and casing and urgency-term statistics; the streams
 were fused into a single feature space and classified by a class-balanced logistic-regression
@@ -170,7 +170,7 @@ References; Appendices A–F. -->
 - Table 3.1 Use-case descriptions.
 - Table 3.2 Integrated public corpus and class distribution.
 - Table 4.1 Component modules and responsibilities.
-- Table 4.2 The twelve structural metadata signals.
+- Table 4.2 The thirteen structural metadata signals.
 - Table 5.1 Specifications of the development machine.
 - Table 5.2 Software and libraries used in the project.
 - Table 5.3 Model and feature hyper-parameters.
@@ -347,7 +347,7 @@ the scope.
 The project made the following contributions:
 
 1. A working content–metadata fusion detector that combined word and character TF-IDF content
-   features with twelve structural metadata signals in a single, standardised feature space.
+   features with thirteen structural metadata signals in a single, standardised feature space.
 2. A structured comparison of multinomial Naïve Bayes, logistic regression and a linear support
    vector machine on both content-only and fused features, quantifying the contribution of the
    feature groups.
@@ -600,7 +600,7 @@ deployable, explainable systems. These findings motivated the proposed solution.
 ## 2.5 Proposed Solution
 
 The proposed solution was a local, open-source adaptive detector that fused word and character
-TF-IDF content features with twelve standardised structural metadata signals under a
+TF-IDF content features with thirteen standardised structural metadata signals under a
 class-balanced logistic-regression classifier, with Naïve Bayes and a linear support vector
 machine evaluated for comparison. The detector was wrapped in a service with a browser review
 console, a mailbox watcher with quarantine and a feedback-driven retraining loop.
@@ -712,16 +712,19 @@ sub-linear term-frequency scaling. The word stream captured phrasing while the c
 tolerated obfuscation. The weight assigned to a term t in an email d was computed as in
 Equations (3.1) and (3.2):
 
-EQ# w(t, d) = tf(t, d) · idf(t)											(3.1)
+EQ# w(t, d) = ( 1 + ln tf(t, d) ) · idf(t)									(3.1)
 
-EQ# idf(t) = ln ( N / (1 + df(t)) ) + 1									(3.2)
+EQ# idf(t) = ln ( (1 + N) / (1 + df(t)) ) + 1								(3.2)
 
 where tf(t, d) is the frequency of term t in email d, df(t) is the number of emails in the
-training set that contain t, and N is the total number of emails. A term that is frequent in one
+training set that contain t, and N is the total number of emails. Equation (3.1) uses the
+sub-linear term-frequency scaling configured in the vectoriser, and Equation (3.2) is the
+smoothed inverse-document-frequency form used by the library; the resulting vectors were
+L2-normalised. A term that is frequent in one
 email but rare across all emails therefore receives a high weight, while common words receive a
 low weight.
 
-*Metadata features.* Twelve structural signals were extracted from the parsed message and
+*Metadata features.* Thirteen structural signals were extracted from the parsed message and
 encoded with a dictionary vectoriser: subject length, body length, URL count, number of unique
 link domains, attachment count, a sender-has-domain flag, a sender-domain/link-domain mismatch
 flag, reply-to presence, sender-policy-framework pass indicator, DomainKeys-Identified-Mail
@@ -803,7 +806,7 @@ This chapter presented the methodology as a development-based, supervised machin
 pipeline. It described the system architecture with its three parallel feature streams and the
 feedback-driven retraining loop, set out the use cases, traced the activity flow, defined the
 81,152-email public corpus and the disjoint AI-generated test set, specified the word/character
-content and twelve metadata features, and defined the evaluation metrics and validity controls.
+content and thirteen metadata features, and defined the evaluation metrics and validity controls.
 Chapter 4 details the system design at a level sufficient to rebuild it.
 
 ---
@@ -820,7 +823,7 @@ The system comprised five top-level blocks, shown in Figure 4.1:
 
 1. **Ingestion** — a request to the detection service, a mailbox folder watcher, or a local file.
 2. **Parsing and feature extraction** — robust RFC-5322 parsing producing content text and the
-   twelve metadata signals, with crash-safe handling of malformed mail.
+   thirteen metadata signals, with crash-safe handling of malformed mail.
 3. **Fusion classifier** — the word/character/metadata feature union, standardisation and the
    logistic-regression classifier.
 4. **Action and decision** — threshold comparison, labelling, quarantine and signal explanation.
@@ -843,7 +846,7 @@ independent so that it could be modified or replaced without affecting the other
 
 | Component | Block (Figure 4.1) | Responsibility |
 |---|---|---|
-| Email parsing and feature extraction | Parsing and feature extraction | Parsed each message and produced the content text together with the twelve structural metadata signals. |
+| Email parsing and feature extraction | Parsing and feature extraction | Parsed each message and produced the content text together with the thirteen structural metadata signals. |
 | Data preparation | Ingestion | Merged and de-duplicated the public corpora into one reviewed dataset. |
 | Fusion classification engine | Fusion classifier | Combined content and metadata features and produced the label, probability and fired signals. |
 | Detection service | Action and decision | Exposed the trained engine through a web interface with a review console. |
@@ -872,7 +875,7 @@ defensive: malformed links were handled without aborting, and a message that was
 with no headers (as in the body-only AI-generated test sets) was still accepted, with the
 header-derived signals set to neutral values so that the feature structure was preserved. From
 the parsed message the extractor produced two outputs: the textual content (subject and body
-concatenated) for the content features, and a set of twelve structural metadata signals
+concatenated) for the content features, and a set of thirteen structural metadata signals
 described in Section 4.3.
 
 ### 4.2.3 Fusion Classification Engine
@@ -882,7 +885,7 @@ joined three feature branches into one sparse vector. Two branches described the
 term frequency–inverse document frequency: a word branch over one- and two-word terms (capped at
 40,000 features) that captured phrasing, and a character branch over three- to five-character
 sequences (capped at 30,000 features) that tolerated obfuscation such as inserted symbols. The
-third branch encoded the twelve metadata signals and scaled them so that their magnitudes did
+third branch encoded the thirteen metadata signals and scaled them so that their magnitudes did
 not overwhelm the text features. The scaled, combined vector was passed to a class-balanced
 logistic-regression classifier (regularisation strength C = 1.5), which output a spam
 probability; multinomial Naïve Bayes and a linear support-vector machine were also implemented
@@ -913,9 +916,9 @@ distinguished the system from both a static model and an uncontrolled online-lea
 
 ## 4.3 Data and Feature Design
 
-The twelve structural metadata signals are defined in Table 4.2.
+The thirteen structural metadata signals are defined in Table 4.2.
 
-**Table 4.2 — The twelve structural metadata signals.**
+**Table 4.2 — The thirteen structural metadata signals.**
 
 | Signal | Meaning / rationale |
 |---|---|
@@ -930,14 +933,15 @@ The twelve structural metadata signals are defined in Table 4.2.
 | SPF authentication result | Whether a sender-policy-framework pass was indicated in the authentication headers. |
 | DKIM signature present | Whether a DomainKeys-Identified-Mail signature header was present. |
 | Capitals ratio in subject | Fraction of upper-case letters in the subject line. |
-| Urgency markers | Count of exclamation marks and of urgent/verification terms. |
+| Exclamation count | Number of exclamation marks in the subject and body. |
+| Urgency term count | Number of urgent or verification-related terms (eleven-term list) found in the subject and body. |
 
 The subject and body were concatenated into a single content string so that both parts were
 represented in the text features. For plain-text inputs without headers (such as the body-only
 external sets), the parser treated the whole input as the body and set the header-derived
 signals to neutral values, preserving the feature-vector structure. Once trained, the model was
 saved to a single file so that the service and the mailbox watcher loaded an identical
-predictor. Keeping the metadata to twelve signals deliberately avoided a large, fragile
+predictor. Keeping the metadata to thirteen signals deliberately avoided a large, fragile
 handcrafted rule
 set: unlike a keyword blocklist, each signal contributed a numeric feature whose weight was
 learned by the classifier rather than maintained by hand, satisfying the objective of an
@@ -960,7 +964,7 @@ system could be rebuilt from the public corpus by following Sections 4.2 and 4.3
 ## 4.5 Summary
 
 This chapter gave a rebuild-ready description of the system: the five-block architecture, the
-module responsibilities and the exact scikit-learn pipeline and hyper-parameters, the twelve
+module responsibilities and the exact scikit-learn pipeline and hyper-parameters, the thirteen
 structural metadata signals, and the end-to-end component interaction including the review
 queue, feedback store and validated retraining path. Chapter 5 describes how this design was
 implemented and operated.
@@ -1076,7 +1080,7 @@ lists the model and feature hyper-parameters.
 In plain terms, the word and character TF-IDF rows controlled how the email text was turned into
 numbers: single words and two-word pairs (and three-to-five-character fragments) were counted,
 up to a fixed vocabulary size, with very frequent words dampened. The dictionary vectoriser
-turned the twelve metadata signals into numerical features, and the standard scaler rescaled
+turned the thirteen metadata signals into numerical features, and the standard scaler rescaled
 those signals so that a raw value such as body length could not outweigh the word features. The
 classifier used class-balanced weighting so that the spam and legitimate classes were treated
 fairly even if one was more common, with a regularisation strength of C = 1.5. The decision
@@ -1264,7 +1268,7 @@ regression 0.990, so almost every message flagged as spam was genuinely maliciou
 Recall was the operationally important metric for a filter, because it measured how much
 phishing was actually caught. Here the fusion models were best, with the fusion support vector
 machine at 0.995 and the deployed fusion logistic regression at 0.994, both above their
-content-only forms (0.993 and 0.990). Adding the twelve metadata signals therefore bought
+content-only forms (0.993 and 0.990). Adding the thirteen metadata signals therefore bought
 additional phishing recall, as intended in the fusion design. The F1 score, which balances
 precision and recall, followed the same ordering, with the two fusion classifiers highest (0.993
 and 0.992). Finally, the ROC-AUC measured how reliably each model ranked spam above legitimate
@@ -1402,7 +1406,7 @@ signals.
 | Multinomial Naïve Bayes | Classical ML | Spambase / phishing corpora [7] | ~79–88% |
 | Support vector machine | Classical ML | Enron1; merged corpora [6], [7] | ~98–99% |
 | Random forest | Classical ML | Spam/Spambase; phishing corpora [7] | ~97–99.9% |
-| **Proposed fusion LR (word+char TF-IDF + 12 metadata)** | Classical ML (fusion) | Merged Enron/Ling/SpamAssassin/CEAS/Nazario/Nigerian, 81,152 emails | **99.2% (CPU, ~16 ms/email)** |
+| **Proposed fusion LR (word+char TF-IDF + 13 metadata)** | Classical ML (fusion) | Merged Enron/Ling/SpamAssassin/CEAS/Nazario/Nigerian, 81,152 emails | **99.2% (CPU, ~16 ms/email)** |
 
 The interpretation was twofold. First, on the standard public-corpus task the proposed
 classical fusion model sat at the level of the strongest reported classical results, consistent
@@ -1442,14 +1446,14 @@ Table 6.7 maps each objective to its outcome and evidence.
 
 | Objective | Status | Evidence |
 |---|---|---|
-| 1. Extract content + metadata features | Achieved | Content and metadata extraction component; twelve metadata signals (Table 4.2) |
+| 1. Extract content + metadata features | Achieved | Content and metadata extraction component; thirteen metadata signals (Table 4.2) |
 | 2. Content–metadata fusion framework | Achieved | FeatureUnion pipeline with standardised metadata (Sections 3.3 and 4.2) |
 | 3. Train/evaluate NB, LR, SVM | Achieved | Classifier comparison experiment; Table 6.2 |
 | 4. Adaptive retraining maintains accuracy | Achieved | ROC-AUC 0.81 → 0.945; recall 20% → 85% (Table 6.4) |
 
 Objective 1, extracting content and metadata features, was achieved. The system extracted both
 word- and character-level content features using term-frequency inverse-document-frequency
-weighting, together with twelve structural metadata signals (Section 4.2, Table 4.2) such as
+weighting, together with thirteen structural metadata signals (Section 4.2, Table 4.2) such as
 link counts, the mismatch between the sender domain and linked domains, and authentication
 indicators; a message was therefore judged on both what it said and how it was structured,
 rather than on either source alone.
@@ -1493,7 +1497,7 @@ environment.
 
 An adaptive email spam detection system using artificial intelligence and content–metadata
 fusion was designed, implemented and evaluated. The system fused word and character TF-IDF
-content features with twelve standardised structural metadata signals in a class-balanced
+content features with thirteen standardised structural metadata signals in a class-balanced
 logistic-regression model, with Naïve Bayes and a linear support vector machine evaluated for
 comparison. On a held-out split of 81,152 public emails it achieved 99.2% accuracy with
 precision 0.991, recall 0.992 and ROC-AUC of 1.000, at a median latency of approximately 16
@@ -1626,7 +1630,7 @@ confusion matrices produced during the evaluation described in Section 6.2.]
 
 ## Appendix C — Example Emails and Metadata Feature Definitions
 [FILL IN: include one representative ham and one phishing example (public/synthetic only), with
-the twelve extracted metadata values shown.]
+the thirteen extracted metadata values shown.]
 
 ## Appendix D — Weekly / Bi-weekly Log
 [FILL IN: insert at least six bi-weekly/weekly progress report forms signed by the supervisor.]
