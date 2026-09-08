@@ -174,7 +174,8 @@ References; Appendices A–F. -->
 - Table 5.1 Specifications of the development machine.
 - Table 5.2 Software and libraries used in the project.
 - Table 5.3 Model and feature hyper-parameters.
-- Table 5.4 Command-line operations used to run the system.
+- Table 5.4 Mailbox connection and filtering configuration.
+- Table 5.5 Command-line operations used to run the system.
 - Table 6.1 Held-out performance of the deployed fused model.
 - Table 6.2 Classifier and feature-group comparison (Objective 3).
 - Table 6.3 Detection of genuine LLM-generated phishing (n = 4,986).
@@ -1056,14 +1057,37 @@ small enough to be loaded instantly by the service.
 
 ## 5.3 Setting and Configuration
 
-The system was entirely self-contained: all classification was performed locally by the trained
-model, so no external application-programming-interface keys, cloud look-up services or
-device-level permissions were required to run it. Configuration therefore consisted of the
-feature-extraction and classifier settings fixed at training time, together with the decision
-threshold used at deployment. The deployed decision threshold defaulted to 0.55 in the mailbox tool and was re-tuned per
-deployment using the threshold sweep; lowering the threshold increased recall at the cost of
-more false positives, which was useful when prioritising catch rate for AI-style mail. Table 5.3
-lists the model and feature hyper-parameters.
+This section outlines the configuration steps required to prepare the environment, train the
+detector and connect it to a mailbox so that incoming messages are scored automatically. No
+paid service, cloud classification API or third-party scanning key was required: all
+classification is performed locally by the trained model, and the only credential involved is
+the mail-account application password used to read the mailbox. Each step below was performed
+once and is reproducible on any machine with Python installed.
+
+### 5.3.1 Python Environment Configuration
+
+1. **Install Python 3.13** for Windows from python.org, selecting "Add python.exe to PATH".
+2. **Create the project virtual environment** in the project folder so that the libraries are
+   isolated from the system installation:
+   `python -m venv .venv`
+3. **Activate the environment**: `.venv\Scripts\activate` (the prompt is then prefixed with
+   `(.venv)`).
+4. **Install the required libraries**: `pip install -r requirements.txt`, which installs
+   scikit-learn, FastAPI, Uvicorn, pandas, Matplotlib and Joblib together with their
+   dependencies.
+5. **Verify the installation** with `pip list`, as shown in Figure 5.1.
+
+No configuration file, environment variable or administrator privilege is required for this
+stage.
+
+### 5.3.2 Detector Configuration
+
+The classifier settings were fixed at training time and are stored inside the saved model file,
+so the mailbox connector and the service load an identical predictor. The deployed decision
+threshold defaulted to 0.55 and was re-tuned per deployment using the threshold sweep; lowering
+the threshold increased recall at the cost of more false positives, which was useful when
+prioritising catch rate for AI-style mail. Table 5.3 lists the model and feature
+hyper-parameters.
 
 **Table 5.3 — Model and feature hyper-parameters.**
 
@@ -1089,6 +1113,61 @@ exceeded 0.55; lowering it caught more spam but produced more false positives, a
 sweep used in evaluation chose a suitable operating point. A fixed random seed ensured that the
 same training run could be reproduced exactly.
 
+### 5.3.3 Mail-Account Configuration for Live Filtering
+
+To filter real incoming mail rather than pasted samples, the detector connects to a mail account
+over the Internet Message Access Protocol (IMAP), the same protocol ordinary mail clients use to
+read mail. A dedicated test account was used throughout, so that no third party's private
+correspondence was processed. The account was prepared as follows:
+
+1. **Create a dedicated test mail account** used only for this project, so that no personal or
+   third-party mail is read by the system.
+2. **Enable two-step verification** on that account, which is a prerequisite for issuing an
+   application password.
+3. **Generate an application password**: in the account security settings, create a sixteen-
+   character application password for the connector. The ordinary login password is never used
+   and is never stored by the system.
+4. **Enable IMAP access** in the mail account settings so that external clients may read the
+   mailbox.
+5. **Supply the credentials as environment variables** rather than editing any source file, so
+   that no password is written into the code or the report:
+
+```
+$env:IMAP_USER = "the test address"
+$env:IMAP_PASS = "the sixteen-character application password"
+```
+
+6. **Run a read-only check first.** The connector defaults to `report` mode, in which messages
+   are scored and logged but nothing is moved or deleted:
+   `python -m spam_detection.imap_watch --action report`
+7. **Enable automatic filtering** once the read-only check succeeds:
+   `python -m spam_detection.imap_watch --action quarantine --watch`
+
+### 5.3.4 Filtering and Review Configuration
+
+The connector's operational settings are summarised in Table 5.4. The server host and port are
+inferred automatically from the address domain for common providers, so in normal use only the
+account credentials must be supplied.
+
+**Table 5.4 — Mailbox connection and filtering configuration.**
+
+| Setting | Value | Purpose |
+|---|---|---|
+| Protocol | IMAP over SSL/TLS (port 993) | Encrypted retrieval of new mail |
+| Server host | Inferred from the address domain | Avoids manual server entry for common providers |
+| Authentication | Sixteen-character application password, supplied as an environment variable | Avoids storing a password in code or configuration files |
+| Action mode | `report` (read-only) or `quarantine` | Read-only scoring for testing; quarantine for live filtering |
+| Quarantine folder | `Spam_Quarantine` | Flagged mail is copied there, never deleted |
+| Poll interval | 10 seconds | Frequency at which the inbox is checked for new mail |
+| Processed-message state file | `imap_seen.txt` | Prevents a message from being scored twice |
+| Review queue | `review_queue.csv` | Records every decision so a reviewer can correct mistakes |
+| Decision threshold | 0.55 | Probability above which a message is treated as spam |
+
+As shown in Table 5.4, the configuration was deliberately conservative: flagged mail is copied
+into a quarantine folder rather than deleted, the read-only mode allows the filter to be
+validated before it is allowed to move anything, and every decision is logged so that reviewer
+corrections can be fed back into the next retraining cycle described in Section 3.4.
+
 ## 5.4 System Operation (with Screenshots)
 
 The system was operated through four stages. First, the public corpus was merged and
@@ -1099,9 +1178,9 @@ scored to measure generalisation to modern threats. Fourth, the detection servic
 mailbox watcher loaded the saved model and served predictions, while reviewer corrections
 accumulated in the feedback store to be incorporated in the next retraining cycle. These stages
 could be triggered through short command-line instructions, which are listed in
-Table 5.4; the following figures illustrate the system in operation.
+Table 5.5; the following figures illustrate the system in operation.
 
-**Table 5.4 — Command-line operations used to run the system.**
+**Table 5.5 — Command-line operations used to run the system.**
 
 | Operation | Command |
 |---|---|
@@ -1110,9 +1189,10 @@ Table 5.4; the following figures illustrate the system in operation.
 | Score an external or AI-generated message set | `python -m spam_detection.evaluate_external models/email_spam_detector.joblib data/llm_test.csv` |
 | Start the detection service and open it in a web browser | `python -m uvicorn spam_detection.api:app --host 0.0.0.0 --port 8000` |
 | Monitor a mail folder and quarantine flagged messages | `python -m spam_detection.scan_mailbox mail_inbox --action quarantine --watch` |
+| Filter a live mailbox automatically over IMAP | `python -m spam_detection.imap_watch --action quarantine --watch` |
 | Retrain from reviewer corrections | `python -m spam_detection.feedback review_queue.csv` |
 
-As shown in Table 5.4, every stage of the workflow was reproducible from a single command, which
+As shown in Table 5.5, every stage of the workflow was reproducible from a single command, which
 kept the environment easy to recreate on any machine with Python installed and required no
 graphics-processing hardware. The complete source code is provided in the accompanying
 submission archive, organised into the modules described in Section 4.2.
@@ -1226,7 +1306,7 @@ configurations: content features only, and the full content–metadata fusion. A
 resulting configurations used the same training and held-out split, the same preprocessing and
 the same decision threshold, so that the comparison reflected only the choice of classifier and
 feature set. For each configuration the accuracy, precision, recall, F1 score and ROC-AUC were
-recorded on the held-out split; the commands used are listed in Table 5.4.
+recorded on the held-out split; the commands used are listed in Table 5.5.
 The results on the full 81,152-email corpus are summarised in Table 6.2. The support-vector
 machine's iteration limit was raised from the default 1,000 to 10,000 because the default value
 produced a convergence warning on the large fused feature set; with this setting the metrics
