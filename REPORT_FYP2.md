@@ -137,7 +137,7 @@ Learning.
 Front matter (Title, Copyright, Report Status Declaration Form, FYP Submission Form,
 Declaration of Originality, Acknowledgements, Abstract, ToC, List of Figures, List of Tables,
 List of Symbols, List of Abbreviations); Chapters 1–7 with the subsections shown in this file;
-References; Appendices A–G. -->
+References; Appendices A–F. -->
 
 # LIST OF FIGURES
 
@@ -174,6 +174,7 @@ References; Appendices A–G. -->
 - Table 5.1 Specifications of the development machine.
 - Table 5.2 Software and libraries used in the project.
 - Table 5.3 Model and feature hyper-parameters.
+- Table 5.4 Command-line operations used to run the system.
 - Table 6.1 Held-out performance of the deployed fused model.
 - Table 6.2 Classifier and feature-group comparison (Objective 3).
 - Table 6.3 Detection of genuine LLM-generated phishing (n = 4,986).
@@ -1093,8 +1094,24 @@ trained model was saved for deployment. Third, the external and AI-generated mes
 scored to measure generalisation to modern threats. Fourth, the detection service and the
 mailbox watcher loaded the saved model and served predictions, while reviewer corrections
 accumulated in the feedback store to be incorporated in the next retraining cycle. These stages
-could be triggered through short command-line instructions, which are listed in full in
-Appendix D for reproducibility; the following figures illustrate the system in operation.
+could be triggered through short command-line instructions, which are listed in
+Table 5.4; the following figures illustrate the system in operation.
+
+**Table 5.4 — Command-line operations used to run the system.**
+
+| Operation | Command |
+|---|---|
+| Create the virtual environment and install the libraries | `python -m venv .venv` ; `.venv\Scripts\activate` ; `pip install -r requirements.txt` |
+| Train on the reviewed corpus, evaluate on the held-out split and save the model | `python -m spam_detection.evaluate data/reviewed_mail.csv --save models/email_spam_detector.joblib` |
+| Score an external or AI-generated message set | `python -m spam_detection.evaluate_external models/email_spam_detector.joblib data/llm_test.csv` |
+| Start the detection service and open it in a web browser | `python -m uvicorn spam_detection.api:app --host 0.0.0.0 --port 8000` |
+| Monitor a mail folder and quarantine flagged messages | `python -m spam_detection.scan_mailbox mail_inbox --action quarantine --watch` |
+| Retrain from reviewer corrections | `python -m spam_detection.feedback review_queue.csv` |
+
+As shown in Table 5.4, every stage of the workflow was reproducible from a single command, which
+kept the environment easy to recreate on any machine with Python installed and required no
+graphics-processing hardware. The complete source code is provided in the accompanying
+submission archive, organised into the modules described in Section 4.2.
 
 The review console, shown in Figure 5.2, allowed a reviewer to paste an email and immediately
 see its classification, the probability assigned, and the individual structural signals that
@@ -1205,7 +1222,7 @@ configurations: content features only, and the full content–metadata fusion. A
 resulting configurations used the same training and held-out split, the same preprocessing and
 the same decision threshold, so that the comparison reflected only the choice of classifier and
 feature set. For each configuration the accuracy, precision, recall, F1 score and ROC-AUC were
-recorded on the held-out split; the complete command-line procedure is documented in Appendix D.
+recorded on the held-out split; the commands used are listed in Table 5.4.
 The results on the full 81,152-email corpus are summarised in Table 6.2. The support-vector
 machine's iteration limit was raised from the default 1,000 to 10,000 because the default value
 produced a convergence warning on the large fused feature set; with this setting the metrics
@@ -1426,7 +1443,7 @@ Table 6.7 maps each objective to its outcome and evidence.
 | Objective | Status | Evidence |
 |---|---|---|
 | 1. Extract content + metadata features | Achieved | Content and metadata extraction component; twelve metadata signals (Table 4.2) |
-| 2. Content–metadata fusion framework | Achieved | FeatureUnion pipeline with standardised metadata (§3.3, §4.2) |
+| 2. Content–metadata fusion framework | Achieved | FeatureUnion pipeline with standardised metadata (Sections 3.3 and 4.2) |
 | 3. Train/evaluate NB, LR, SVM | Achieved | Classifier comparison experiment; Table 6.2 |
 | 4. Adaptive retraining maintains accuracy | Achieved | ROC-AUC 0.81 → 0.945; recall 20% → 85% (Table 6.4) |
 
@@ -1611,52 +1628,15 @@ confusion matrices produced during the evaluation described in Section 6.2.]
 [FILL IN: include one representative ham and one phishing example (public/synthetic only), with
 the twelve extracted metadata values shown.]
 
-## Appendix D — Command Reference and System Screenshots
-
-For reproducibility, the system was run from the command line inside the Python virtual
-environment described in Section 5.2. The environment was created and the required libraries
-installed with the following commands:
-
-```
-python -m venv .venv
-.venv\Scripts\activate          (Windows)   /   source .venv/bin/activate   (Linux/macOS)
-pip install -r requirements.txt
-```
-
-The four principal operations — training and evaluation, external (AI-mail) evaluation,
-running the detection service, and continuous mailbox monitoring — were invoked as follows:
-
-```
-# 1. Train on the reviewed corpus, evaluate on the held-out split, and save the model
-python -m spam_detection.evaluate data/reviewed_mail.csv --save models/email_spam_detector.joblib
-
-# 2. Score an external / AI-generated set (a body-only CSV is supported)
-python -m spam_detection.evaluate_external models/email_spam_detector.joblib data/llm_test.csv
-
-# 3. Start the detection service, then open its address in a web browser
-python -m uvicorn spam_detection.api:app --host 0.0.0.0 --port 8000
-
-# 4. Monitor a folder and quarantine flagged mail as it arrives
-python -m spam_detection.scan_mailbox mail_inbox --action quarantine --watch
-
-# 5. Connect to a LIVE mailbox over IMAP and filter real incoming mail
-#    (set IMAP_HOST / IMAP_USER / IMAP_PASS first, using an app password)
-python -m spam_detection.imap_watch --action report --watch        # read-only check
-python -m spam_detection.imap_watch --action quarantine --watch    # move spam to Spam_Quarantine
-```
-
-[FILL IN: add any further screenshots not placed in Chapter 5, e.g. the training output and the
-threshold-sweep output.]
-
-## Appendix E — Weekly / Bi-weekly Log
+## Appendix D — Weekly / Bi-weekly Log
 [FILL IN: insert at least six bi-weekly/weekly progress report forms signed by the supervisor.]
 
-## Appendix F — Plagiarism Check Result (Turnitin)
+## Appendix E — Plagiarism Check Result (Turnitin)
 [FILL IN: insert the Turnitin originality result. For the similarity check, upload ONLY the
 title page, abstract, Chapters 1–7 and references — remove the cover, declaration forms,
 acknowledgements, table of contents, lists and appendices.]
 
-## Appendix G — FYP2 Submission Checklist
+## Appendix F — FYP2 Submission Checklist
 [FILL IN: insert the completed FYP2 submission form/checklist (FM-IAD-005 and the checklist from
 the booklet).]
 
