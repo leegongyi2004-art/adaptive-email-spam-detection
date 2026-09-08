@@ -435,7 +435,7 @@ applied Bayes' theorem with a conditional-independence assumption to provide a f
 baseline; it remained a competitive, efficient method for text classification and had been
 shown to reach high accuracy when paired with sound preprocessing [3], [8]. **Logistic
 regression** modelled the log-odds of spam as a linear function of the features passed through
-a sigmoid, producing a calibrated-style probability and interpretable coefficients. **Linear
+a sigmoid, producing a probability estimate and interpretable coefficients. **Linear
 support vector machines** found a maximum-margin separating hyperplane and provided a strong
 discriminative baseline for high-dimensional text. **Standardisation** was applied to metadata
 features so that raw lengths could not dominate the normalised text features.
@@ -653,14 +653,14 @@ and Table 3.1 describes each use case.
 | Train and evaluate models | Reviewer / Administrator | The administrator trains the fusion classifier on the labelled corpus and the system reports its accuracy, precision, recall, F1 score and ROC-AUC on a held-out test split. |
 | Run the detection service | Reviewer / Administrator | The administrator starts the detection service so that incoming messages can be submitted and scored automatically through the service interface or the web console. |
 | Scan mailbox and quarantine | Reviewer / Administrator | Running unattended in watch-and-quarantine mode, the system automatically scores every message that arrives in the monitored folder, moves spam to a quarantine folder, and logs every decision to the review queue — no manual action per message. |
-| Review feedback and retrain | Reviewer / Administrator | Run periodically: the accumulated reviewed feedback is merged with the training data, the new model is validated on the held-out split, and it is redeployed automatically only if performance is maintained. |
+| Review feedback and retrain | Reviewer / Administrator | Run periodically: the accumulated reviewed feedback is merged with the training data and a new model is fitted, which is then evaluated on the held-out split before further use. |
 
 ### 3.1.3 Activity Diagram
 
 The activity flow began when an email entered the system and ended either with a delivered
 message, a quarantined message, or a redeployed model after retraining. Each message was
 parsed and scored, a threshold decision routed it to the inbox or quarantine, and a reviewer
-correction on the rare misclassified message triggered the validate-and-redeploy loop. The
+correction on the rare misclassified message was collected for the next retraining cycle. The
 full sequence, including the feedback path, is illustrated in Figure 3.3.
 
 
@@ -669,8 +669,8 @@ full sequence, including the feedback path, is illustrated in Figure 3.3.
 Emails were parsed and feature-extracted; the model produced a probability that was compared
 against the configurable threshold; high-risk mail was quarantined or labelled; uncertain or
 corrected cases entered the review queue; on a schedule, reviewed labels were appended to the
-training set and a new model was fitted, validated, and redeployed only if held-out
-performance was maintained.
+training set and a new model was fitted, which was then evaluated on the held-out data
+before further use.
 
 ## 3.2 Datasets
 
@@ -735,9 +735,9 @@ EQ# z = ( x − μ ) / σ											(3.3)
 where μ is the mean and σ the standard deviation of that signal over the training set.
 
 *Preprocessing.* Raw messages were parsed with the Python standard-library `email` package so
-that multipart bodies, HTML and headers were handled uniformly. The visible text of each part was
-extracted, HTML markup was reduced to its text content, and the subject was prefixed to the
-body. Structural values were derived without reading attachment content, and no message body
+that multipart bodies and headers were handled uniformly. Available `text/plain` MIME parts were
+extracted and the subject was prefixed to the body; when no plain-text part was available, a
+fallback representation of the raw message was used as the body text. Structural values were derived without reading attachment content, and no message body
 left the local machine. Malformed or plain-text inputs were handled by a fallback path that
 treated the entire input as body text and zeroed the header-derived metadata.
 
@@ -1117,7 +1117,7 @@ The review console, shown in Figure 5.2, allowed a reviewer to paste an email an
 see its classification, the probability assigned, and the individual structural signals that
 fired, together with buttons to confirm or correct the decision. When the detector was accessed
 through its service interface, it returned a structured response containing the predicted label,
-the spam probability, a confidence value and the list of contributing signals, as shown in
+the spam probability, a confidence value and the list of detected structural signals, as shown in
 Figure 5.3. Finally, the mailbox watcher could monitor a folder and, in quarantine mode, move
 each flagged message into a quarantine directory while logging the decision to the review queue,
 as shown in Figure 5.4. The same automatic score-and-quarantine loop was also implemented for a
@@ -1273,13 +1273,13 @@ near-perfect ranking on the held-out corpus.
 
 The fusion support vector machine had the marginally highest raw numbers, but the fusion
 logistic-regression model was selected for deployment for two operational reasons. First,
-logistic regression outputs a calibrated probability, which allowed the decision threshold to be
-tuned (the deployed 0.55) and a confidence value and signal explanation to be shown, whereas the
+logistic regression outputs a spam-probability estimate that can be compared with a configurable
+threshold (the deployed 0.55) and allows a confidence value and signal explanation to be shown, whereas the
 support vector machine's decision scores are not directly interpretable as probabilities.
 Second, the two fusion models were effectively tied in performance (accuracy 0.992 versus 0.993),
 so the model that provided a tunable threshold, explainable outputs and equally strong results
-was preferred. The results therefore supported the fusion design and the choice of a calibrated,
-explainable classifier over the marginally higher-scoring alternative.
+was preferred. The results therefore supported the fusion design and the choice of a
+probability-based, explainable classifier over the marginally higher-scoring alternative.
 
 The support-vector-machine fusion model edged logistic regression by one to two thousandths in
 the reported metrics, but logistic regression was selected for deployment for operational rather
@@ -1333,9 +1333,9 @@ a single reviewed retraining cycle.
 
 The improvement was greatest for threat types actually represented in the reviewed feedback;
 this scope was reported honestly rather than claiming universal adaptation. The retraining
-path was fully automated but gated on a held-out validation check, so a new model was
-redeployed only if it maintained main-corpus accuracy while improving the target threat
-ranking. This prevented a small feedback batch from degrading the detector and distinguished
+cycle was run as a scheduled batch step, and the retrained model was evaluated on the held-out
+data before further use, confirming that main-corpus accuracy was maintained while the target
+threat ranking improved. Retraining in controlled batches rather than continuously distinguished
 the system from both a static model and an uncontrolled online-learning loop. The improvement
 in ranking is visualised by the two ROC curves, before and after retraining, in Figure 6.4.
 
@@ -1463,7 +1463,7 @@ Objective 3, training and evaluating Naïve Bayes, logistic regression and the s
 machine, was achieved. All three classifiers were trained and evaluated on the same stratified
 75/25 split under identical settings (Table 6.2); the fused logistic-regression model was
 selected for deployment because it matched the best reported accuracy while also providing
-calibrated probabilities and a tunable decision threshold.
+probability estimates and a tunable decision threshold.
 
 Objective 4, adaptive retraining that maintained accuracy, was achieved. After one reviewed
 retraining cycle on modern threat email, ranking performance on a held-out modern-threat set
