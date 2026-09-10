@@ -630,7 +630,7 @@ The trained engine was exposed in two ways. The detection service provided a web
 
   [4.2.5 Review, Feedback and Adaptive Retraining]
 
-The adaptation block closed the learning loop. When a reviewer corrected a decision in the console, the correction was saved as a labelled example in the feedback store. A scheduled retraining stage merged these reviewed labels with the original training data, fitted a new model, and validated it on the held-out split; the new model replaced the deployed one only if it maintained accuracy on the main corpus while improving performance on the target threat. This validation gate prevented a small batch of feedback from degrading the detector, and it distinguished the system from both a static model and an uncontrolled online-learning loop.
+The adaptation block closed the learning loop. When a reviewer corrected a decision in the console, the correction was saved as a labelled example in the feedback store. A scheduled retraining stage merged these reviewed labels with the original training data and fitted a new model, which was then evaluated on the held-out split before further use so that its effect on both the main corpus and the target threat could be measured. Retraining in scheduled batches rather than continuously prevented a small batch of feedback from silently degrading the detector, and it distinguished the system from both a static model and an uncontrolled online-learning loop.
 
 
 [4.3 Data and Feature Design]
