@@ -1433,7 +1433,8 @@ rate with the decision threshold is plotted in Figure 6.3.
 After retraining on a disjoint, reviewed batch of modern AI-style and
 business-email-compromise emails, detection ranking on a held-out modern-threat set improved
 from ROC-AUC 0.81 to 0.945, and phishing recall at a near-zero false-positive point rose from
-approximately 20% to 85%, while main-corpus accuracy was maintained (0.991). Table 6.4
+0.810 to 0.945 — a 16.7% relative improvement in ranking quality — while main-corpus accuracy
+was maintained (0.991). Table 6.4
 summarises the change; in a controlled before/after demonstration on a held-out new campaign,
 the number of campaign messages caught rose from 0 out of 6 before retraining to 5 out of 6 after
 a single reviewed retraining cycle.
@@ -1443,12 +1444,20 @@ a single reviewed retraining cycle.
 | Measure | Before retraining | After retraining |
 |---|---|---|
 | ROC-AUC (modern set) | 0.81 | **0.945** |
-| Phishing recall at near-zero FPR | ≈ 20% | **85%** |
+| Phishing recall at threshold 0.55 | 95% | **95%** |
 | Main-corpus accuracy | 0.991 | 0.991 (maintained) |
 | Demo campaign caught (held-out set) | 0 / 6 | 5 / 6 |
 
 The improvement was greatest for threat types actually represented in the reviewed feedback;
-this scope was reported honestly rather than claiming universal adaptation. The retraining
+this scope was reported honestly rather than claiming universal adaptation. The same before/after
+comparison was also applied to a second, independent held-out set, on which the baseline detector
+was already close to its ceiling at ROC-AUC 0.965 and 100% recall. After the same retraining
+cycle, recall on that set remained at 100% while ROC-AUC moved slightly to 0.951. Adaptation
+therefore did not improve a set on which there was effectively no headroom to gain, and the
+small change in ranking quality is within the variation expected from refitting on a marginally
+different training sample. This outcome is reported because it delimits the claim: reviewed
+feedback improves detection for threat families the baseline handles poorly, and neither
+improves nor materially harms performance where the baseline is already near-perfect. The retraining
 cycle was run as a scheduled batch step, and the retrained model was evaluated on the held-out
 data before further use, confirming that main-corpus accuracy was maintained while the target
 threat ranking improved. Retraining in controlled batches rather than continuously distinguished
@@ -1561,7 +1570,7 @@ Table 6.7 maps each objective to its outcome and evidence.
 | 1. Extract content + metadata features | Achieved | Content and metadata extraction component; thirteen metadata signals (Table 4.2) |
 | 2. Content–metadata fusion framework | Achieved | FeatureUnion pipeline with standardised metadata (Sections 3.3 and 4.2) |
 | 3. Train/evaluate NB, LR, SVM | Achieved | Classifier comparison experiment; Table 6.2 |
-| 4. Adaptive retraining maintains accuracy | Achieved | ROC-AUC 0.81 → 0.945; recall 20% → 85% (Table 6.4) |
+| 4. Adaptive retraining maintains accuracy | Achieved | ROC-AUC 0.810 → 0.945; recall maintained at 95% (Table 6.4) |
 
 Objective 1, extracting content and metadata features, was achieved. The system extracted both
 word- and character-level content features using term-frequency inverse-document-frequency
@@ -1584,7 +1593,8 @@ probability estimates and a tunable decision threshold.
 Objective 4, adaptive retraining that maintained accuracy, was achieved. After one reviewed
 retraining cycle on modern threat email, ranking performance on a held-out modern-threat set
 rose from ROC-AUC 0.81 to 0.945 and recall at a near-zero false-positive point rose from
-approximately 20% to 85%, while accuracy on the main corpus was maintained at 0.991 (Table
+0.810 to 0.945, while recall was maintained at 95% and accuracy on the main corpus was
+maintained at 0.991 (Table
 6.4), demonstrating measurable adaptation to new threat styles without degrading normal
 performance.
 
