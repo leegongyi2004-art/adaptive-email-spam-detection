@@ -375,20 +375,47 @@ async function loadQueue(){
   for (const r of rows){
     const spam = (r.predicted_label === 'spam');
     const pct = (parseFloat(r.spam_probability) * 100).toFixed(1);
-    const el = document.createElement('div');
-    el.style.cssText = 'border:1px solid #334155;border-radius:8px;padding:10px;margin-top:10px';
-    el.innerHTML =
-      '<div><b>' + (r.subject || '(no subject)') + '</b></div>' +
-      '<div class="meta">from ' + (r.sender || '(unknown)') + '</div>' +
-      '<div class="meta" style="margin:6px 0">Model says <b style="color:' +
-      (spam ? '#f87171' : '#4ade80') + '">' + (spam ? 'SPAM' : 'LEGITIMATE') +
-      '</b> at ' + pct + '% &middot; signals: ' + (r.signals || '-') + '</div>' +
-      '<div class="row">' +
-      '<button class="fb" onclick="queueVerdict(' + r.row + ',\'correct\',this)">&#10003; Correct</button>' +
-      '<button class="fb" onclick="queueVerdict(' + r.row + ',\'spam\',this)">&#10007; Actually SPAM</button>' +
-      '<button class="fb" onclick="queueVerdict(' + r.row + ',\'ham\',this)">&#10007; Actually LEGITIMATE</button>' +
-      '</div><div class="meta" id="qm' + r.row + '"></div>';
-    box.appendChild(el);
+    const card = document.createElement('div');
+    card.style.cssText = 'border:1px solid #334155;border-radius:8px;padding:10px;margin-top:10px';
+
+    const t = document.createElement('div');
+    t.innerHTML = '<b></b>';
+    t.firstChild.textContent = r.subject || '(no subject)';
+    card.appendChild(t);
+
+    const who = document.createElement('div');
+    who.className = 'meta';
+    who.textContent = 'from ' + (r.sender || '(unknown)');
+    card.appendChild(who);
+
+    const verdictLine = document.createElement('div');
+    verdictLine.className = 'meta';
+    verdictLine.style.margin = '6px 0';
+    verdictLine.textContent = 'Model says ' + (spam ? 'SPAM' : 'LEGITIMATE') + ' at ' + pct +
+                              '%  -  signals: ' + (r.signals || '-');
+    verdictLine.style.color = spam ? '#f87171' : '#4ade80';
+    card.appendChild(verdictLine);
+
+    const btnRow = document.createElement('div');
+    btnRow.className = 'row';
+    const defs = [['\u2713 Correct', 'correct'],
+                  ['\u2717 Actually SPAM', 'spam'],
+                  ['\u2717 Actually LEGITIMATE', 'ham']];
+    for (const d of defs){
+      const b = document.createElement('button');
+      b.className = 'fb';
+      b.textContent = d[0];
+      b.onclick = function(){ queueVerdict(r.row, d[1], b); };
+      btnRow.appendChild(b);
+    }
+    card.appendChild(btnRow);
+
+    const msg = document.createElement('div');
+    msg.className = 'meta';
+    msg.id = 'qm' + r.row;
+    card.appendChild(msg);
+
+    box.appendChild(card);
   }
 }
 
