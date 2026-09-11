@@ -209,7 +209,12 @@ def main():
     model = EmailSpamDetector.load(args.model)
     model.threshold = args.threshold
     queue_path = Path(args.queue)
+    # IMAP UIDs are unique only WITHIN a folder, so the processed-UID state must be
+    # kept per folder; otherwise switching folders makes unrelated messages look seen.
     state_path = Path(args.state)
+    if args.source_folder.upper() != "INBOX":
+        safe = "".join(c if c.isalnum() else "_" for c in args.source_folder)
+        state_path = state_path.with_name(f"{state_path.stem}_{safe}{state_path.suffix}")
     seen = load_seen(state_path)
 
     print(f"Connecting to {host}:{port} as {args.user} ...")
