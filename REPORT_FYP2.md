@@ -1632,7 +1632,42 @@ main-corpus accuracy, evidencing an effective and practical adaptation mechanism
 was delivered as a local, open-source service with a browser review console, mailbox
 quarantine and feedback-driven retraining, satisfying all four stated objectives.
 
-## 7.2 Recommendation
+## 7.2 Limitations of the Adaptation Mechanism
+
+Two properties of the adaptation loop constrain how quickly and how safely the deployed model
+can change, and both were deliberate design decisions rather than oversights.
+
+The first is that retraining is a batch operation and cannot be performed on a single new
+message. Term weighting in the proposed system is corpus-dependent: as Equation (3.2) shows, the
+inverse document frequency of a term is computed from the total number of documents and the
+number of documents containing that term, so introducing one additional message changes the
+weight of every term in the vocabulary. The vectoriser and the classifier must therefore be
+refitted together over the whole corpus, which takes several minutes on the 81,152-message
+dataset. Training on the corrected message alone is not a valid alternative: the resulting model
+would represent only that single example and would discard everything learned from the remaining
+corpus, an effect known as catastrophic forgetting. Retraining is consequently performed as a
+scheduled maintenance action on the corpus together with the accumulated corrections, rather than
+after every individual review.
+
+An incremental alternative exists. A stochastic-gradient classifier combined with feature hashing
+supports partial fitting, and would allow the model to be updated in milliseconds for each
+reviewed message. It was not adopted here for two reasons. Such a model forgoes the calibrated
+probability estimates that the present system relies on for its adjustable decision threshold and
+for the explanation of individual verdicts, and, more importantly, it removes the human
+checkpoint between a reviewer's correction and a change in the deployed model. That checkpoint is
+a security control. Adaptive filters are a documented target for label-flipping poisoning
+attacks, in which an adversary submits deliberately mislabelled messages so that the decision
+boundary shifts in their favour over time. In the proposed system a correction cannot alter the
+deployed model until a reviewer explicitly requests retraining, and the candidate model is then
+accepted only if it does not reduce ranking quality on the held-out split; a batch of corrupted
+corrections is therefore rejected automatically rather than silently degrading detection.
+
+The second limitation is that the validation gate protects against a poor batch of corrections
+but does not provide model versioning. Once a candidate model has been accepted and deployed,
+there is no automated mechanism to revert to a previous version, and a reviewer correction
+recorded in error can be changed or withdrawn only before the next retraining cycle is run.
+
+## 7.3 Recommendation
 
 Several directions were identified for future work:
 
@@ -1658,6 +1693,16 @@ Several directions were identified for future work:
    signal's contribution.
 5. **Broader evaluation.** Evaluate on additional organisational and multilingual mail after
    obtaining the necessary approvals, to test generalisation beyond the public-corpus setting.
+6. **Model versioning and rollback.** Retain previous model versions with their evaluation
+   records so that a deployed model can be reverted if a retraining cycle is later found to have
+   degraded performance, complementing the validation gate described in Section 7.2 with
+   after-the-fact recovery.
+7. **Resistance to adversarial manipulation.** Evaluate the detector against deliberate evasion
+   as well as poisoning: good-word insertion, in which a phishing message is padded with
+   legitimate vocabulary to dilute its score, and character-level obfuscation using visually
+   identical characters from other alphabets. The character n-gram component is expected to
+   provide partial resistance to the latter, and quantifying that resistance would strengthen the
+   security case for content–metadata fusion.
 
 ---
 
