@@ -105,6 +105,44 @@ def queue():
     return {"rows": pending, "total": len(rows), "pending": len(pending)}
 
 
+@app.get("/queue/{row}/message")
+def queue_message(row: int):
+    """Return the readable text of one queued message so a reviewer can read it
+    in the console instead of opening the mailbox separately."""
+    if not QUEUE_PATH.exists():
+        raise HTTPException(404, "No review queue found.")
+    with open(QUEUE_PATH, newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    if row >= len(rows):
+        raise HTTPException(404, f"Row {row} not in the queue.")
+    source = Path(rows[row].get("file", ""))
+    if not source.is_file():
+        raise HTTPException(404, "The stored copy of this message is no longer available.")
+
+    from email import policy
+    from email.parser import BytesParser
+    raw = source.read_bytes()
+    try:
+        msg = BytesParser(policy=policy.default).parsebytes(raw)
+        body = ""
+        if msg.is_multipart():
+            for part in msg.walk():
+                if part.get_content_type() == "text/plain":
+                    body = part.get_content()
+                    break
+        else:
+            body = msg.get_content()
+        if not body:
+            body = raw.decode("utf-8", errors="replace")
+        headers = {k: str(msg.get(k, "")) for k in ("From", "To", "Subject", "Date", "Reply-To")}
+    except Exception:  # noqa: BLE001 - display only
+        body = raw.decode("utf-8", errors="replace")
+        headers = {}
+    if len(body) > 8000:
+        body = body[:8000] + "\n\n[... truncated for display ...]"
+    return {"headers": headers, "body": body}
+
+
 class QueueFeedbackRequest(BaseModel):
     row: int = Field(ge=0, description="row index from /queue")
     correct_label: str = Field(description="'spam', 'ham', or 'correct'")
@@ -395,6 +433,43 @@ async function loadQueue(){
                               '%  -  signals: ' + (r.signals || '-');
     verdictLine.style.color = spam ? '#f87171' : '#4ade80';
     card.appendChild(verdictLine);
+
+    const pane = document.createElement('pre');
+    pane.style.cssText = 'display:none;white-space:pre-wrap;word-break:break-word;' +
+        'background:#0f172a;border:1px solid #334155;border-radius:6px;padding:10px;' +
+        'margin:8px 0;max-height:320px;overflow:auto;font-size:12.5px;line-height:1.45';
+
+    const readBtn = document.createElement('button');
+    readBtn.className = 'ghost';
+    readBtn.textContent = 'Read message';
+    readBtn.onclick = async function(){
+      if (pane.style.display === 'block'){
+        pane.style.display = 'none';
+        readBtn.textContent = 'Read message';
+        return;
+      }
+      pane.style.display = 'block';
+      readBtn.textContent = 'Hide message';
+      if (!pane.dataset.loaded){
+        pane.textContent = 'Loading ...';
+        try {
+          const mres = await fetch('/queue/' + r.row + '/message');
+          const mdata = await mres.json();
+          if (mdata.detail){ pane.textContent = mdata.detail; return; }
+          let head = '';
+          for (const k in (mdata.headers || {})){
+            if (mdata.headers[k]) head += k + ': ' + mdata.headers[k] + '\\n';
+          }
+          pane.textContent = head + '\\n' + (mdata.body || '');
+          pane.dataset.loaded = '1';
+        } catch (e){ pane.textContent = 'Could not load message: ' + e; }
+      }
+    };
+    const readRow = document.createElement('div');
+    readRow.className = 'row';
+    readRow.appendChild(readBtn);
+    card.appendChild(readRow);
+    card.appendChild(pane);
 
     const btnRow = document.createElement('div');
     btnRow.className = 'row';
