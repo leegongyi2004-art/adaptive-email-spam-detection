@@ -10,6 +10,7 @@ from .model import EmailSpamDetector
 MODEL_PATH = Path("models/email_spam_detector.joblib")
 FEEDBACK_PATH = Path("data/feedback.csv")  # corrections from the review UI feed retraining
 QUEUE_PATH = Path("review_queue.csv")      # messages scanned by the mailbox/IMAP watchers
+BASE_DATA_PATH = Path("data/reviewed_mail.csv")  # historical corpus used for retraining
 app = FastAPI(title="Adaptive Email Spam Detection API", version="0.2.0")
 _model: EmailSpamDetector | None = None
 
@@ -154,6 +155,67 @@ def queue_feedback(req: QueueFeedbackRequest):
             "message": f"Correction saved as {verdict}; it joins the next retrain."}
 
 
+@app.post("/retrain")
+def retrain():
+    """Retrain on the historical corpus plus the accumulated reviewer corrections.
+
+    This is triggered explicitly by a reviewer; the system never retrains on its own.
+    The replacement model is accepted only if it still performs at least as well as
+    the current one on a held-out split, so a bad batch of corrections cannot silently
+    degrade the deployed detector.
+    """
+    global _model
+    if not BASE_DATA_PATH.exists():
+        raise HTTPException(404, f"Training corpus not found at {BASE_DATA_PATH}.")
+    if feedback_count() == 0:
+        raise HTTPException(400, "No corrections recorded yet - review some messages first.")
+
+    from sklearn.metrics import roc_auc_score
+    from sklearn.model_selection import train_test_split
+
+    from .evaluate import load_csv as load_training_csv
+
+    emails, labels = load_training_csv(str(BASE_DATA_PATH))
+    # The corrections file legitimately holds a single class (e.g. only missed spam),
+    # so it is read directly rather than through the two-class training loader.
+    fb_emails: list[str] = []
+    fb_labels: list[int] = []
+    with open(FEEDBACK_PATH, newline="", encoding="utf-8", errors="replace") as f:
+        for row in csv.DictReader(f):
+            text = (row.get("raw_email") or "").strip()
+            lab = (row.get("label") or "").strip()
+            if text and lab in ("0", "1"):
+                fb_emails.append(text)
+                fb_labels.append(int(lab))
+    if not fb_emails:
+        raise HTTPException(400, "No usable corrections found in the feedback file.")
+
+    x_tr, x_te, y_tr, y_te = train_test_split(
+        emails, labels, test_size=0.25, random_state=42, stratify=labels)
+
+    def auc_of(model) -> float:
+        probs = [model.predict(e).spam_probability for e in x_te]
+        return roc_auc_score(y_te, probs) if len(set(y_te)) > 1 else float("nan")
+
+    candidate = EmailSpamDetector(0.55).fit(x_tr + fb_emails, y_tr + fb_labels)
+    new_auc = auc_of(candidate)
+    old_auc = auc_of(_model) if _model is not None else 0.0
+
+    if new_auc + 1e-4 < old_auc:
+        return {"status": "rejected", "previous_auc": round(old_auc, 4),
+                "candidate_auc": round(new_auc, 4),
+                "message": "Retrained model scored worse on the held-out split; "
+                           "the existing model was kept."}
+
+    MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+    candidate.save(MODEL_PATH)
+    _model = candidate
+    return {"status": "deployed", "previous_auc": round(old_auc, 4),
+            "new_auc": round(new_auc, 4), "corrections_used": len(fb_emails),
+            "message": f"Retrained on {len(x_tr) + len(fb_emails):,} emails "
+                       f"({len(fb_emails)} reviewer corrections) and deployed."}
+
+
 @app.get("/", response_class=HTMLResponse)
 def home() -> str:
     """Paste-and-check page plus an inline feedback console."""
@@ -227,6 +289,7 @@ def home() -> str:
     message - corrections are added to the next retrain automatically.</div>
     <div class="row" style="margin-top:10px">
       <button class="ghost" onclick="loadQueue()">Refresh queue</button>
+      <button onclick="retrain()">Retrain model with corrections</button>
       <span class="meta" id="qcount" style="align-self:center"></span>
     </div>
     <div id="queue"></div>
@@ -286,6 +349,18 @@ async function check(){
   });
   if(!Object.values(data.signals||{}).some(x=>x)){
     chips.innerHTML = '<span class="chip" style="background:#122b1c;color:#86efac;border-color:#14532d">no structural risk signals fired</span>';
+  }
+}
+
+async function retrain(){
+  const el = document.getElementById('qcount');
+  el.textContent = 'Retraining - this can take several minutes on the full corpus ...';
+  try {
+    const res = await fetch('/retrain', {method:'POST'});
+    const data = await res.json();
+    el.textContent = data.message || data.detail || 'Done.';
+  } catch (e) {
+    el.textContent = 'Retrain failed: ' + e;
   }
 }
 
