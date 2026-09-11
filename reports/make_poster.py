@@ -66,111 +66,142 @@ ax.text(59, 95.8, "Adaptive Email Spam Detection Using",
         ha="center", va="center", fontsize=17, color="white", fontweight="bold", zorder=4)
 ax.text(59, 92.8, "AI and Content\u2013Metadata Fusion",
         ha="center", va="center", fontsize=17, color="white", fontweight="bold", zorder=4)
-ax.text(59, 89.8, "Lee Gong Yi   \u00b7   Supervisor: Dr Abdulrahman",
+ax.text(59, 89.8, "Lee Gong Yi   \u00b7   Supervisor: Dr. Abdulrahman Aminu Ghali",
         ha="center", va="center", fontsize=10, color="#cbd4e8", zorder=4)
 ax.text(59, 88.3, "Faculty of Information and Communication Technology, UTAR",
         ha="center", va="center", fontsize=8, color="#9aa7c4", zorder=4)
 
 M = 4.0
 CW = 100 - 2 * M
-GAP = 1.4
+GAP = 1.6
+COLGAP = 2.2
+HALF = (CW - COLGAP) / 2
+LX = M
+RX = M + HALF + COLGAP
 
-# ---------------------------------------------------------------- introduction
-y = 85.5
-h = 12.0
-panel(M, y - h, CW, h)
-head(M, y - 3.0, CW, "Introduction")
-body(M + 2.5, y - 5.0,
-     "Phishing is the most common entry point for cyber intrusion, and\n"
-     "large language models now write fluent phishing mail at scale.\n"
-     "Filters that read only words let well-written phishing through;\n"
-     "filters that read only headers miss properly configured senders.", 9.5)
+TOP = 85.5
 
-# ---------------------------------------------------------------- objectives
+# ============================================================ LEFT COLUMN
+y = TOP
+h = 20.0
+panel(LX, y - h, HALF, h)
+head(LX, y - 3.0, HALF, "Introduction")
+body(LX + 2.2, y - 5.0,
+     "Phishing is the most common entry\n"
+     "point for cyber intrusion, and large\n"
+     "language models now write fluent\n"
+     "phishing mail at scale.\n\n"
+     "Filters reading only words let clean\n"
+     "phishing through. Filters reading only\n"
+     "headers miss valid-looking senders.", 9.2)
+
 y -= h + GAP
-h = 14.0
-panel(M, y - h, CW, h)
-head(M, y - 3.0, CW, "Objectives")
-oy = y - 4.8
+h = 18.0
+panel(LX, y - h, HALF, h)
+head(LX, y - 3.0, HALF, "Objectives")
+oy = y - 5.2
 for i, o in enumerate([
-        "Combine message content with structural metadata.",
-        "Compare classical models; select the best fusion.",
-        "Evaluate against AI-generated phishing.",
-        "Measure a reviewed-feedback adaptation loop."], 1):
-    ax.add_patch(plt.Circle((M + 3.4, oy - 0.75), 1.2, facecolor=ACCENT,
+        "Combine content with metadata.",
+        "Compare models, select best fusion.",
+        "Evaluate on AI-generated phishing.",
+        "Measure the adaptation loop."], 1):
+    ax.add_patch(plt.Circle((LX + 3.0, oy - 0.65), 1.15, facecolor=ACCENT,
                             edgecolor="none", zorder=4))
-    ax.text(M + 3.4, oy - 0.75, str(i), ha="center", va="center",
-            fontsize=8.5, color=NAVY, fontweight="bold", zorder=5)
-    body(M + 6.0, oy, o, 9.5)
-    oy -= 2.5
+    ax.text(LX + 3.0, oy - 0.65, str(i), ha="center", va="center",
+            fontsize=8, color=NAVY, fontweight="bold", zorder=5)
+    body(LX + 5.4, oy, o, 9.2)
+    oy -= 2.9
 
-# ---------------------------------------------------------------- methodology
 y -= h + GAP
-h = 23.0
-panel(M, y - h, CW, h)
-head(M, y - 3.0, CW, "Methodology")
+h = 38.6
+panel(LX, y - h, HALF, h)
+head(LX, y - 3.0, HALF, "Methods")
 
 arch = FIGS / "fig3_1_system_architecture.png"
 if arch.exists():
     im = mpimg.imread(arch)
-    iw = 36.0
+    iw = 29.0
     ih = iw * im.shape[0] / im.shape[1] * (W / H)
-    axi = fig.add_axes([(M + 3.0) / 100, (y - 4.2 - ih) / 100, iw / 100, ih / 100], zorder=6)
+    axi = fig.add_axes([(LX + (HALF - iw) / 2) / 100, (y - 4.4 - ih) / 100,
+                        iw / 100, ih / 100], zorder=6)
     axi.imshow(im)
     axi.axis("off")
+    ny = y - 5.8 - ih
+else:
+    ny = y - 5.0
 
-tx = M + 45.0
-body(tx, y - 5.2,
-     "Word and character TF-IDF\n"
-     "plus 13 metadata signals:\n"
-     "links, domain mismatch,\n"
-     "SPF, DKIM, urgency terms.\n\n"
-     "Fused and classified by\n"
-     "balanced logistic regression.\n\n"
-     "Reviewer corrections feed\n"
-     "gated batch retraining.", 9.5)
+body(LX + 2.2, ny,
+     "Word and character TF-IDF plus 13\n"
+     "structural metadata signals: links,\n"
+     "domain mismatch, SPF, DKIM,\n"
+     "urgency terms.\n\n"
+     "Fused, then classified by balanced\n"
+     "logistic regression at 0.55.\n\n"
+     "Reviewer corrections feed gated\n"
+     "batch retraining.", 9.2)
 
-# ---------------------------------------------------------------- results
-y -= h + GAP
-h = 17.5
-panel(M, y - h, CW, h)
-head(M, y - 3.0, CW, "Results")
+# ============================================================ RIGHT COLUMN
+y = TOP
+h = 31.0
+panel(RX, y - h, HALF, h)
+head(RX, y - 3.0, HALF, "Results")
 
-ry = y - 4.8
+ry = y - 5.2
 for i, (k, v, b) in enumerate([("Accuracy", "99.2%", True),
                                ("False positives", "0.9%", True),
-                               ("Speed on a laptop CPU", "13 ms", False),
+                               ("Speed (laptop CPU)", "13 ms", False),
                                ("AI phishing caught", "92%", True)]):
     if i % 2 == 0:
-        ax.add_patch(Rectangle((M + 1.5, ry - 2.0), 48.0, 3.1,
+        ax.add_patch(Rectangle((RX + 1.4, ry - 2.0), HALF - 2.8, 3.1,
                                facecolor="#eef2f7", edgecolor="none", zorder=2))
-    body(M + 3.0, ry, k, 9.5)
-    body(M + 48.0, ry, v, 11 if b else 10, "bold", ACCENT if b else NAVY, ha="right")
+    body(RX + 2.6, ry, k, 9.2)
+    body(RX + HALF - 2.6, ry, v, 10.5 if b else 9.8, "bold",
+         ACCENT if b else NAVY, ha="right")
     ry -= 3.2
 
 cm = np.array([[9719, 90], [80, 10399]])
-axc = fig.add_axes([(M + 56.0) / 100, (y - 15.6) / 100, 24.0 / 100, 10.0 / 100], zorder=6)
+axc = fig.add_axes([(RX + 8.5) / 100, (y - 29.5) / 100, 24.0 / 100, 10.0 / 100],
+                   zorder=6)
 axc.imshow(cm, cmap="Blues", vmin=0, vmax=12000)
 for (r, c), v in np.ndenumerate(cm):
-    axc.text(c, r, f"{v:,}", ha="center", va="center", fontsize=9,
+    axc.text(c, r, f"{v:,}", ha="center", va="center", fontsize=8.5,
              fontweight="bold", color="white" if v > 6000 else TEXT)
-axc.set_xticks([0, 1]); axc.set_xticklabels(["Ham", "Spam"], fontsize=7)
-axc.set_yticks([0, 1]); axc.set_yticklabels(["Ham", "Spam"], fontsize=7)
-axc.set_title("Confusion matrix (20,288 emails)", fontsize=8, color=BLUE,
-              fontweight="bold", pad=5)
+axc.set_xticks([0, 1]); axc.set_xticklabels(["Ham", "Spam"], fontsize=6.5)
+axc.set_yticks([0, 1]); axc.set_yticklabels(["Ham", "Spam"], fontsize=6.5)
+axc.set_title("Confusion matrix (20,288 emails)", fontsize=7.5, color=BLUE,
+              fontweight="bold", pad=4)
 axc.tick_params(length=0)
 for sp in axc.spines.values():
     sp.set_visible(False)
 
-# ---------------------------------------------------------------- conclusion
 y -= h + GAP
-h = 10.5
-panel(M, y - h, CW, h, fc="#eef2f7", ec=NAVY)
-head(M, y - 3.0, CW, "Conclusion")
-body(M + 2.5, y - 5.0,
-     "An explainable detector reaching 99.2% accuracy that generalises to\n"
-     "AI-generated phishing it never saw in training, with a human-gated\n"
-     "feedback loop. Runs on a laptop \u2014 no email leaves the machine.", 9.5)
+h = 29.5
+panel(RX, y - h, HALF, h)
+head(RX, y - 3.0, HALF, "Discussion")
+body(RX + 2.2, y - 5.0,
+     "Fusion beat content alone. Metadata\n"
+     "such as sender/link domain mismatch\n"
+     "catches mail that reads perfectly but\n"
+     "is structurally suspicious.\n\n"
+     "Character n-grams resist obfuscation\n"
+     "that defeats word-level features.\n\n"
+     "The 92% catch rate came with no\n"
+     "AI-written mail in training, so the\n"
+     "gain is from fusion, not exposure.\n\n"
+     "Retraining stays human-gated, which\n"
+     "blocks label-flipping poisoning.", 9.2)
+
+y -= h + GAP
+h = 16.1
+panel(RX, y - h, HALF, h, fc="#eef2f7", ec=NAVY)
+head(RX, y - 3.0, HALF, "Conclusion")
+body(RX + 2.2, y - 5.0,
+     "An explainable detector reaching\n"
+     "99.2% accuracy that generalises to\n"
+     "AI-generated phishing it never saw\n"
+     "in training, with a human-gated\n"
+     "feedback loop. Runs on an ordinary\n"
+     "laptop \u2014 no email leaves the machine.", 9.2)
 
 # ---------------------------------------------------------------- footer
 ax.add_patch(Rectangle((0, 0), 100, 2.0, facecolor=NAVY, edgecolor="none", zorder=2))
