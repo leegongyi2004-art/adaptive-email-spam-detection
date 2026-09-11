@@ -1,0 +1,190 @@
+raw_email,label
+"From: ap@company.example
+Subject: Invoice 4471 attached
+
+Please find invoice 4471 for the September retainer attached, per our signed contract. Payment terms are net 30 to the bank account already on file. No new account details are needed.",0
+"From: admin@sharepoint-login.example
+Subject: Scheduled account verification
+
+Your recent purchase could not be completed because the payment did not go through. Update your card details within 24 hours so the order is not cancelled:
+
+https://parcel-update.example/track
+
+Billing services",1
+"From: it.manager@it-internal.example
+Subject: VPN credentials
+
+We are doing an emergency VPN certificate rotation. Reply with your current username and password so we can pre-approve your device before the downtime tonight.",1
+"From: security@account-verify.example
+Subject: Payment failed for order 9856
+
+Dear accounts, invoice 7135 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://parcel-update.example/track
+
+Accounts receivable",1
+"From: security@account-verify.example
+Subject: Your mailbox is nearly full
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://account-verify.example/secure
+
+Finance department",1
+"From: team@parcel-update.example
+Subject: Please confirm your direct deposit
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://parcel-update.example/track
+
+Document services",1
+"From: tracking@courier.example
+Subject: Out for delivery today
+
+Your parcel is out for delivery and should arrive by 6pm. Track it in the courier app. No payment is required - all fees were paid at checkout.",0
+"From: hr@hr-document-portal.example
+Subject: Payment failed for order 8589
+
+A confidential document has been prepared for you. For privacy reasons it requires sign-in to view. Please review and acknowledge receipt by end of day.
+
+https://login-secure.example/auth
+
+Human Resources",1
+"From: it.helpdesk@company.example
+Subject: Security awareness reminder
+
+This quarter's security training is open on the learning portal. Remember: IT will never ask you to email your password. Always verify money requests by phone or in person.",0
+"From: colleague@company.example
+Subject: Re: contract
+
+Thanks for the draft. I left comments in the shared document. We can go over them in Tuesday's review meeting.",0
+"From: payroll@company.example
+Subject: Payroll onboarding
+
+For direct deposit setup, please complete the payroll form in the HR system under Onboarding. We never accept bank details by email for security reasons.",0
+"From: security@account-verify.example
+Subject: Scheduled account verification
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://billing-verify.example/pay
+
+Cloud support",1
+"From: ap@remit-vendor.example
+Subject: Updated payment details
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://hr-document-portal.example/share
+
+Payroll team",1
+"From: security@account-verify.example
+Subject: Confidential document awaiting review
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://invoice-payment.example/remit
+
+Thank you, Account security team",1
+"From: manager@company.example
+Subject: Re: vendor payment
+
+Let's discuss the vendor payment on our 2pm call rather than over email. Finance should confirm any bank change through the official portal, not on the strength of a message.",0
+"From: sarah.lee@company.example
+Subject: Friday team lunch
+
+Team lunch Friday at 12:30 in the cafeteria - no need to reply, just turn up. Let me know if you need a vegetarian option.",0
+"From: team@parcel-update.example
+Reply-To: collector@webmail.example
+Subject: Scheduled account verification
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://invoice-payment.example/remit
+
+Cloud support",1
+"From: director@exec-team.example
+Subject: Gift cards for clients
+
+Can you pick up ten gift cards from the store on your way in? I will reimburse you. Send the codes to this email once purchased - it is for a client surprise and I am offsite all day.",1
+"From: ceo@exec-team.example
+Subject: Re: wire transfer
+
+Thanks for confirming. Please go ahead and transfer $42,000 to the new account I sent last night. The deal closes this afternoon so it is time sensitive - I will sign the paperwork tomorrow.",1
+"From: tracking@courier.example
+Subject: Scheduled delivery window
+
+Your parcel is scheduled between 9am and 1pm tomorrow. You will receive a separate text from the courier; no charges are due on delivery.",0
+"From: hr@company.example
+Subject: Compensation reviews
+
+Reminder that compensation review meetings happen with each manager next week. Salaries are discussed in person; we never ask for bank details or passwords by email.",0
+"From: hr@hr-document-portal.example
+Subject: Shared file needs review
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://helpdesk-verify.example/confirm
+
+Kind regards, IT Services",1
+"From: accounts@invoice-payment.example
+Reply-To: collector@webmail.example
+Subject: Delivery address correction
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://account-verify.example/secure
+
+Parcel support",1
+"From: it.support@helpdesk-verify.example
+Subject: Action required: unusual sign-in
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://billing-verify.example/pay
+
+This is an automated notice.",1
+"From: security@account-verify.example
+Reply-To: collector@webmail.example
+Subject: Scheduled account verification
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://invoice-payment.example/remit
+
+Document services",1
+"From: hr@hr-document-portal.example
+Reply-To: collector@webmail.example
+Subject: Please confirm your direct deposit
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://cloud-storage-verify.example/renew
+
+Document services",1
+"From: team@parcel-update.example
+Subject: Updated payment details
+
+Dear accounts, invoice 3202 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://invoice-payment.example/remit
+
+Accounts receivable",1
+"From: accounts@invoice-payment.example
+Reply-To: collector@webmail.example
+Subject: Updated payment details
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://cloud-storage-verify.example/renew
+
+Parcel support",1
+"From: cfo@exec-team.example
+Subject: Quick request while I travel
+
+I am in back-to-back meetings and cannot take calls. I need you to process a vendor payment of $18,400 today. Reply to this email and I will send the account details. Please keep this discreet until processed.",1
+"From: it.helpdesk@company.example
+Subject: Password expiry reminder
+
+Hi all, your network password expires this Friday. Change it through Settings > Account on your work laptop, not via any email link. The IT desk in Building B can help. Thanks, IT.",0

@@ -157,6 +157,7 @@ References; Appendices A–F. -->
 - Figure 5.2 Browser check-and-review console showing a phishing verdict and signal chips.
 - Figure 5.3 Example service prediction response (label, probability and signals).
 - Figure 5.4 Mailbox watch run quarantining a flagged message.
+- Figure 5.5 Live IMAP run scoring four messages retrieved from a commercial mailbox.
 - Figure 6.1 Confusion matrix of the fused model on the held-out test split (n = 20,288).
 - Figure 6.2 ROC curve and threshold sweep for the fused model.
 - Figure 6.3 Catch rate versus decision threshold on the LLM-phishing set.
@@ -1218,6 +1219,34 @@ deployed as a live adaptive filter rather than only as an offline tool.
 [FIGURE 5.3: Example service prediction response (label, probability and signals).]
 
 [FIGURE 5.4: Mailbox watch run quarantining a flagged message.]
+
+To confirm that the connector operated outside a controlled local folder, it was run against a
+live mailbox hosted by a commercial provider. A disposable account was created for the purpose,
+application-specific credentials were issued for it, and four test messages were sent to it: one
+ordinary meeting request and three phishing messages of the credential-harvesting, fraudulent
+invoice and account-suspension types. The connector authenticated over an encrypted IMAP
+connection on port 993, retrieved each message in its complete RFC 5322 form and scored it with
+the same saved model used throughout Chapter 6, with no change to the classifier, its features or
+its decision threshold.
+
+An unanticipated but instructive observation arose during this run. The provider applied its own
+filter before delivery and placed all four test messages, including the legitimate meeting
+request, in its spam folder, so that none of them reached the inbox. The connector was therefore
+directed at that folder instead, which had the useful effect of turning the exercise into an
+independent second opinion on messages the provider had already judged. Figure 5.5 records the
+result: the three phishing messages were assigned spam probabilities of 97.6%, 98.7% and 99.8%
+and were flagged, whereas the legitimate meeting request received 27.4% and was correctly
+released as legitimate. The proposed detector thus agreed with the provider on the three genuine
+phishing messages and disagreed on the one legitimate message, which the provider had filtered
+and the detector did not. This single observation is a demonstration of deployment, not a
+measurement of comparative accuracy, and no general claim about the relative performance of the
+two systems is drawn from it; the quantitative results in Chapter 6 rest entirely on the held-out
+corpus and the external test sets. It does, however, confirm that the detector operates correctly
+on live network mail and that the false-positive behaviour examined in Section 6.2.2 is a
+practical concern for deployed filters in general.
+
+[FIGURE 5.5: Live IMAP run scoring four messages retrieved from a commercial mailbox, showing
+three phishing messages flagged and one legitimate message released.]
 
 ## 5.5 Implementation Issues and Challenges
 
