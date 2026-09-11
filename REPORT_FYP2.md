@@ -177,7 +177,8 @@ References; Appendices A–F. -->
 - Table 5.2 Software and libraries used in the project.
 - Table 5.3 Model and feature hyper-parameters.
 - Table 5.4 Mailbox connection and filtering configuration.
-- Table 5.5 Command-line operations used to run the system.
+- Table 5.5 Detection-service endpoints.
+- Table 5.6 Command-line operations used to run the system.
 - Table 6.1 Held-out performance of the deployed fused model.
 - Table 6.2 Classifier and feature-group comparison (Objective 3).
 - Table 6.3 Detection of genuine LLM-generated phishing (n = 4,986).
@@ -1081,8 +1082,8 @@ Protocol (IMAP) and act on new messages safely. No paid service, cloud classific
 or third-party scanning key is required: all classification is performed locally by the trained
 model, and the only credential involved is the mail-account application password used to read
 the mailbox. Below are the steps for configuring the Python environment, the detector itself,
-the mail account used for live filtering, and the filtering and review behaviour of the running
-system.
+the mail account used for live filtering, the local detection service interface, and the
+filtering and review behaviour of the running system.
 
 ### 5.3.1 Python Environment Configuration
 
@@ -1179,7 +1180,56 @@ $env:IMAP_PASS = "the sixteen-character application password"
    monitoring with quarantine enabled:
    `python -m spam_detection.imap_watch --action quarantine --watch`
 
-### 5.3.4 Filtering and Review Configuration
+### 5.3.4 Detection Service Configuration
+
+The detector is exposed as a local representational-state-transfer (REST) service built with
+FastAPI and served by Uvicorn. The service is what the review console, the mailbox watchers and
+any external automation talk to, so it must be started and verified before live filtering is
+attempted. It listens only on the local machine and requires no account, no key and no internet
+connection.
+
+1. **Activate the environment:** open a terminal in the project folder and run
+   `.venv\Scripts\activate`.
+2. **Confirm the model is present:** check that `models/email_spam_detector.joblib` exists. The
+   service loads this file once at start-up; if it is missing, the service still starts but
+   every prediction request is refused.
+3. **Start the service:** run `uvicorn spam_detection.api:app --reload`. Uvicorn binds to
+   `http://127.0.0.1:8000` by default and prints `Application startup complete` when ready.
+4. **Change the port if 8000 is occupied:** restart with an explicit port, for example
+   `uvicorn spam_detection.api:app --port 8001`.
+5. **Verify that the service is healthy:** open `http://localhost:8000/health` in a browser. A
+   response of `{"status": "ready"}` confirms that the model loaded successfully; a response of
+   `model_not_loaded` indicates that step 2 was not satisfied.
+6. **Open the review console:** browse to `http://localhost:8000`. The console is served by the
+   same process, so no separate front-end installation is required.
+7. **Test a single prediction:** paste a raw email into the console and submit it, or send a
+   request directly to the `/predict` endpoint, and confirm that a label, a spam probability and
+   the contributing metadata signals are returned.
+8. **Leave the service running:** the mailbox watchers and the retraining control depend on it,
+   so the terminal window is kept open for the duration of a filtering session.
+
+The endpoints the service exposes are listed in Table 5.5.
+
+**Table 5.5 — Detection-service endpoints.**
+
+| Endpoint | Method | Purpose |
+|---|---|---|
+| `/` | GET | Serves the browser review console |
+| `/health` | GET | Reports whether the model loaded and how many feedback rows exist |
+| `/predict` | POST | Scores one raw email and returns the label, spam probability and metadata signals |
+| `/feedback` | POST | Records a reviewer's correct label for a submitted email |
+| `/queue` | GET | Returns the messages scanned by the mailbox watchers that still await review |
+| `/queue/{row}/message` | GET | Returns the stored copy of one queued message for preview |
+| `/queue/feedback` | POST | Records or replaces the reviewer's verdict for a queued message |
+| `/queue/{row}/undo` | POST | Withdraws a verdict recorded in error |
+| `/retrain` | POST | Trains a candidate model on the corpus plus accumulated corrections and deploys it only if it does not reduce ranking quality |
+
+As shown in Table 5.5, the service separates scoring from learning: the prediction endpoints are
+read-only with respect to the model, and the deployed model can change only through an explicit
+call to the retraining endpoint. This is the configuration-level expression of the human
+checkpoint discussed in Section 7.2.
+
+### 5.3.5 Filtering and Review Configuration
 
 1. **Choose the action mode:** use `report` while validating the filter and `quarantine` once it
    is trusted to move mail. Flagged messages are copied into the quarantine folder and are never
@@ -1188,14 +1238,12 @@ $env:IMAP_PASS = "the sixteen-character application password"
    checked; the default is ten seconds.
 3. **Choose where copies are stored:** pass `--save-dir` so that a copy of each scored message is
    written to disk, allowing the reviewer to open the original message from the console.
-4. **Start the review service:** run `uvicorn spam_detection.api:app --reload` from the project
-   folder and open the console in a browser at `http://localhost:8000`.
-5. **Review and correct verdicts:** confirm or correct each queued message. Only the most recent
+4. **Review and correct verdicts:** confirm or correct each queued message. Only the most recent
    verdict for a message is retained, and corrections accumulate in the feedback store without
    altering the deployed model.
-6. **Trigger retraining when required:** use the retraining control in the console. The candidate
-   model replaces the deployed model only if it does not reduce ranking quality on the held-out
-   split.
+5. **Trigger retraining when required:** use the retraining control in the console, which calls
+   the `/retrain` endpoint listed in Table 5.5. The candidate model replaces the deployed model
+   only if it does not reduce ranking quality on the held-out split.
 
 The resulting operational settings are summarised in Table 5.4. The server host and port are
 inferred automatically from the address domain for common providers, so in normal use only the
@@ -1232,9 +1280,9 @@ scored to measure generalisation to modern threats. Fourth, the detection servic
 mailbox watcher loaded the saved model and served predictions, while reviewer corrections
 accumulated in the feedback store to be incorporated in the next retraining cycle. These stages
 could be triggered through short command-line instructions, which are listed in
-Table 5.5; the following figures illustrate the system in operation.
+Table 5.6; the following figures illustrate the system in operation.
 
-**Table 5.5 — Command-line operations used to run the system.**
+**Table 5.6 — Command-line operations used to run the system.**
 
 | Operation | Command |
 |---|---|
@@ -1246,7 +1294,7 @@ Table 5.5; the following figures illustrate the system in operation.
 | Filter a live mailbox automatically over IMAP | `python -m spam_detection.imap_watch --action quarantine --watch` |
 | Retrain from reviewer corrections | `python -m spam_detection.feedback review_queue.csv` |
 
-As shown in Table 5.5, every stage of the workflow was reproducible from a single command, which
+As shown in Table 5.6, every stage of the workflow was reproducible from a single command, which
 kept the environment easy to recreate on any machine with Python installed and required no
 graphics-processing hardware. The complete source code is provided in the accompanying
 submission archive, organised into the modules described in Section 4.2.
@@ -1432,7 +1480,7 @@ configurations: content features only, and the full content–metadata fusion. A
 resulting configurations used the same training and held-out split, the same preprocessing and
 the same decision threshold, so that the comparison reflected only the choice of classifier and
 feature set. For each configuration the accuracy, precision, recall, F1 score and ROC-AUC were
-recorded on the held-out split; the commands used are listed in Table 5.5.
+recorded on the held-out split; the commands used are listed in Table 5.6.
 The results on the full 81,152-email corpus are summarised in Table 6.2. The support-vector
 machine's iteration limit was raised from the default 1,000 to 10,000 because the default value
 produced a convergence warning on the large fused feature set; with this setting the metrics
