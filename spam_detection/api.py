@@ -175,23 +175,33 @@ def queue_feedback(req: QueueFeedbackRequest):
         writer.writeheader()
         writer.writerows(rows)
 
-    if verdict == predicted:
-        return {"status": "agreed", "message": "Marked as reviewed; the model was right."}
-
     source = Path(row.get("file", ""))
     if not source.is_file():
         raise HTTPException(404, f"Original message not found at {source}. "
                                  "Re-run the scan so the message copy is saved.")
     text = source.read_bytes().decode("utf-8", errors="replace")
+
+    # A reviewer may change their mind, so any earlier entry for this exact message is
+    # withdrawn before the current verdict is recorded. Only one verdict per message can
+    # ever reach the retraining file, and agreeing with the model records no entry at all.
     FEEDBACK_PATH.parent.mkdir(parents=True, exist_ok=True)
-    new = not FEEDBACK_PATH.exists()
-    with open(FEEDBACK_PATH, "a", newline="", encoding="utf-8") as f:
+    existing = []
+    if FEEDBACK_PATH.exists():
+        with open(FEEDBACK_PATH, newline="", encoding="utf-8", errors="replace") as f:
+            existing = [r for r in csv.DictReader(f) if (r.get("raw_email") or "") != text]
+    if verdict != predicted:
+        existing.append({"raw_email": text, "label": str(1 if verdict == "spam" else 0)})
+    with open(FEEDBACK_PATH, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=["raw_email", "label"])
-        if new:
-            writer.writeheader()
-        writer.writerow({"raw_email": text, "label": 1 if verdict == "spam" else 0})
+        writer.writeheader()
+        writer.writerows([{"raw_email": r.get("raw_email", ""), "label": r.get("label", "")}
+                          for r in existing])
+
+    if verdict == predicted:
+        return {"status": "agreed", "correct_label": verdict, "feedback_rows": feedback_count(),
+                "message": "Marked as reviewed; the model was right."}
     return {"status": "saved", "correct_label": verdict, "feedback_rows": feedback_count(),
-            "message": f"Correction saved as {verdict}; it joins the next retrain."}
+            "message": f"Recorded as {verdict}; it joins the next retrain."}
 
 
 @app.post("/queue/{row}/undo")
@@ -453,7 +463,7 @@ async function loadQueue(){
   const box = document.getElementById('queue');
   const res = await fetch('/queue');
   const data = await res.json();
-  const rows = data.rows || [];
+  const rows = (data.rows || []).concat(data.reviewed || []);
   document.getElementById('qcount').textContent =
       rows.length ? rows.length + ' awaiting review' : (data.message || 'Nothing to review.');
   box.innerHTML = '';
@@ -523,13 +533,33 @@ async function loadQueue(){
     const defs = [['\u2713 Correct', 'correct'],
                   ['\u2717 Actually SPAM', 'spam'],
                   ['\u2717 Actually LEGITIMATE', 'ham']];
+    const made = [];
+    function highlight(current){
+      for (const item of made){
+        const isChosen = (item.verdict === current) ||
+                         (current === r.predicted_label && item.verdict === 'correct');
+        item.btn.style.outline = isChosen ? '2px solid #38bdf8' : '';
+        item.btn.style.opacity = current && !isChosen ? '0.55' : '1';
+      }
+    }
     for (const d of defs){
       const b = document.createElement('button');
       b.className = 'fb';
       b.textContent = d[0];
-      b.onclick = function(){ queueVerdict(r.row, d[1], b); };
+      b.onclick = async function(){
+        const res = await fetch('/queue/feedback', {method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({row: r.row, correct_label: d[1]})});
+        const out = await res.json();
+        const m = document.getElementById('qm' + r.row);
+        if (m) m.textContent = (out.message || out.detail || 'Saved.') +
+                               '  (click another button to change this)';
+        highlight(out.correct_label || d[1]);
+      };
+      made.push({btn: b, verdict: d[1]});
       btnRow.appendChild(b);
     }
+    if (r.correct_label) highlight(r.correct_label);
     card.appendChild(btnRow);
 
     const msg = document.createElement('div');
@@ -540,45 +570,6 @@ async function loadQueue(){
     box.appendChild(card);
   }
 
-  const done = data.reviewed || [];
-  if (done.length){
-    const h = document.createElement('div');
-    h.className = 'meta';
-    h.style.marginTop = '16px';
-    h.textContent = 'Already reviewed (' + done.length + ') - use Undo if a verdict was a mistake:';
-    box.appendChild(h);
-    for (const r of done){
-      const line = document.createElement('div');
-      line.style.cssText = 'border:1px solid #1e293b;border-radius:8px;padding:8px 10px;margin-top:8px';
-      const label = document.createElement('span');
-      label.className = 'meta';
-      label.textContent = (r.subject || '(no subject)') + '  -  marked ' + r.correct_label;
-      line.appendChild(label);
-      const u = document.createElement('button');
-      u.className = 'ghost';
-      u.style.marginLeft = '10px';
-      u.textContent = 'Undo';
-      u.onclick = async function(){
-        u.disabled = true;
-        const res = await fetch('/queue/' + r.row + '/undo', {method:'POST'});
-        const d = await res.json();
-        label.textContent = d.message || d.detail || 'Undone.';
-        loadQueue();
-      };
-      line.appendChild(u);
-      box.appendChild(line);
-    }
-  }
-}
-
-async function queueVerdict(row, verdict, btn){
-  const res = await fetch('/queue/feedback', {method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({row: row, correct_label: verdict})});
-  const data = await res.json();
-  const msg = document.getElementById('qm' + row);
-  if (msg) msg.textContent = data.message || data.detail || 'Saved.';
-  btn.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
 }
 
 async function sendFeedback(correct){
