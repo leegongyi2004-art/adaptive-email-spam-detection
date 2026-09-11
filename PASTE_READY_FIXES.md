@@ -206,8 +206,7 @@ rate with the decision threshold is plotted in Figure 6.3.
 
 [FIGURE 6.3: Catch rate versus decision threshold on the LLM-phishing set.]
 
-### 5b. Replace Section 6.2.4 (fixes the "20% to 85%" claim)
-
+### 5b. Replace Section 6.2.4 (fixes "20% to 85%" and adds the similarity disclosure)
 
 ### 6.2.4 Adaptive Improvement (Objective 4)
 
@@ -229,7 +228,14 @@ a single reviewed retraining cycle.
 | Demo campaign caught (held-out set) | 0 / 6 | 5 / 6 |
 
 The improvement was greatest for threat types actually represented in the reviewed feedback;
-this scope was reported honestly rather than claiming universal adaptation. The same before/after
+this scope was reported honestly rather than claiming universal adaptation. A similarity check
+between the reviewed feedback batch and this modern-threat set found that 16 of the 30 test
+messages had a term-frequency inverse-document-frequency cosine similarity of 0.70 or above to
+at least one feedback message, although no message appeared in both sets. The improvement on
+this set should therefore be read as adaptation to a threat family that was represented in the
+feedback, rather than as evidence of a general gain on unseen threats; the independent held-out
+set discussed next, on which the baseline was already close to its ceiling, is the stricter
+test. The same before/after
 comparison was also applied to a second, independent held-out set, on which the baseline detector
 was already close to its ceiling at ROC-AUC 0.965 and 100% recall. After the same retraining
 cycle, recall on that set remained at 100% while ROC-AUC moved slightly to 0.951. Adaptation
@@ -238,7 +244,7 @@ small change in ranking quality is within the variation expected from refitting 
 different training sample. This outcome is reported because it delimits the claim: reviewed
 feedback improves detection for threat families the baseline handles poorly, and neither
 improves nor materially harms performance where the baseline is already near-perfect. The retraining
-cycle was run as a scheduled batch step, and the retrained model was evaluated on the held-out
+cycle was run as an explicit, reviewer-initiated batch step, and the retrained model was evaluated on the held-out
 data before further use, confirming that main-corpus accuracy was maintained while the target
 threat ranking improved. Retraining in controlled batches rather than continuously distinguished
 the system from both a static model and an uncontrolled online-learning loop. The improvement

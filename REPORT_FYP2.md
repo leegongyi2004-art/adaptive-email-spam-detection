@@ -1593,7 +1593,14 @@ a single reviewed retraining cycle.
 | Demo campaign caught (held-out set) | 0 / 6 | 5 / 6 |
 
 The improvement was greatest for threat types actually represented in the reviewed feedback;
-this scope was reported honestly rather than claiming universal adaptation. The same before/after
+this scope was reported honestly rather than claiming universal adaptation. A similarity check
+between the reviewed feedback batch and this modern-threat set found that 16 of the 30 test
+messages had a term-frequency inverse-document-frequency cosine similarity of 0.70 or above to
+at least one feedback message, although no message appeared in both sets. The improvement on
+this set should therefore be read as adaptation to a threat family that was represented in the
+feedback, rather than as evidence of a general gain on unseen threats; the independent held-out
+set discussed next, on which the baseline was already close to its ceiling, is the stricter
+test. The same before/after
 comparison was also applied to a second, independent held-out set, on which the baseline detector
 was already close to its ceiling at ROC-AUC 0.965 and 100% recall. After the same retraining
 cycle, recall on that set remained at 100% while ROC-AUC moved slightly to 0.951. Adaptation
