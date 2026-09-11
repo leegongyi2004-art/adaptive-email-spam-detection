@@ -1,5 +1,0 @@
-# Install these only when training/serving the transformer branch.
-transformers>=4.46,<5.0
-torch>=2.2
-datasets>=2.19
-accelerate>=0.30

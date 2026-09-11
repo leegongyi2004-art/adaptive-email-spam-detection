@@ -89,11 +89,9 @@ def queue():
         return {"rows": [], "message": "No review queue yet. Run a mailbox or IMAP scan first."}
     with open(QUEUE_PATH, newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
-    pending = []
+    pending, reviewed = [], []
     for i, r in enumerate(rows):
-        if (r.get("correct_label") or "").strip():
-            continue  # already reviewed
-        pending.append({
+        item = {
             "row": i,
             "file": r.get("file", ""),
             "sender": r.get("sender", ""),
@@ -101,8 +99,11 @@ def queue():
             "predicted_label": r.get("predicted_label", ""),
             "spam_probability": r.get("spam_probability", ""),
             "signals": r.get("signals", ""),
-        })
-    return {"rows": pending, "total": len(rows), "pending": len(pending)}
+            "correct_label": (r.get("correct_label") or "").strip(),
+        }
+        (reviewed if item["correct_label"] else pending).append(item)
+    return {"rows": pending, "reviewed": reviewed,
+            "total": len(rows), "pending": len(pending)}
 
 
 @app.get("/queue/{row}/message")
@@ -191,6 +192,52 @@ def queue_feedback(req: QueueFeedbackRequest):
         writer.writerow({"raw_email": text, "label": 1 if verdict == "spam" else 0})
     return {"status": "saved", "correct_label": verdict, "feedback_rows": feedback_count(),
             "message": f"Correction saved as {verdict}; it joins the next retrain."}
+
+
+@app.post("/queue/{row}/undo")
+def queue_undo(row: int):
+    """Reverse a verdict recorded by mistake.
+
+    The queue row is returned to the unreviewed state and, if the correction had
+    been written to the feedback file, that entry is removed so it cannot reach
+    the next retraining cycle.
+    """
+    if not QUEUE_PATH.exists():
+        raise HTTPException(404, "No review queue found.")
+    with open(QUEUE_PATH, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        fields = reader.fieldnames or []
+        rows = list(reader)
+    if row >= len(rows):
+        raise HTTPException(404, f"Row {row} not in the queue.")
+    entry = rows[row]
+    previous = (entry.get("correct_label") or "").strip()
+    if not previous:
+        return {"status": "nothing_to_undo", "message": "That message has not been reviewed yet."}
+
+    entry["correct_label"] = ""
+    with open(QUEUE_PATH, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+
+    removed = 0
+    source = Path(entry.get("file", ""))
+    if FEEDBACK_PATH.exists() and source.is_file():
+        text = source.read_bytes().decode("utf-8", errors="replace")
+        with open(FEEDBACK_PATH, newline="", encoding="utf-8", errors="replace") as f:
+            fb_rows = list(csv.DictReader(f))
+        kept = [r for r in fb_rows if (r.get("raw_email") or "") != text]
+        removed = len(fb_rows) - len(kept)
+        if removed:
+            with open(FEEDBACK_PATH, "w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=["raw_email", "label"])
+                writer.writeheader()
+                writer.writerows([{"raw_email": r.get("raw_email", ""),
+                                   "label": r.get("label", "")} for r in kept])
+    return {"status": "undone", "previous_label": previous,
+            "corrections_removed": removed, "feedback_rows": feedback_count(),
+            "message": f"Verdict '{previous}' removed; the message is back in the review list."}
 
 
 @app.post("/retrain")
@@ -491,6 +538,36 @@ async function loadQueue(){
     card.appendChild(msg);
 
     box.appendChild(card);
+  }
+
+  const done = data.reviewed || [];
+  if (done.length){
+    const h = document.createElement('div');
+    h.className = 'meta';
+    h.style.marginTop = '16px';
+    h.textContent = 'Already reviewed (' + done.length + ') - use Undo if a verdict was a mistake:';
+    box.appendChild(h);
+    for (const r of done){
+      const line = document.createElement('div');
+      line.style.cssText = 'border:1px solid #1e293b;border-radius:8px;padding:8px 10px;margin-top:8px';
+      const label = document.createElement('span');
+      label.className = 'meta';
+      label.textContent = (r.subject || '(no subject)') + '  -  marked ' + r.correct_label;
+      line.appendChild(label);
+      const u = document.createElement('button');
+      u.className = 'ghost';
+      u.style.marginLeft = '10px';
+      u.textContent = 'Undo';
+      u.onclick = async function(){
+        u.disabled = true;
+        const res = await fetch('/queue/' + r.row + '/undo', {method:'POST'});
+        const d = await res.json();
+        label.textContent = d.message || d.detail || 'Undone.';
+        loadQueue();
+      };
+      line.appendChild(u);
+      box.appendChild(line);
+    }
   }
 }
 
