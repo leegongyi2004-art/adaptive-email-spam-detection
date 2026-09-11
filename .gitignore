@@ -17,3 +17,6 @@ imap_seen.txt
 
 # Saved copies of scanned live messages (feedback loop working files)
 review_messages/
+
+# Poster TIFF is a large derived artefact; regenerate with reports/make_poster.py
+reports/poster/*.tiff
