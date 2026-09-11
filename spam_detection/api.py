@@ -9,6 +9,7 @@ from .model import EmailSpamDetector
 
 MODEL_PATH = Path("models/email_spam_detector.joblib")
 FEEDBACK_PATH = Path("data/feedback.csv")  # corrections from the review UI feed retraining
+QUEUE_PATH = Path("review_queue.csv")      # messages scanned by the mailbox/IMAP watchers
 app = FastAPI(title="Adaptive Email Spam Detection API", version="0.2.0")
 _model: EmailSpamDetector | None = None
 
@@ -80,6 +81,79 @@ def feedback(req: FeedbackRequest):
             "message": f"Saved as {req.correct_label}. It joins data/feedback.csv for the next retrain."}
 
 
+@app.get("/queue")
+def queue():
+    """Return messages scanned by the mailbox watchers that still need review."""
+    if not QUEUE_PATH.exists():
+        return {"rows": [], "message": "No review queue yet. Run a mailbox or IMAP scan first."}
+    with open(QUEUE_PATH, newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    pending = []
+    for i, r in enumerate(rows):
+        if (r.get("correct_label") or "").strip():
+            continue  # already reviewed
+        pending.append({
+            "row": i,
+            "file": r.get("file", ""),
+            "sender": r.get("sender", ""),
+            "subject": r.get("subject", ""),
+            "predicted_label": r.get("predicted_label", ""),
+            "spam_probability": r.get("spam_probability", ""),
+            "signals": r.get("signals", ""),
+        })
+    return {"rows": pending, "total": len(rows), "pending": len(pending)}
+
+
+class QueueFeedbackRequest(BaseModel):
+    row: int = Field(ge=0, description="row index from /queue")
+    correct_label: str = Field(description="'spam', 'ham', or 'correct'")
+
+
+@app.post("/queue/feedback")
+def queue_feedback(req: QueueFeedbackRequest):
+    """Record a verdict for one queued message: mark the queue row as reviewed and,
+    when the model was wrong, append the email text to the feedback training file."""
+    if not QUEUE_PATH.exists():
+        raise HTTPException(404, "No review queue found.")
+    with open(QUEUE_PATH, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        fields = reader.fieldnames or []
+        rows = list(reader)
+    if req.row >= len(rows):
+        raise HTTPException(404, f"Row {req.row} not in the queue.")
+    row = rows[req.row]
+    predicted = (row.get("predicted_label") or "").strip()
+    verdict = "spam" if req.correct_label == "correct" and predicted == "spam" else req.correct_label
+    if verdict == "correct":
+        verdict = predicted
+    if verdict not in ("spam", "ham"):
+        raise HTTPException(400, "correct_label must be 'spam', 'ham', or 'correct'.")
+
+    row["correct_label"] = verdict
+    with open(QUEUE_PATH, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+
+    if verdict == predicted:
+        return {"status": "agreed", "message": "Marked as reviewed; the model was right."}
+
+    source = Path(row.get("file", ""))
+    if not source.is_file():
+        raise HTTPException(404, f"Original message not found at {source}. "
+                                 "Re-run the scan so the message copy is saved.")
+    text = source.read_bytes().decode("utf-8", errors="replace")
+    FEEDBACK_PATH.parent.mkdir(parents=True, exist_ok=True)
+    new = not FEEDBACK_PATH.exists()
+    with open(FEEDBACK_PATH, "a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=["raw_email", "label"])
+        if new:
+            writer.writeheader()
+        writer.writerow({"raw_email": text, "label": 1 if verdict == "spam" else 0})
+    return {"status": "saved", "correct_label": verdict, "feedback_rows": feedback_count(),
+            "message": f"Correction saved as {verdict}; it joins the next retrain."}
+
+
 @app.get("/", response_class=HTMLResponse)
 def home() -> str:
     """Paste-and-check page plus an inline feedback console."""
@@ -147,6 +221,16 @@ def home() -> str:
       <div id="fbmsg"></div>
     </div>
   </div>
+  <div class="feedback" style="margin-top:22px">
+    <h2 style="font-size:17px;margin:0 0 6px">Review inbox</h2>
+    <div class="meta">Messages picked up by the mailbox / IMAP watchers. Click one button per
+    message - corrections are added to the next retrain automatically.</div>
+    <div class="row" style="margin-top:10px">
+      <button class="ghost" onclick="loadQueue()">Refresh queue</button>
+      <span class="meta" id="qcount" style="align-self:center"></span>
+    </div>
+    <div id="queue"></div>
+  </div>
   <p class="note">Risk score only - not proof a message was AI-written. In production, mail arrives
   automatically via an integration (e.g. n8n / a mail server calling /predict); this page is the
   manual check + review console. Use synthetic/public data; don't paste others' private email.</p>
@@ -172,6 +256,7 @@ Can we discuss on Tuesday at 10am? Best, Sarah`;
 let lastEmail = "", lastLabel = "";
 function loadSample(k){ document.getElementById('email').value = (k==='phish')?PHISH:HAM; }
 loadSample('phish');
+loadQueue();
 
 async function check(){
   lastEmail = document.getElementById('email').value;
@@ -202,6 +287,44 @@ async function check(){
   if(!Object.values(data.signals||{}).some(x=>x)){
     chips.innerHTML = '<span class="chip" style="background:#122b1c;color:#86efac;border-color:#14532d">no structural risk signals fired</span>';
   }
+}
+
+async function loadQueue(){
+  const box = document.getElementById('queue');
+  const res = await fetch('/queue');
+  const data = await res.json();
+  const rows = data.rows || [];
+  document.getElementById('qcount').textContent =
+      rows.length ? rows.length + ' awaiting review' : (data.message || 'Nothing to review.');
+  box.innerHTML = '';
+  for (const r of rows){
+    const spam = (r.predicted_label === 'spam');
+    const pct = (parseFloat(r.spam_probability) * 100).toFixed(1);
+    const el = document.createElement('div');
+    el.style.cssText = 'border:1px solid #334155;border-radius:8px;padding:10px;margin-top:10px';
+    el.innerHTML =
+      '<div><b>' + (r.subject || '(no subject)') + '</b></div>' +
+      '<div class="meta">from ' + (r.sender || '(unknown)') + '</div>' +
+      '<div class="meta" style="margin:6px 0">Model says <b style="color:' +
+      (spam ? '#f87171' : '#4ade80') + '">' + (spam ? 'SPAM' : 'LEGITIMATE') +
+      '</b> at ' + pct + '% &middot; signals: ' + (r.signals || '-') + '</div>' +
+      '<div class="row">' +
+      '<button class="fb" onclick="queueVerdict(' + r.row + ',\'correct\',this)">&#10003; Correct</button>' +
+      '<button class="fb" onclick="queueVerdict(' + r.row + ',\'spam\',this)">&#10007; Actually SPAM</button>' +
+      '<button class="fb" onclick="queueVerdict(' + r.row + ',\'ham\',this)">&#10007; Actually LEGITIMATE</button>' +
+      '</div><div class="meta" id="qm' + r.row + '"></div>';
+    box.appendChild(el);
+  }
+}
+
+async function queueVerdict(row, verdict, btn){
+  const res = await fetch('/queue/feedback', {method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({row: row, correct_label: verdict})});
+  const data = await res.json();
+  const msg = document.getElementById('qm' + row);
+  if (msg) msg.textContent = data.message || data.detail || 'Saved.';
+  btn.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
 }
 
 async function sendFeedback(correct){
