@@ -100,7 +100,7 @@ def fig_3_1():
     ys = 6.9
     box(ax, 1.8, ys, 2.9, 1.0, "Word content features\n(TF-IDF: 1-2 word\nn-grams)", ORG_F, ORG_E, 9)
     box(ax, cx, ys, 2.9, 1.0, "Character content\nfeatures (TF-IDF:\n3-5 char. n-grams)", ORG_F, ORG_E, 9)
-    box(ax, 7.8, ys, 2.9, 1.0, "Structural metadata\n(12 signals: links,\nsender auth., urgency)", ORG_F, ORG_E, 9)
+    box(ax, 7.8, ys, 2.9, 1.0, "Structural metadata\n(13 signals: links,\nsender auth., urgency)", ORG_F, ORG_E, 9)
     arrow(ax, (cx, 7.7), (1.8, 7.4))
     arrow(ax, (cx, 7.7), (cx, 7.4))
     arrow(ax, (cx, 7.7), (7.8, 7.4))
@@ -174,7 +174,7 @@ def fig_3_3():
     start_node(ax, cx, 11.4)
     box(ax, cx, 10.7, 5.0, 0.6, "Email enters system (console / service / mailbox)", BLUE_F, BLUE_E, 9.5)
     arrow(ax, (cx, 11.26), (cx, 11.0))
-    box(ax, cx, 9.8, 5.2, 0.7, "Parse email; extract content\nand 12 metadata signals", BLUE_F, BLUE_E, 9.5)
+    box(ax, cx, 9.8, 5.2, 0.7, "Parse email; extract content\nand 13 metadata signals", BLUE_F, BLUE_E, 9.5)
     arrow(ax, (cx, 10.4), (cx, 10.1))
     box(ax, cx, 8.9, 5.0, 0.6, "Build fused content-metadata feature vector", BLUE_F, BLUE_E, 9.5)
     arrow(ax, (cx, 9.5), (cx, 9.2))

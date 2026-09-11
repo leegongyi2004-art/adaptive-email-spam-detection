@@ -166,7 +166,7 @@ def fig_2_1():
 
     # Highlight: this project
     box(ax, 5.6, 1.7, 9.6, 1.25,
-        "THIS PROJECT: content–metadata fusion (word + character TF-IDF, 12 metadata\n"
+        "THIS PROJECT: content–metadata fusion (word + character TF-IDF, 13 metadata\n"
         "signals, logistic regression)  +  reviewed-feedback adaptive retraining\n"
         "local  ·  explainable  ·  runs on CPU  ·  reproducible",
         fc=GREEN_LIGHT, ec=GREEN, bold=True, fs=9.5)
@@ -260,7 +260,7 @@ def fig_3_1():
     # parallel feature extraction
     box(ax, 1.9, 6.0, 2.9, 0.8, "Word TF-IDF\n1–2 grams (40k)", fc=ORANGE_LIGHT, ec=ORANGE)
     box(ax, cx, 6.0, 2.9, 0.8, "Char TF-IDF\n3–5 grams (30k)", fc=ORANGE_LIGHT, ec=ORANGE)
-    box(ax, 7.3, 6.0, 2.9, 0.8, "Metadata (12 signals)\nDictVectorizer", fc=ORANGE_LIGHT, ec=ORANGE)
+    box(ax, 7.3, 6.0, 2.9, 0.8, "Metadata (13 signals)\nDictVectorizer", fc=ORANGE_LIGHT, ec=ORANGE)
 
     box(ax, cx, 4.7, 4.6, 0.8, "Feature Fusion  →  StandardScaler", bold=True)
     box(ax, cx, 3.6, 4.9, 0.9, "Class-balanced Logistic Regression\n(NB / Linear SVM compared)", fc=LIGHT, ec=BLUE, bold=True)
