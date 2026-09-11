@@ -23,7 +23,8 @@ from pathlib import Path
 
 from .model import EmailSpamDetector
 
-QUEUE_FIELDS = ["scanned_at", "file", "predicted_label", "spam_probability", "signals", "correct_label"]
+QUEUE_FIELDS = ["scanned_at", "file", "sender", "subject", "predicted_label",
+                "spam_probability", "signals", "correct_label"]
 
 
 def find_emails(folder: Path, quarantine: Path) -> list[Path]:
@@ -51,15 +52,20 @@ def append_queue(queue_path: Path, row: dict) -> None:
         writer = csv.DictWriter(f, fieldnames=QUEUE_FIELDS)
         if new:
             writer.writeheader()
-        writer.writerow(row)
+        writer.writerow({field: row.get(field, "") for field in QUEUE_FIELDS})
 
 
 def process_file(model, path: Path, args, quarantine: Path) -> dict:
-    result = model.predict(path.read_bytes())
+    raw = path.read_bytes()
+    result = model.predict(raw)
     signals = ", ".join(result.signals.keys()) if result.signals else "-"
+    from .imap_watch import describe
+    sender, subject = describe(raw)
     row = {
         "scanned_at": datetime.now().isoformat(timespec="seconds"),
         "file": str(path),
+        "sender": sender,
+        "subject": subject,
         "predicted_label": result.label,
         "spam_probability": round(result.spam_probability, 4),
         "signals": signals,

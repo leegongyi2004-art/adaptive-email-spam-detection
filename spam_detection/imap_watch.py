@@ -101,6 +101,19 @@ def mark_seen(state_path: Path, uid: bytes) -> None:
         f.write(uid.decode() + "\n")
 
 
+def describe(raw: bytes) -> tuple[str, str]:
+    """Return (sender, subject) as readable text for logging and display."""
+    try:
+        from email import policy
+        from email.parser import BytesParser
+        msg = BytesParser(policy=policy.default).parsebytes(raw)
+        sender = str(msg.get("From", "") or "(no sender)")
+        subject = str(msg.get("Subject", "") or "(no subject)")
+    except Exception:  # noqa: BLE001 - display only; never abort a scan
+        sender, subject = "(unreadable)", "(unreadable)"
+    return sender.strip(), " ".join(subject.split())
+
+
 def fetch_new(mail: imaplib.IMAP4_SSL, seen: set[bytes],
               source_folder: str = "INBOX") -> list[tuple[bytes, bytes]]:
     """Return list of (uid, raw_rfc822_bytes) for messages not yet processed.
@@ -149,6 +162,7 @@ def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: se
     n_spam = n_ham = 0
     for uid, raw in messages:
         result = model.predict(raw)
+        sender, subject = describe(raw)
         signals = ", ".join(result.signals.keys()) if result.signals else "-"
         is_spam = result.label == "spam"
         moved = False
@@ -161,6 +175,8 @@ def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: se
         append_queue(queue_path, {
             "scanned_at": datetime.now().isoformat(timespec="seconds"),
             "file": f"imap:{uid.decode()}",
+            "sender": sender,
+            "subject": subject,
             "predicted_label": result.label,
             "spam_probability": round(result.spam_probability, 4),
             "signals": signals,
@@ -173,7 +189,9 @@ def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: se
         n_ham += not is_spam
         flag = "SPAM " if is_spam else "ham  "
         action = f"  -> moved to {args.quarantine_folder}" if moved else ""
-        print(f"  [{flag}] {result.spam_probability*100:6.1f}%  msg {uid.decode()}{action}")
+        shown = subject if len(subject) <= 58 else subject[:55] + "..."
+        print(f"  [{flag}] {result.spam_probability*100:6.1f}%  {shown}")
+        print(f"                    from {sender}   (uid {uid.decode()}){action}")
     return n_spam, n_ham
 
 
