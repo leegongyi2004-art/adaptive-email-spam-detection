@@ -3,7 +3,7 @@
 A reviewer only fills the `correct_label` column in the review queue CSV
 (`review_queue.csv`) for messages the model got WRONG - typing `spam` or `ham`.
 This script reads those corrections, pulls in the email content, and appends
-them to a feedback CSV used for the next scheduled retrain:
+them to a feedback CSV used for the next manual retrain:
 
     python -m spam_detection.feedback review_queue.csv
 
@@ -97,7 +97,7 @@ def main():
     if badlabel:
         print(f"WARNING: {badlabel} correction(s) had an unrecognised label - use 'spam' or 'ham'.")
     if wrote:
-        print("\nNext scheduled retrain (includes the feedback):")
+        print("\nNext retrain (run manually; includes the feedback):")
         print(f"  python -m spam_detection.evaluate data/reviewed_mail.csv {out} "
               "--save models/email_spam_detector.joblib")
 

@@ -62,7 +62,7 @@ def feedback_count() -> int:
 def feedback(req: FeedbackRequest):
     """Record a reviewer correction. 'correct' means the model was right (nothing
     to learn); 'spam'/'ham' means the model was wrong and the email is appended
-    to data/feedback.csv for the next scheduled retrain."""
+    to data/feedback.csv for the next manual retrain."""
     if req.correct_label == "correct":
         return {"status": "agreed", "message": "Model was correct - no correction needed."}
     if req.correct_label not in ("spam", "ham"):

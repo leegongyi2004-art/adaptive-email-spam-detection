@@ -10,7 +10,7 @@ This simulates a mail filter automatically processing incoming messages.
 Every prediction is appended to a review queue CSV (default review_queue.csv) with a blank
 `correct_label` column. A reviewer only fills that column for messages the model got wrong
 (type `spam` or `ham`); then run `python -m spam_detection.feedback review_queue.csv` to turn
-those corrections into training data for the next scheduled retrain.
+those corrections into training data for the next manual retrain.
 """
 from __future__ import annotations
 
