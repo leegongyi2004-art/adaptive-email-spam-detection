@@ -14,3 +14,6 @@ models/*-checkpoints/
 mail_quarantine/
 review_queue.csv
 imap_seen.txt
+
+# Saved copies of scanned live messages (feedback loop working files)
+review_messages/

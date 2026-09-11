@@ -163,6 +163,15 @@ def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: se
     for uid, raw in messages:
         result = model.predict(raw)
         sender, subject = describe(raw)
+        # Keep a local copy so a reviewer correction can be turned back into training
+        # data: the review queue stores a path, and an IMAP message has no local file.
+        saved = Path(args.save_dir) / f"imap_{uid.decode()}.eml"
+        try:
+            saved.parent.mkdir(parents=True, exist_ok=True)
+            saved.write_bytes(raw)
+            recorded = str(saved)
+        except OSError:
+            recorded = f"imap:{uid.decode()}"
         signals = ", ".join(result.signals.keys()) if result.signals else "-"
         is_spam = result.label == "spam"
         moved = False
@@ -174,7 +183,7 @@ def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: se
 
         append_queue(queue_path, {
             "scanned_at": datetime.now().isoformat(timespec="seconds"),
-            "file": f"imap:{uid.decode()}",
+            "file": recorded,
             "sender": sender,
             "subject": subject,
             "predicted_label": result.label,
@@ -209,6 +218,8 @@ def main():
     parser.add_argument("--source-folder", default="INBOX",
                         help='folder to scan; use "[Gmail]/Spam" to score mail the '
                              "provider already filtered, or \"[Gmail]/All Mail\" for everything")
+    parser.add_argument("--save-dir", default="review_messages",
+                        help="folder where scanned messages are saved so corrections can be retrained")
     parser.add_argument("--list-folders", action="store_true",
                         help="print the mailbox folder names available on the server and exit")
     parser.add_argument("--queue", default="review_queue.csv", help="review/feedback queue CSV")
