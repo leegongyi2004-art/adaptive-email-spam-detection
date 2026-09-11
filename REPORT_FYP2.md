@@ -158,6 +158,7 @@ References; Appendices A–F. -->
 - Figure 5.3 Example service prediction response (label, probability and signals).
 - Figure 5.4 Mailbox watch run quarantining a flagged message.
 - Figure 5.5 Live IMAP run scoring four messages retrieved from a commercial mailbox.
+- Figure 5.6 Review inbox with confirm, correct and retrain controls.
 - Figure 6.1 Confusion matrix of the fused model on the held-out test split (n = 20,288).
 - Figure 6.2 ROC curve and threshold sweep for the fused model.
 - Figure 6.3 Catch rate versus decision threshold on the LLM-phishing set.
@@ -195,6 +196,7 @@ References; Appendices A–F. -->
 
 # LIST OF ABBREVIATIONS
 
+- AI — Artificial Intelligence
 - API — Application Programming Interface
 - AUC — Area Under the Curve
 - BEC — Business Email Compromise
@@ -202,18 +204,27 @@ References; Appendices A–F. -->
 - CSV — Comma-Separated Values
 - DKIM — DomainKeys Identified Mail
 - FPR — False-Positive Rate
+- FN — False Negative
+- FP — False Positive
 - HTML — HyperText Markup Language
 - IDE — Integrated Development Environment
+- IMAP — Internet Message Access Protocol
+- LLM — Large Language Model
 - LR — Logistic Regression
 - ML — Machine Learning
 - NB — Naïve Bayes
+- MIME — Multipurpose Internet Mail Extensions
 - NLP — Natural Language Processing
+- RFC — Request for Comments (Internet standards document)
 - ROC — Receiver Operating Characteristic
 - REST — Representational State Transfer
 - SPF — Sender Policy Framework
 - SVM — Support Vector Machine
 - TF-IDF — Term Frequency–Inverse Document Frequency
 - TLD — Top-Level Domain
+- TN — True Negative
+- TP — True Positive
+- UTF-8 — 8-bit Unicode Transformation Format
 - URL — Uniform Resource Locator
 
 ---
@@ -1201,52 +1212,96 @@ kept the environment easy to recreate on any machine with Python installed and r
 graphics-processing hardware. The complete source code is provided in the accompanying
 submission archive, organised into the modules described in Section 4.2.
 
-The review console, shown in Figure 5.2, allowed a reviewer to paste an email and immediately
-see its classification, the probability assigned, and the individual structural signals that
-fired, together with buttons to confirm or correct the decision. When the detector was accessed
-through its service interface, it returned a structured response containing the predicted label,
-the spam probability, a confidence value and the list of detected structural signals, as shown in
-Figure 5.3. Finally, the mailbox watcher could monitor a folder and, in quarantine mode, move
-each flagged message into a quarantine directory while logging the decision to the review queue,
-as shown in Figure 5.4. The same automatic score-and-quarantine loop was also implemented for a
-live, network-connected mailbox over the Internet Message Access Protocol: a connector logs into
-the account, fetches new messages as they arrive, moves flagged mail into a dedicated quarantine
-folder within the mailbox and leaves legitimate mail in the inbox, allowing the system to be
-deployed as a live adaptive filter rather than only as an offline tool.
+### 5.4.1 Checking an Email in the Review Console
+
+The review console was the manual entry point to the detector. A reviewer pasted the complete
+source of an email into the console and submitted it for scoring. The console returned the
+predicted label, the spam probability, a confidence value and the list of structural signals that
+fired for that message, so that the verdict could be interpreted rather than merely accepted.
+Figure 5.2 shows the console after a phishing message was submitted.
 
 [FIGURE 5.2: Browser check-and-review console showing a phishing verdict and fired signals.]
 
+Figure 5.2 shows the console classifying a credential-harvesting message as spam. The probability
+bar reports the score assigned by the model, and the signal chips beneath it name the structural
+evidence that contributed to the decision, including the mismatch between the sender domain and
+the domain of the embedded link and the presence of a reply-to address different from the sender.
+
+### 5.4.2 Service Prediction Response
+
+The same detector was exposed as a local service so that other software could obtain a verdict
+programmatically rather than through the browser. A client submitted the raw email to the
+prediction endpoint and received a structured response. Figure 5.3 shows a response returned by
+the service.
+
 [FIGURE 5.3: Example service prediction response (label, probability and signals).]
 
+Figure 5.3 shows the response for a single message, containing the predicted label, the spam
+probability, the confidence value and the named structural signals. Returning the signals
+alongside the verdict allowed a calling system to log why a message was flagged, which was a
+requirement for the review and appeal process described in Section 4.4.
+
+### 5.4.3 Mailbox Watch and Quarantine
+
+The mailbox watcher applied the detector to a folder of stored messages rather than to a single
+pasted email. Each message file was parsed, scored and recorded in the review queue; in
+quarantine mode a flagged message was moved into a separate quarantine folder while legitimate
+mail was left untouched. Figure 5.4 shows a watch run in progress.
+
 [FIGURE 5.4: Mailbox watch run quarantining a flagged message.]
+
+Figure 5.4 shows the watcher processing a folder containing both legitimate and phishing
+messages. Each line reports the verdict and the probability for one message, and the flagged
+messages are reported as moved to the quarantine folder. Nothing was deleted at any point: the
+quarantine folder retained every flagged message so that a false positive could be recovered.
+
+### 5.4.4 Live Mailbox Filtering over IMAP
 
 To confirm that the connector operated outside a controlled local folder, it was run against a
 live mailbox hosted by a commercial provider. A disposable account was created for the purpose,
 application-specific credentials were issued for it, and four test messages were sent to it: one
-ordinary meeting request and three phishing messages of the credential-harvesting, fraudulent
-invoice and account-suspension types. The connector authenticated over an encrypted IMAP
-connection on port 993, retrieved each message in its complete RFC 5322 form and scored it with
-the same saved model used throughout Chapter 6, with no change to the classifier, its features or
-its decision threshold.
+ordinary message and three phishing messages of the credential-harvesting, fraudulent invoice
+and account-suspension types. The connector authenticated over an encrypted IMAP connection on
+port 993, retrieved each message in its complete RFC 5322 form and scored it with the same saved
+model used throughout Chapter 6, with no change to the classifier, its features or its decision
+threshold.
 
 An unanticipated but instructive observation arose during this run. The provider applied its own
-filter before delivery and placed all four test messages, including the legitimate meeting
-request, in its spam folder, so that none of them reached the inbox. The connector was therefore
-directed at that folder instead, which had the useful effect of turning the exercise into an
-independent second opinion on messages the provider had already judged. Figure 5.5 records the
-result: the three phishing messages were assigned spam probabilities of 97.6%, 98.7% and 99.8%
-and were flagged, whereas the legitimate meeting request received 27.4% and was correctly
-released as legitimate. The proposed detector thus agreed with the provider on the three genuine
-phishing messages and disagreed on the one legitimate message, which the provider had filtered
-and the detector did not. This single observation is a demonstration of deployment, not a
-measurement of comparative accuracy, and no general claim about the relative performance of the
-two systems is drawn from it; the quantitative results in Chapter 6 rest entirely on the held-out
-corpus and the external test sets. It does, however, confirm that the detector operates correctly
-on live network mail and that the false-positive behaviour examined in Section 6.2.2 is a
-practical concern for deployed filters in general.
+filter before delivery and placed all four test messages, including the legitimate one, in its
+spam folder, so that none of them reached the inbox. The connector was therefore directed at that
+folder instead, which had the useful effect of turning the exercise into an independent second
+opinion on messages the provider had already judged. Figure 5.5 records the result.
 
 [FIGURE 5.5: Live IMAP run scoring four messages retrieved from a commercial mailbox, showing
 three phishing messages flagged and one legitimate message released.]
+
+Figure 5.5 shows that the three phishing messages were assigned spam probabilities of 97.6%,
+98.7% and 99.8% and were flagged, whereas the legitimate message received 27.4% and was correctly
+released. The proposed detector therefore agreed with the provider on the three phishing messages
+and disagreed on the one legitimate message, which the provider had filtered and the detector had
+not. This single observation is a demonstration of deployment, not a measurement of comparative
+accuracy, and no general claim about the relative performance of the two systems is drawn from
+it; the quantitative results in Chapter 6 rest entirely on the held-out corpus and the external
+test sets. It does, however, confirm that the detector operates correctly on live network mail.
+
+### 5.4.5 Reviewer Feedback and Retraining
+
+Every message scored by either watcher was written to the review queue, and the console presented
+those messages to a reviewer for confirmation or correction. For each message the reviewer either
+confirmed the verdict or recorded the correct label; a verdict entered by mistake could be
+changed simply by selecting a different one, and only the most recent verdict for a message was
+retained. Corrections accumulated in the feedback store and did not alter the deployed model
+until retraining was explicitly requested. Figure 5.6 shows the review inbox.
+
+[FIGURE 5.6: Review inbox showing scored messages with confirm and correct controls, and the
+retraining control.]
+
+Figure 5.6 shows the queued messages with their verdicts and probabilities, the controls used to
+confirm or correct each one, and the control that starts a retraining cycle. When retraining was
+requested, a candidate model was trained on the historical corpus together with the accumulated
+corrections and was compared with the deployed model on the held-out split; the candidate
+replaced the deployed model only if it did not reduce ranking quality. This validation gate is
+discussed further in Section 7.2.
 
 ## 5.5 Implementation Issues and Challenges
 

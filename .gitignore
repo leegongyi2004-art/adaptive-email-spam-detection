@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+.venv/
+models/*.joblib
+.env
+
+*.egg-info/
+
+data/
+models/distilbert-email*/
+models/*-checkpoints/
+
+# mailbox watcher runtime outputs (sample inputs in mail_inbox/ are kept)
+mail_quarantine/
+review_queue.csv
+imap_seen.txt
+
+# Saved copies of scanned live messages (feedback loop working files)
+review_messages/
