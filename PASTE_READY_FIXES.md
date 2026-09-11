@@ -503,8 +503,10 @@ checkpoint discussed in Section 7.2.
    verdict for a message is retained, and corrections accumulate in the feedback store without
    altering the deployed model.
 5. **Trigger retraining when required:** use the retraining control in the console, which calls
-   the `/retrain` endpoint listed in Table 5.5. The candidate model replaces the deployed model
-   only if it does not reduce ranking quality on the held-out split.
+   the `/retrain` endpoint listed in Table 5.5. Retraining is a planned batch operation initiated
+   by the reviewer; no automatic timer is used, so no change reaches the deployed model without
+   human authorisation. The candidate model replaces the deployed model only if it does not
+   reduce ranking quality on the held-out split.
 
 The resulting operational settings are summarised in Table 5.4. The server host and port are
 inferred automatically from the address domain for common providers, so in normal use only the

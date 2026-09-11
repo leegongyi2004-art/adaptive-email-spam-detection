@@ -365,8 +365,8 @@ The project made the following contributions:
 2. A structured comparison of multinomial Naïve Bayes, logistic regression and a linear support
    vector machine on both content-only and fused features, quantifying the contribution of the
    feature groups.
-3. A complete adaptive loop — a review console, a feedback store and a scheduled retraining
-   path — demonstrated empirically to improve detection on previously unseen threat types.
+3. A complete adaptive loop — a review console, a feedback store and a reviewer-initiated batch
+   retraining path — demonstrated empirically to improve detection on previously unseen threat types.
 4. A deployable service layer comprising a REST application programming interface, a browser
    review page, a mailbox watcher with quarantine, and a documented integration route for mail
    automation.
@@ -636,7 +636,7 @@ The pipeline proceeded from incoming email to action and feedback. Three paralle
 streams — word content, character content and structural metadata — were extracted, fused and
 standardised, then passed to the classifier. The resulting probability was compared against a
 configurable threshold to produce a label and an explanation; decisions and corrections flowed
-through a review queue into the feedback store, which fed scheduled retraining. The end-to-end
+through a review queue into the feedback store, which fed reviewer-initiated batch retraining. The end-to-end
 data flow and the retraining feedback loop are shown in Figure 3.1.
 
 
@@ -682,7 +682,8 @@ full sequence, including the feedback path, is illustrated in Figure 3.3.
 
 Emails were parsed and feature-extracted; the model produced a probability that was compared
 against the configurable threshold; high-risk mail was quarantined or labelled; uncertain or
-corrected cases entered the review queue; on a schedule, reviewed labels were appended to the
+corrected cases entered the review queue; when a reviewer requested retraining, the reviewed
+labels were appended to the
 training set and a new model was fitted, which was then evaluated on the held-out data
 before further use.
 
@@ -843,7 +844,7 @@ The system comprised five top-level blocks, shown in Figure 4.1:
 3. **Fusion classifier** — the word/character/metadata feature union, standardisation and the
    logistic-regression classifier.
 4. **Action and decision** — threshold comparison, labelling, quarantine and signal explanation.
-5. **Adaptation** — the review queue, feedback store and scheduled retraining path.
+5. **Adaptation** — the review queue, feedback store and reviewer-initiated batch retraining path.
 
 
 [FIGURE 4.1: System block diagram of the five main blocks.]
@@ -923,10 +924,10 @@ correction field awaiting human review.
 ### 4.2.5 Review, Feedback and Adaptive Retraining
 
 The adaptation block closed the learning loop. When a reviewer corrected a decision in the
-console, the correction was saved as a labelled example in the feedback store. A scheduled
-retraining stage merged these reviewed labels with the original training data and fitted a new
+console, the correction was saved as a labelled example in the feedback store. A reviewer-initiated
+batch retraining stage merged these reviewed labels with the original training data and fitted a new
 model, which was then evaluated on the held-out split before further use so that its effect on
-both the main corpus and the target threat could be measured. Retraining in scheduled batches
+both the main corpus and the target threat could be measured. Retraining in controlled batches
 rather than continuously prevented a small batch of feedback from silently degrading the
 detector, and it distinguished the system from both a static model and an uncontrolled
 online-learning loop.
@@ -1242,8 +1243,10 @@ checkpoint discussed in Section 7.2.
    verdict for a message is retained, and corrections accumulate in the feedback store without
    altering the deployed model.
 5. **Trigger retraining when required:** use the retraining control in the console, which calls
-   the `/retrain` endpoint listed in Table 5.5. The candidate model replaces the deployed model
-   only if it does not reduce ranking quality on the held-out split.
+   the `/retrain` endpoint listed in Table 5.5. Retraining is a planned batch operation initiated
+   by the reviewer; no automatic timer is used, so no change reaches the deployed model without
+   human authorisation. The candidate model replaces the deployed model only if it does not
+   reduce ranking quality on the held-out split.
 
 The resulting operational settings are summarised in Table 5.4. The server host and port are
 inferred automatically from the address domain for common providers, so in normal use only the
@@ -1599,7 +1602,7 @@ small change in ranking quality is within the variation expected from refitting 
 different training sample. This outcome is reported because it delimits the claim: reviewed
 feedback improves detection for threat families the baseline handles poorly, and neither
 improves nor materially harms performance where the baseline is already near-perfect. The retraining
-cycle was run as a scheduled batch step, and the retrained model was evaluated on the held-out
+cycle was run as an explicit, reviewer-initiated batch step, and the retrained model was evaluated on the held-out
 data before further use, confirming that main-corpus accuracy was maintained while the target
 threat ranking improved. Retraining in controlled batches rather than continuously distinguished
 the system from both a static model and an uncontrolled online-learning loop. The improvement
