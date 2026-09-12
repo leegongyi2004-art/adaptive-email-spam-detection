@@ -20,3 +20,6 @@ review_messages/
 
 # Poster TIFF is a large derived artefact; regenerate with reports/make_poster.py
 reports/poster/*.tiff
+
+# transient image-search scratch
+image-search/
