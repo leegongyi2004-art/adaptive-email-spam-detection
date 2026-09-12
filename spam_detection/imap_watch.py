@@ -173,7 +173,7 @@ def fetch_new(mail: imaplib.IMAP4_SSL, seen: set[bytes],
     return messages
 
 
-def list_folders(mail: imaplib.IMAP4_SSL) -> list[str]:
+def list_folders(mail: imaplib.IMAP4_SSL, quarantine_folder: str = "") -> list[str]:
     """Return the mailbox folder names the account exposes.
 
     Used by ``--all-folders`` so that a message is scored wherever the provider
@@ -183,6 +183,7 @@ def list_folders(mail: imaplib.IMAP4_SSL) -> list[str]:
     typ, entries = mail.list()
     if typ != "OK":
         return ["INBOX"]
+    skip_extra = {(quarantine_folder or "").lower()}
     # Gmail's Important/Starred are views over mail that already lives in a real
     # folder, so including them would score the same message twice. Sent Mail is
     # the account's own outgoing mail and is not incoming traffic to screen.
@@ -196,9 +197,21 @@ def list_folders(mail: imaplib.IMAP4_SSL) -> list[str]:
         if "\\Noselect" in text:
             continue
         name = text.split(' "/" ')[-1].strip().strip('"') if ' "/" ' in text else text.split()[-1].strip('"')
-        if name and name.lower() not in skip:
+        if name and name.lower() not in skip and name.lower() not in skip_extra:
             names.append(name)
     return names or ["INBOX"]
+
+
+def label_message(mail: imaplib.IMAP4_SSL, uid: bytes, folder: str) -> bool:
+    """Copy the message into ``folder`` without deleting the original.
+
+    On Gmail an IMAP copy adds a label, so the message appears under both its
+    original folder and the detector's folder. This keeps the provider's own
+    decision visible alongside the detector's verdict.
+    """
+    ensure_folder(mail, folder)
+    typ, _ = mail.uid("copy", uid, folder)
+    return typ == "OK"
 
 
 def quarantine_message(mail: imaplib.IMAP4_SSL, uid: bytes, folder: str) -> bool:
@@ -244,7 +257,7 @@ def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: se
     # Fetch everything first so moving/deleting later does not shift UIDs mid-loop.
     try:
         messages = fetch_new(mail, seen, folder,
-                             readonly=(args.action != "quarantine"))
+                             readonly=(args.action == "report"))
     except (imaplib.IMAP4.error, OSError) as exc:
         print(f"  (connection issue: {exc}; will retry)")
         return 0, 0
@@ -265,8 +278,13 @@ def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: se
         signals = ", ".join(result.signals.keys()) if result.signals else "-"
         is_spam = result.label == "spam"
         moved = False
+        labelled = False
         if is_spam and args.action == "quarantine":
             moved = quarantine_message(mail, uid, args.quarantine_folder)
+        elif is_spam and args.action == "label":
+            # Tag the message in place: the provider's own filing is left intact so the
+            # two verdicts can be compared side by side, which quarantining would hide.
+            labelled = label_message(mail, uid, args.quarantine_folder)
         else:
             # Mark as read so it is not re-fetched; leave the message in the inbox.
             mail.uid("store", uid, "+FLAGS", r"(\Seen)")
@@ -281,6 +299,7 @@ def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: se
             "spam_probability": round(result.spam_probability, 4),
             "signals": signals,
             "action_taken": ("quarantined" if moved else
+                             "labelled" if labelled else
                              "flagged" if is_spam else "delivered"),
             "correct_label": "",
         })
@@ -290,7 +309,8 @@ def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: se
         n_spam += is_spam
         n_ham += not is_spam
         flag = "SPAM " if is_spam else "ham  "
-        action = f"  -> moved to {args.quarantine_folder}" if moved else ""
+        action = (f"  -> moved to {args.quarantine_folder}" if moved else
+                  f"  -> labelled {args.quarantine_folder} (left in place)" if labelled else "")
         shown = subject if len(subject) <= 58 else subject[:55] + "..."
         print(f"  [{flag}] {result.spam_probability*100:6.1f}%  {shown}")
         print(f"                    from {sender}   (uid {uid.decode()}){action}")
@@ -306,7 +326,7 @@ def main():
     parser.add_argument("--password", default=os.environ.get("IMAP_PASS"), help="app password (or use IMAP_PASS env var)")
     parser.add_argument("--model", default="models/email_spam_detector.joblib")
     parser.add_argument("--threshold", type=float, default=0.55)
-    parser.add_argument("--action", choices=["report", "quarantine"], default="report",
+    parser.add_argument("--action", choices=["report", "label", "quarantine"], default="report",
                         help="report = read-only; quarantine = move spam to the quarantine folder")
     parser.add_argument("--quarantine-folder", default="Spam_Quarantine")
     parser.add_argument("--source-folder", default="INBOX",
@@ -367,7 +387,7 @@ def main():
     # Resolve which folders to scan. Scanning every folder means a message is scored
     # wherever the provider filed it, rather than only if it reached the inbox.
     if args.all_folders:
-        folders = list_folders(mail)
+        folders = list_folders(mail, args.quarantine_folder)
     else:
         folders = [f.strip() for f in args.source_folder.split(",") if f.strip()] or ["INBOX"]
     state_paths = {f: state_for(f) for f in folders}

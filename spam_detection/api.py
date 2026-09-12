@@ -748,11 +748,13 @@ async function loadQueue(){
       card.appendChild(warn);
     }
 
-    if (r.action_taken === 'quarantined'){
+    if (r.action_taken === 'quarantined' || r.action_taken === 'labelled'){
       const q = document.createElement('div');
       q.className = 'meta';
       q.style.cssText = 'color:#fbbf24;font-weight:600;margin-top:4px';
-      q.textContent = 'Quarantined - moved out of the mailbox into Spam_Quarantine';
+      q.textContent = (r.action_taken === 'quarantined')
+        ? 'Quarantined - moved out of the mailbox into Spam_Quarantine'
+        : 'Labelled Spam_Quarantine - left in place for comparison';
       card.appendChild(q);
     }
 
