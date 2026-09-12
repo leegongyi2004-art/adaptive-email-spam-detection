@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import csv
 import shutil
+import shutil
 import time
 from datetime import datetime
 from pathlib import Path
@@ -46,8 +47,35 @@ def load_processed(queue_path: Path) -> set[str]:
     return names
 
 
+def migrate_queue(queue_path: Path) -> None:
+    """Upgrade a queue file written before a column was added.
+
+    Appending new-format rows to an old-format file would silently shift every
+    value one column to the left, so the existing rows are rewritten with the
+    current header (missing fields left blank) before anything new is appended.
+    """
+    if not queue_path.exists():
+        return
+    with open(queue_path, newline="", encoding="utf-8", errors="replace") as f:
+        reader = csv.DictReader(f)
+        header = reader.fieldnames or []
+        if header == QUEUE_FIELDS:
+            return
+        rows = [dict(r) for r in reader]
+    backup = queue_path.with_suffix(queue_path.suffix + ".bak")
+    shutil.copy2(queue_path, backup)
+    with open(queue_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=QUEUE_FIELDS)
+        writer.writeheader()
+        for r in rows:
+            writer.writerow({field: (r.get(field) or "") for field in QUEUE_FIELDS})
+    print(f"  (review queue upgraded to the current format; backup saved as {backup.name})")
+
+
 def append_queue(queue_path: Path, row: dict) -> None:
     new = not queue_path.exists()
+    if not new:
+        migrate_queue(queue_path)
     with open(queue_path, "a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=QUEUE_FIELDS)
         if new:
