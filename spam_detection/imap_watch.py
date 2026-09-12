@@ -45,6 +45,7 @@ from __future__ import annotations
 import argparse
 import imaplib
 import os
+import re
 import ssl
 import time
 from datetime import datetime
@@ -252,6 +253,23 @@ def baseline_folder(mail: imaplib.IMAP4_SSL, state_path: Path, seen: set[bytes],
     return len(uids)
 
 
+AUTH_HEADER_RE = re.compile(
+    rb"(?im)^(Authentication-Results|Received-SPF|DKIM-Signature|ARC-Seal|"
+    rb"ARC-Message-Signature|ARC-Authentication-Results):.*(?:\r?\n[ \t].*)*\r?\n")
+
+
+def strip_auth_headers(raw: bytes) -> bytes:
+    """Remove provider authentication headers before scoring.
+
+    The public training corpus contains almost no legitimate mail carrying SPF or
+    DKIM headers, while much of its spam does, so the model associates their
+    presence with spam (Section 6.3). Every message in a live mailbox carries
+    them, which inflates live scores. Removing them restores the content-based
+    verdict for demonstration purposes; the trained model is not modified.
+    """
+    return AUTH_HEADER_RE.sub(b"", raw)
+
+
 def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: set[bytes],
                  folder: str = "INBOX") -> tuple[int, int]:
     # Fetch everything first so moving/deleting later does not shift UIDs mid-loop.
@@ -264,7 +282,8 @@ def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: se
 
     n_spam = n_ham = 0
     for uid, raw in messages:
-        result = model.predict(raw)
+        scored = strip_auth_headers(raw) if args.ignore_auth_headers else raw
+        result = model.predict(scored)
         sender, subject = describe(raw)
         # Keep a local copy so a reviewer correction can be turned back into training
         # data: the review queue stores a path, and an IMAP message has no local file.
@@ -341,6 +360,9 @@ def main():
                         help="print the mailbox folder names available on the server and exit")
     parser.add_argument("--queue", default="review_queue.csv", help="review/feedback queue CSV")
     parser.add_argument("--state", default="imap_seen.txt", help="local file tracking processed message IDs")
+    parser.add_argument("--ignore-auth-headers", action="store_true",
+                        help="score messages with SPF/DKIM headers removed; the public corpus "
+                             "links their presence to spam, which inflates live-mailbox scores")
     parser.add_argument("--only-new", action="store_true",
                         help="ignore mail already in the mailbox and classify only messages "
                              "that arrive from now on (recommended for a live demonstration)")
