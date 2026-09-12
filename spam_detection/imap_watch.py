@@ -64,6 +64,29 @@ PRESET_HOSTS = {
 }
 
 
+def load_env_file(path: Path = Path(".env")) -> None:
+    """Read simple KEY=VALUE lines from a local .env file into the environment.
+
+    Credentials are kept in an untracked file rather than typed on the command
+    line, so they are not recorded in shell history. Values already present in
+    the real environment win, which lets a one-off command override the file.
+    """
+    if not path.exists():
+        return
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        # An app password is often shown in 4-character groups; the server wants it joined up.
+        if key == "IMAP_PASS":
+            value = value.replace(" ", "")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
 def host_for(user: str, override: str | None, port: int) -> tuple[str, int]:
     if override:
         return override, port
@@ -231,6 +254,7 @@ def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: se
 
 
 def main():
+    load_env_file()
     parser = argparse.ArgumentParser(description="Live IMAP mailbox spam filter (auto-score and quarantine).")
     parser.add_argument("--host", default=os.environ.get("IMAP_HOST"), help="IMAP server host (e.g. imap.gmail.com)")
     parser.add_argument("--port", type=int, default=int(os.environ.get("IMAP_PORT", "993")))
@@ -258,8 +282,14 @@ def main():
     args = parser.parse_args()
 
     if not args.user or not args.password:
-        raise SystemExit("Provide credentials with --user/--password or the IMAP_USER/IMAP_PASS "
-                         "environment variables (use an app password, not your normal password).")
+        raise SystemExit(
+            "No mailbox credentials found.\n"
+            "Create a file named .env in the project folder containing:\n"
+            "    IMAP_USER=yourtestaddr@gmail.com\n"
+            "    IMAP_PASS=your16charapppassword\n"
+            "(.env is git-ignored.) You can also use --user/--password or the "
+            "IMAP_USER/IMAP_PASS environment variables. Use a Gmail app password, "
+            "not your normal account password.")
     if not Path(args.model).exists():
         raise SystemExit(f"Model not found: {args.model}. Train it first (see GETTING_STARTED.md).")
 

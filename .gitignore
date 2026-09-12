@@ -23,3 +23,7 @@ reports/poster/*.tiff
 
 # transient image-search scratch
 image-search/
+
+# per-folder IMAP state files created by --all-folders
+imap_seen_*.txt
+review_queue.csv.bak
