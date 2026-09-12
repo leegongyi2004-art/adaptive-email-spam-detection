@@ -140,6 +140,30 @@ def fetch_new(mail: imaplib.IMAP4_SSL, seen: set[bytes],
     return messages
 
 
+def list_folders(mail: imaplib.IMAP4_SSL) -> list[str]:
+    """Return the mailbox folder names the account exposes.
+
+    Used by ``--all-folders`` so that a message is scored wherever the provider
+    filed it. Gmail's ``[Gmail]/All Mail`` is skipped because every message also
+    appears in its own folder, and ``[Gmail]/Trash`` is skipped as deleted mail.
+    """
+    typ, entries = mail.list()
+    if typ != "OK":
+        return ["INBOX"]
+    skip = {"[gmail]/all mail", "[gmail]/trash", "[gmail]/bin", "[gmail]/drafts"}
+    names = []
+    for entry in (entries or []):
+        if not isinstance(entry, bytes):
+            continue
+        text = entry.decode(errors="replace")
+        if "\\Noselect" in text:
+            continue
+        name = text.split(' "/" ')[-1].strip().strip('"') if ' "/" ' in text else text.split()[-1].strip('"')
+        if name and name.lower() not in skip:
+            names.append(name)
+    return names or ["INBOX"]
+
+
 def quarantine_message(mail: imaplib.IMAP4_SSL, uid: bytes, folder: str) -> bool:
     """Copy the message to the quarantine folder, then remove the inbox copy."""
     ensure_folder(mail, folder)
@@ -151,10 +175,11 @@ def quarantine_message(mail: imaplib.IMAP4_SSL, uid: bytes, folder: str) -> bool
     return True
 
 
-def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: set[bytes]) -> tuple[int, int]:
+def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: set[bytes],
+                 folder: str = "INBOX") -> tuple[int, int]:
     # Fetch everything first so moving/deleting later does not shift UIDs mid-loop.
     try:
-        messages = fetch_new(mail, seen, args.source_folder)
+        messages = fetch_new(mail, seen, folder)
     except imaplib.IMAP4Error as exc:
         print(f"  (connection issue: {exc}; will retry)")
         return 0, 0
@@ -183,6 +208,7 @@ def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: se
 
         append_queue(queue_path, {
             "scanned_at": datetime.now().isoformat(timespec="seconds"),
+            "folder": folder,
             "file": recorded,
             "sender": sender,
             "subject": subject,
@@ -216,8 +242,11 @@ def main():
                         help="report = read-only; quarantine = move spam to the quarantine folder")
     parser.add_argument("--quarantine-folder", default="Spam_Quarantine")
     parser.add_argument("--source-folder", default="INBOX",
-                        help='folder to scan; use "[Gmail]/Spam" to score mail the '
-                             "provider already filtered, or \"[Gmail]/All Mail\" for everything")
+                        help='folder(s) to scan, comma-separated; use "[Gmail]/Spam" to score mail '
+                             'the provider already filtered, or "INBOX,[Gmail]/Spam" for both')
+    parser.add_argument("--all-folders", action="store_true",
+                        help="scan every folder the account exposes, so a message is scored no "
+                             "matter where the provider filed it (inbox, spam, promotions, ...)")
     parser.add_argument("--save-dir", default="review_messages",
                         help="folder where scanned messages are saved so corrections can be retrained")
     parser.add_argument("--list-folders", action="store_true",
@@ -238,13 +267,15 @@ def main():
     model = EmailSpamDetector.load(args.model)
     model.threshold = args.threshold
     queue_path = Path(args.queue)
-    # IMAP UIDs are unique only WITHIN a folder, so the processed-UID state must be
-    # kept per folder; otherwise switching folders makes unrelated messages look seen.
-    state_path = Path(args.state)
-    if args.source_folder.upper() != "INBOX":
-        safe = "".join(c if c.isalnum() else "_" for c in args.source_folder)
-        state_path = state_path.with_name(f"{state_path.stem}_{safe}{state_path.suffix}")
-    seen = load_seen(state_path)
+    base_state = Path(args.state)
+
+    def state_for(folder: str) -> Path:
+        """IMAP UIDs are unique only WITHIN a folder, so processed-UID state is kept
+        per folder; otherwise switching folders makes unrelated messages look seen."""
+        if folder.upper() == "INBOX":
+            return base_state
+        safe = "".join(c if c.isalnum() else "_" for c in folder)
+        return base_state.with_name(f"{base_state.stem}_{safe}{base_state.suffix}")
 
     print(f"Connecting to {host}:{port} as {args.user} ...")
     mail = connect(host, port, args.user, args.password)
@@ -256,23 +287,41 @@ def main():
                 print("   " + entry.decode(errors="replace"))
         mail.logout()
         return
-    print(f"Scanning folder: {args.source_folder}")
+    # Resolve which folders to scan. Scanning every folder means a message is scored
+    # wherever the provider filed it, rather than only if it reached the inbox.
+    if args.all_folders:
+        folders = list_folders(mail)
+    else:
+        folders = [f.strip() for f in args.source_folder.split(",") if f.strip()] or ["INBOX"]
+    state_paths = {f: state_for(f) for f in folders}
+    seen_by_folder = {f: load_seen(state_paths[f]) for f in folders}
+
+    print("Scanning folder(s): " + ", ".join(folders))
     print(f"Connected. Action = {args.action} "
           f"({'READ-ONLY' if args.action == 'report' else 'spam will be moved to ' + args.quarantine_folder}).")
 
+    def scan_all() -> tuple[int, int]:
+        spam = ham = 0
+        for folder in folders:
+            fs, fh = process_once(mail, model, args, queue_path,
+                                  state_paths[folder], seen_by_folder[folder], folder)
+            spam += fs
+            ham += fh
+        return spam, ham
+
     if not args.watch:
-        mail.select("INBOX")
-        s, h = process_once(mail, model, args, queue_path, state_path, seen)
+        s, h = scan_all()
         print(f"\nResult: {s} spam/phishing, {h} legitimate. Logged to {queue_path.resolve()}.")
         mail.logout()
         return
 
-    print(f"Watching INBOX every {args.poll_seconds}s. Send emails to {args.user}; Ctrl+C to stop.\n")
+    print(f"Watching {len(folders)} folder(s) every {args.poll_seconds}s. "
+          f"Send emails to {args.user}; Ctrl+C to stop.\n")
     total_spam = total_ham = 0
     try:
         while True:
             try:
-                s, h = process_once(mail, model, args, queue_path, state_path, seen)
+                s, h = scan_all()
                 total_spam += s
                 total_ham += h
                 if s or h:

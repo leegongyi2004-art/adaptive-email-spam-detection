@@ -83,27 +83,90 @@ def feedback(req: FeedbackRequest):
 
 
 @app.get("/queue")
-def queue():
-    """Return messages scanned by the mailbox watchers that still need review."""
+def queue(label: str = "all", status: str = "all", sort: str = "newest",
+          since: str = "", search: str = ""):
+    """Return messages scanned by the mailbox watchers, with optional filtering.
+
+    Query parameters let a reviewer narrow a long queue instead of scrolling it:
+    ``label`` (all/spam/ham), ``status`` (all/pending/reviewed/disagreed),
+    ``since`` (ISO date, e.g. 2026-09-01), ``search`` (sender or subject substring)
+    and ``sort`` (newest/oldest/riskiest/safest).
+    """
     if not QUEUE_PATH.exists():
-        return {"rows": [], "message": "No review queue yet. Run a mailbox or IMAP scan first."}
+        return {"rows": [], "reviewed": [], "total": 0, "pending": 0, "stats": {},
+                "message": "No review queue yet. Run a mailbox or IMAP scan first."}
     with open(QUEUE_PATH, newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
-    pending, reviewed = [], []
+
+    items = []
     for i, r in enumerate(rows):
-        item = {
+        correct = (r.get("correct_label") or "").strip()
+        predicted = r.get("predicted_label", "")
+        try:
+            prob = float(r.get("spam_probability") or 0.0)
+        except ValueError:
+            prob = 0.0
+        items.append({
             "row": i,
+            "scanned_at": r.get("scanned_at", ""),
+            "folder": r.get("folder", ""),
             "file": r.get("file", ""),
             "sender": r.get("sender", ""),
             "subject": r.get("subject", ""),
-            "predicted_label": r.get("predicted_label", ""),
+            "predicted_label": predicted,
             "spam_probability": r.get("spam_probability", ""),
+            "probability": prob,
             "signals": r.get("signals", ""),
-            "correct_label": (r.get("correct_label") or "").strip(),
-        }
-        (reviewed if item["correct_label"] else pending).append(item)
-    return {"rows": pending, "reviewed": reviewed,
-            "total": len(rows), "pending": len(pending)}
+            "correct_label": correct,
+            # A disagreement is a message the reviewer relabelled: the useful
+            # training signal, and the thing worth looking at first.
+            "disagreed": bool(correct) and correct != predicted,
+        })
+
+    stats = {
+        "total": len(items),
+        "spam": sum(1 for i in items if i["predicted_label"] == "spam"),
+        "ham": sum(1 for i in items if i["predicted_label"] != "spam"),
+        "reviewed": sum(1 for i in items if i["correct_label"]),
+        "pending": sum(1 for i in items if not i["correct_label"]),
+        "disagreed": sum(1 for i in items if i["disagreed"]),
+    }
+    stats["accuracy_on_reviewed"] = (
+        round(100.0 * (stats["reviewed"] - stats["disagreed"]) / stats["reviewed"], 1)
+        if stats["reviewed"] else None
+    )
+
+    sel = items
+    if label == "spam":
+        sel = [i for i in sel if i["predicted_label"] == "spam"]
+    elif label == "ham":
+        sel = [i for i in sel if i["predicted_label"] != "spam"]
+    if status == "pending":
+        sel = [i for i in sel if not i["correct_label"]]
+    elif status == "reviewed":
+        sel = [i for i in sel if i["correct_label"]]
+    elif status == "disagreed":
+        sel = [i for i in sel if i["disagreed"]]
+    if since:
+        sel = [i for i in sel if i["scanned_at"][:10] >= since]
+    if search:
+        q = search.lower()
+        sel = [i for i in sel
+               if q in i["sender"].lower() or q in i["subject"].lower()]
+
+    if sort == "oldest":
+        sel.sort(key=lambda i: i["scanned_at"])
+    elif sort == "riskiest":
+        sel.sort(key=lambda i: i["probability"], reverse=True)
+    elif sort == "safest":
+        sel.sort(key=lambda i: i["probability"])
+    else:
+        sel.sort(key=lambda i: i["scanned_at"], reverse=True)
+
+    pending = [i for i in sel if not i["correct_label"]]
+    reviewed = [i for i in sel if i["correct_label"]]
+    return {"rows": pending, "reviewed": reviewed, "showing": len(sel),
+            "total": stats["total"], "pending": stats["pending"], "stats": stats}
 
 
 @app.get("/queue/{row}/message")
@@ -382,7 +445,30 @@ def home() -> str:
     <h2 style="font-size:17px;margin:0 0 6px">Review inbox</h2>
     <div class="meta">Messages picked up by the mailbox / IMAP watchers. Click one button per
     message - corrections are added to the next retrain automatically.</div>
-    <div class="row" style="margin-top:10px">
+    <div id="qstats" class="meta" style="margin:8px 0 4px"></div>
+    <div class="row" style="margin-top:8px;flex-wrap:wrap;gap:6px">
+      <select id="fLabel" onchange="loadQueue()">
+        <option value="all">All verdicts</option>
+        <option value="spam">Spam only</option>
+        <option value="ham">Legitimate only</option>
+      </select>
+      <select id="fStatus" onchange="loadQueue()">
+        <option value="all">All messages</option>
+        <option value="pending">Not yet reviewed</option>
+        <option value="reviewed">Already reviewed</option>
+        <option value="disagreed">Model got it wrong</option>
+      </select>
+      <select id="fSort" onchange="loadQueue()">
+        <option value="newest">Newest first</option>
+        <option value="oldest">Oldest first</option>
+        <option value="riskiest">Highest risk first</option>
+        <option value="safest">Lowest risk first</option>
+      </select>
+      <input id="fSince" type="date" onchange="loadQueue()" title="Only show mail scanned on or after this date">
+      <input id="fSearch" placeholder="Search sender or subject" oninput="debouncedQueue()" style="min-width:200px">
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button class="ghost" onclick="clearFilters()">Clear filters</button>
       <button class="ghost" onclick="loadQueue()">Refresh queue</button>
       <button onclick="retrain()">Retrain model with corrections</button>
       <span class="meta" id="qcount" style="align-self:center"></span>
@@ -459,13 +545,45 @@ async function retrain(){
   }
 }
 
+let queueTimer = null;
+function debouncedQueue(){
+  clearTimeout(queueTimer);
+  queueTimer = setTimeout(loadQueue, 250);
+}
+function clearFilters(){
+  document.getElementById('fLabel').value = 'all';
+  document.getElementById('fStatus').value = 'all';
+  document.getElementById('fSort').value = 'newest';
+  document.getElementById('fSince').value = '';
+  document.getElementById('fSearch').value = '';
+  loadQueue();
+}
 async function loadQueue(){
   const box = document.getElementById('queue');
-  const res = await fetch('/queue');
+  const q = new URLSearchParams({
+    label:  document.getElementById('fLabel').value,
+    status: document.getElementById('fStatus').value,
+    sort:   document.getElementById('fSort').value,
+    since:  document.getElementById('fSince').value,
+    search: document.getElementById('fSearch').value
+  });
+  const res = await fetch('/queue?' + q.toString());
   const data = await res.json();
   const rows = (data.rows || []).concat(data.reviewed || []);
+  const st = data.stats || {};
+  const sbox = document.getElementById('qstats');
+  if (st.total){
+    let line = st.total + ' scanned  -  ' + st.spam + ' spam, ' + st.ham + ' legitimate  -  ' +
+               st.pending + ' awaiting review';
+    if (st.accuracy_on_reviewed !== null && st.accuracy_on_reviewed !== undefined){
+      line += '  -  agreed with reviewer on ' + st.accuracy_on_reviewed + '% of ' +
+              st.reviewed + ' reviewed';
+    }
+    sbox.textContent = line;
+  } else { sbox.textContent = ''; }
   document.getElementById('qcount').textContent =
-      rows.length ? rows.length + ' awaiting review' : (data.message || 'Nothing to review.');
+      rows.length ? 'showing ' + rows.length + ' of ' + (st.total || rows.length)
+                  : (data.message || 'No messages match these filters.');
   box.innerHTML = '';
   for (const r of rows){
     const spam = (r.predicted_label === 'spam');
@@ -480,8 +598,19 @@ async function loadQueue(){
 
     const who = document.createElement('div');
     who.className = 'meta';
-    who.textContent = 'from ' + (r.sender || '(unknown)');
+    let line = 'from ' + (r.sender || '(unknown)');
+    if (r.scanned_at) line += '   -   ' + r.scanned_at.replace('T', ' ');
+    if (r.folder) line += '   -   ' + r.folder;
+    who.textContent = line;
     card.appendChild(who);
+
+    if (r.disagreed){
+      const warn = document.createElement('div');
+      warn.className = 'meta';
+      warn.style.color = '#fbbf24';
+      warn.textContent = 'Reviewer corrected this to ' + r.correct_label.toUpperCase();
+      card.appendChild(warn);
+    }
 
     const verdictLine = document.createElement('div');
     verdictLine.className = 'meta';
