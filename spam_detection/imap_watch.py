@@ -138,7 +138,8 @@ def describe(raw: bytes) -> tuple[str, str]:
 
 
 def fetch_new(mail: imaplib.IMAP4_SSL, seen: set[bytes],
-              source_folder: str = "INBOX") -> list[tuple[bytes, bytes]]:
+              source_folder: str = "INBOX",
+              readonly: bool = True) -> list[tuple[bytes, bytes]]:
     """Return list of (uid, raw_rfc822_bytes) for messages not yet processed.
 
     ``source_folder`` allows scanning a folder other than the inbox. This matters
@@ -150,8 +151,10 @@ def fetch_new(mail: imaplib.IMAP4_SSL, seen: set[bytes],
     # Folder names containing spaces (e.g. "[Gmail]/Sent Mail") must be sent as a
     # quoted IMAP string, otherwise the server rejects the command as unparseable.
     mailbox = source_folder if source_folder.startswith('"') else f'"{source_folder}"'
+    # Quarantine has to flag and expunge the original, which a read-only SELECT forbids;
+    # report mode stays read-only so the mailbox is never modified.
     try:
-        typ, _ = mail.select(mailbox, readonly=True)
+        typ, _ = mail.select(mailbox, readonly=readonly)
     except (imaplib.IMAP4.error, OSError) as exc:
         print(f"  (could not open folder {source_folder!r}: {exc})")
         return []
@@ -240,7 +243,8 @@ def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: se
                  folder: str = "INBOX") -> tuple[int, int]:
     # Fetch everything first so moving/deleting later does not shift UIDs mid-loop.
     try:
-        messages = fetch_new(mail, seen, folder)
+        messages = fetch_new(mail, seen, folder,
+                             readonly=(args.action != "quarantine"))
     except (imaplib.IMAP4.error, OSError) as exc:
         print(f"  (connection issue: {exc}; will retry)")
         return 0, 0
@@ -276,6 +280,8 @@ def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: se
             "predicted_label": result.label,
             "spam_probability": round(result.spam_probability, 4),
             "signals": signals,
+            "action_taken": ("quarantined" if moved else
+                             "flagged" if is_spam else "delivered"),
             "correct_label": "",
         })
         mark_seen(state_path, uid)

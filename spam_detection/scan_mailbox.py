@@ -25,7 +25,7 @@ from pathlib import Path
 from .model import EmailSpamDetector
 
 QUEUE_FIELDS = ["scanned_at", "folder", "file", "sender", "subject", "predicted_label",
-                "spam_probability", "signals", "correct_label"]
+                "spam_probability", "signals", "action_taken", "correct_label"]
 
 
 def find_emails(folder: Path, quarantine: Path) -> list[Path]:

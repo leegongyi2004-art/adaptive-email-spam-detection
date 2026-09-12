@@ -148,6 +148,7 @@ def queue(label: str = "all", status: str = "all", sort: str = "newest",
             "spam_probability": r.get("spam_probability", ""),
             "probability": prob,
             "signals": r.get("signals", ""),
+            "action_taken": r.get("action_taken", ""),
             "correct_label": correct,
             # A disagreement is a message the reviewer relabelled: the useful
             # training signal, and the thing worth looking at first.
@@ -745,6 +746,14 @@ async function loadQueue(){
       warn.style.color = '#fbbf24';
       warn.textContent = 'Reviewer corrected this to ' + r.correct_label.toUpperCase();
       card.appendChild(warn);
+    }
+
+    if (r.action_taken === 'quarantined'){
+      const q = document.createElement('div');
+      q.className = 'meta';
+      q.style.cssText = 'color:#fbbf24;font-weight:600;margin-top:4px';
+      q.textContent = 'Quarantined - moved out of the mailbox into Spam_Quarantine';
+      card.appendChild(q);
     }
 
     const verdictLine = document.createElement('div');
