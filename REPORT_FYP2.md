@@ -1294,7 +1294,7 @@ Table 5.6; the following figures illustrate the system in operation.
 | Score an external or AI-generated message set | `python -m spam_detection.evaluate_external models/email_spam_detector.joblib data/llm_test.csv` |
 | Start the detection service and open it in a web browser | `python -m uvicorn spam_detection.api:app --host 0.0.0.0 --port 8000` |
 | Monitor a mail folder and quarantine flagged messages | `python -m spam_detection.scan_mailbox mail_inbox --action quarantine --watch` |
-| Filter a live mailbox automatically over IMAP | `python -m spam_detection.imap_watch --action quarantine --watch` |
+| Filter a live mailbox automatically over IMAP | `python -m spam_detection.imap_watch --all-folders --only-new --action quarantine --watch` |
 | Retrain from reviewer corrections | `python -m spam_detection.feedback review_queue.csv` |
 
 As shown in Table 5.6, every stage of the workflow was reproducible from a single command, which
@@ -1358,9 +1358,11 @@ threshold.
 
 An unanticipated but instructive observation arose during this run. The provider applied its own
 filter before delivery and placed all four test messages, including the legitimate one, in its
-spam folder, so that none of them reached the inbox. The connector was therefore directed at that
-folder instead, which had the useful effect of turning the exercise into an independent second
-opinion on messages the provider had already judged. Figure 5.5 records the result.
+spam folder, so that none of them reached the inbox. Rather than redirecting the connector at a
+single folder, the watcher was configured to scan every folder the account exposed, so that a
+message was scored wherever the provider had filed it. This had the useful effect of turning the
+exercise into an independent second opinion on messages the provider had already judged.
+Figure 5.5 records the result.
 
 [FIGURE 5.5: Live IMAP run scoring four messages retrieved from a commercial mailbox, showing
 three phishing messages flagged and one legitimate message released.]
