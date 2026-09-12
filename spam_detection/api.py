@@ -1,4 +1,6 @@
 import csv
+import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -11,6 +13,35 @@ MODEL_PATH = Path("models/email_spam_detector.joblib")
 FEEDBACK_PATH = Path("data/feedback.csv")  # corrections from the review UI feed retraining
 QUEUE_PATH = Path("review_queue.csv")      # messages scanned by the mailbox/IMAP watchers
 BASE_DATA_PATH = Path("data/reviewed_mail.csv")  # historical corpus used for retraining
+ARCHIVE_DIR = Path("models/archive")       # previous model versions, kept on every deploy
+RETRAIN_LOG = Path("models/retrain_log.csv")  # audit trail of every retraining attempt
+
+RETRAIN_LOG_FIELDS = ["timestamp", "corrections_used", "training_emails",
+                      "previous_auc", "candidate_auc", "outcome", "archived_model"]
+
+
+def record_retrain(corrections: int, training_emails: int, previous_auc: float,
+                   candidate_auc: float, outcome: str, archived: str) -> None:
+    """Append one row to the retraining audit log.
+
+    Every attempt is logged, including rejected ones, so the review history shows
+    that the validation gate actually turns candidate models away.
+    """
+    RETRAIN_LOG.parent.mkdir(parents=True, exist_ok=True)
+    is_new = not RETRAIN_LOG.exists()
+    with open(RETRAIN_LOG, "a", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=RETRAIN_LOG_FIELDS)
+        if is_new:
+            w.writeheader()
+        w.writerow({
+            "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "corrections_used": corrections,
+            "training_emails": training_emails,
+            "previous_auc": "" if previous_auc != previous_auc else round(previous_auc, 4),
+            "candidate_auc": "" if candidate_auc != candidate_auc else round(candidate_auc, 4),
+            "outcome": outcome,
+            "archived_model": archived,
+        })
 app = FastAPI(title="Adaptive Email Spam Detection API", version="0.2.0")
 _model: EmailSpamDetector | None = None
 
@@ -359,19 +390,85 @@ def retrain():
     new_auc = auc_of(candidate)
     old_auc = auc_of(_model) if _model is not None else 0.0
 
+    total_training = len(x_tr) + len(fb_emails)
+
     if new_auc + 1e-4 < old_auc:
+        record_retrain(len(fb_emails), total_training, old_auc, new_auc, "rejected", "")
         return {"status": "rejected", "previous_auc": round(old_auc, 4),
                 "candidate_auc": round(new_auc, 4),
                 "message": "Retrained model scored worse on the held-out split; "
                            "the existing model was kept."}
 
+    # Archive the model being replaced before overwriting it, so a bad batch of
+    # corrections can always be rolled back without retraining from scratch.
+    archived = ""
+    if MODEL_PATH.exists():
+        ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        archive_path = ARCHIVE_DIR / f"email_spam_detector_{stamp}.joblib"
+        shutil.copy2(MODEL_PATH, archive_path)
+        archived = archive_path.name
+
     MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
     candidate.save(MODEL_PATH)
     _model = candidate
+    record_retrain(len(fb_emails), total_training, old_auc, new_auc, "deployed", archived)
     return {"status": "deployed", "previous_auc": round(old_auc, 4),
             "new_auc": round(new_auc, 4), "corrections_used": len(fb_emails),
-            "message": f"Retrained on {len(x_tr) + len(fb_emails):,} emails "
-                       f"({len(fb_emails)} reviewer corrections) and deployed."}
+            "archived_model": archived,
+            "message": f"Retrained on {total_training:,} emails "
+                       f"({len(fb_emails)} reviewer corrections) and deployed. "
+                       + (f"Previous model archived as {archived}." if archived
+                          else "No previous model to archive.")}
+
+
+@app.get("/model/history")
+def model_history():
+    """Return the retraining audit trail plus the archived versions available."""
+    entries: list[dict] = []
+    if RETRAIN_LOG.exists():
+        with open(RETRAIN_LOG, newline="", encoding="utf-8") as f:
+            entries = list(csv.DictReader(f))
+    entries.reverse()  # newest first
+    archives = sorted((p.name for p in ARCHIVE_DIR.glob("*.joblib")), reverse=True) \
+        if ARCHIVE_DIR.exists() else []
+    return {"entries": entries, "archived_versions": archives,
+            "current_model": MODEL_PATH.name if MODEL_PATH.exists() else None,
+            "message": "" if entries else "No retraining has been run yet."}
+
+
+@app.post("/model/rollback")
+def model_rollback(version: str | None = None):
+    """Restore an archived model version, newest by default."""
+    global _model
+    if not ARCHIVE_DIR.exists():
+        raise HTTPException(404, "No archived model versions exist.")
+    available = sorted((p.name for p in ARCHIVE_DIR.glob("*.joblib")), reverse=True)
+    if not available:
+        raise HTTPException(404, "No archived model versions exist.")
+    name = version or available[0]
+    if name not in available:
+        raise HTTPException(404, f"Version {name} not found.")
+    source = ARCHIVE_DIR / name
+    # Keep the model being rolled back out of, so rollback is itself reversible.
+    if MODEL_PATH.exists():
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        shutil.copy2(MODEL_PATH, ARCHIVE_DIR / f"email_spam_detector_{stamp}.joblib")
+    shutil.copy2(source, MODEL_PATH)
+    _model = EmailSpamDetector.load(MODEL_PATH)
+    record_retrain(0, 0, float("nan"), float("nan"), "rolled_back", name)
+    return {"status": "restored", "version": name,
+            "message": f"Restored archived model {name} and reloaded it."}
+
+
+@app.get("/queue/export")
+def export_queue():
+    """Download the review queue as CSV (the reviewed audit trail)."""
+    from fastapi.responses import FileResponse
+    if not QUEUE_PATH.exists():
+        raise HTTPException(404, "No review queue file exists yet.")
+    return FileResponse(QUEUE_PATH, media_type="text/csv",
+                        filename="review_queue.csv")
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -470,9 +567,12 @@ def home() -> str:
     <div class="row" style="margin-top:8px">
       <button class="ghost" onclick="clearFilters()">Clear filters</button>
       <button class="ghost" onclick="loadQueue()">Refresh queue</button>
+      <button class="ghost" onclick="window.location='/queue/export'">Download queue CSV</button>
+      <button class="ghost" onclick="loadHistory()">Model history</button>
       <button onclick="retrain()">Retrain model with corrections</button>
       <span class="meta" id="qcount" style="align-self:center"></span>
     </div>
+    <div id="history" style="display:none;margin-top:10px"></div>
     <div id="queue"></div>
   </div>
   <p class="note">Risk score only - not proof a message was AI-written. In production, mail arrives
@@ -533,6 +633,37 @@ async function check(){
   }
 }
 
+async function loadHistory(){
+  const box = document.getElementById('history');
+  if (box.style.display === 'block'){ box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  box.innerHTML = '<div class="meta">Loading model history ...</div>';
+  const res = await fetch('/model/history');
+  const data = await res.json();
+  if (!data.entries.length){
+    box.innerHTML = '<div class="meta">' + (data.message || 'No retraining yet.') + '</div>';
+    return;
+  }
+  let h = '<table style="width:100%;border-collapse:collapse;font-size:13px">'
+        + '<tr style="text-align:left;opacity:.7">'
+        + '<th>When (UTC)</th><th>Corrections</th><th>Previous AUC</th>'
+        + '<th>Candidate AUC</th><th>Outcome</th></tr>';
+  for (const e of data.entries){
+    const colour = e.outcome === 'deployed' ? '#4ade80'
+                 : e.outcome === 'rejected' ? '#fbbf24' : '#93c5fd';
+    h += '<tr style="border-top:1px solid #333">'
+       + '<td>' + e.timestamp.replace('T',' ').replace('+00:00','') + '</td>'
+       + '<td>' + e.corrections_used + '</td>'
+       + '<td>' + (e.previous_auc || '-') + '</td>'
+       + '<td>' + (e.candidate_auc || '-') + '</td>'
+       + '<td style="color:' + colour + '">' + e.outcome + '</td></tr>';
+  }
+  h += '</table>';
+  h += '<div class="meta" style="margin-top:6px">'
+     + data.archived_versions.length + ' archived version(s) available for rollback.</div>';
+  box.innerHTML = h;
+}
+
 async function retrain(){
   const el = document.getElementById('qcount');
   el.textContent = 'Retraining - this can take several minutes on the full corpus ...';
@@ -540,6 +671,10 @@ async function retrain(){
     const res = await fetch('/retrain', {method:'POST'});
     const data = await res.json();
     el.textContent = data.message || data.detail || 'Done.';
+    if (document.getElementById('history').style.display === 'block'){
+      document.getElementById('history').style.display = 'none';
+      loadHistory();
+    }
   } catch (e) {
     el.textContent = 'Retrain failed: ' + e;
   }
