@@ -153,12 +153,9 @@ References; Appendices A–F. -->
 - Figure 3.2 Use-case diagram for the reviewer/administrator actor.
 - Figure 3.3 Activity diagram for scoring, review and adaptive retraining.
 - Figure 4.1 System block diagram (ingestion, features, fusion, action, adaptation).
-- Figure 5.1 Software and virtual-environment setup.
-- Figure 5.2 Browser check-and-review console showing a phishing verdict and signal chips.
-- Figure 5.3 Example service prediction response (label, probability and signals).
-- Figure 5.4 Mailbox watch run quarantining a flagged message.
-- Figure 5.5 Live IMAP run scoring four messages retrieved from a commercial mailbox.
-- Figure 5.6 Review inbox with confirm, correct and retrain controls.
+- Figure 5.1 Live IMAP monitoring run showing a flagged message moved to quarantine.
+- Figure 5.2 Review console showing scored messages, fired signals and reviewer controls.
+- Figure 5.3 Quarantine folder in the mail client containing the detected spam.
 - Figure 6.1 Confusion matrix of the fused model on the held-out test split (n = 20,288).
 - Figure 6.2 ROC curve and threshold sweep for the fused model.
 - Figure 6.3 Catch rate versus decision threshold on the LLM-phishing set.
@@ -1056,10 +1053,7 @@ additional packages shown by the package manager (such as Starlette, AnyIO, Clic
 httptools, watchfiles, websockets, pydantic-core, lxml, contourpy, kiwisolver and pillow) are
 supporting dependencies installed automatically alongside FastAPI, Uvicorn, scikit-learn and
 Matplotlib, rather than components used directly. A separate document-generation library was
-used only to assemble this report document and formed no part of the detection system. The
-virtual environment and the successful installation of the libraries are shown in Figure 5.1.
-
-[FIGURE 5.1: Software and virtual-environment setup.]
+used only to assemble this report document and formed no part of the detection system.
 
 Based on Table 5.2, scikit-learn provided every machine-learning component, so no separate
 deep-learning framework was needed, which kept the installation light and the training fast on
@@ -1101,7 +1095,7 @@ filtering and review behaviour of the running system.
    scikit-learn, FastAPI, Uvicorn, NumPy, SciPy, Matplotlib and Joblib together with their
    dependencies.
 6. **Verify the installation:** run `pip list` and confirm that the packages listed in Table 5.2
-   are present with the stated versions, as shown in Figure 5.1.
+   are present with the stated versions.
 
 No configuration file, environment variable or administrator privilege is required for this
 stage.
@@ -1273,127 +1267,78 @@ into a quarantine folder rather than deleted, the read-only mode allows the filt
 validated before it is allowed to move anything, and every decision is logged so that reviewer
 corrections can be fed back into the next retraining cycle described in Section 3.4.
 
-## 5.4 System Operation (with Screenshots)
+## 5.4 System Operation
 
-The system was operated through four stages. First, the public corpus was merged and
-de-duplicated into a single reviewed dataset, as described in Section 5.2. Second, the fusion
-model was trained on the training split and evaluated on the held-out split, after which the
-trained model was saved for deployment. Third, the external and AI-generated message sets were
-scored to measure generalisation to modern threats. Fourth, the detection service and the
-mailbox watcher loaded the saved model and served predictions, while reviewer corrections
-accumulated in the feedback store to be incorporated in the next retraining cycle. These stages
-could be triggered through short command-line instructions, which are listed in
-Table 5.6; the following figures illustrate the system in operation.
+This section demonstrates the operation of the main functions of the proposed
+email spam detection system: live mailbox monitoring over IMAP, automatic
+classification and quarantine of detected spam, and reviewer feedback. The
+detection service and the mailbox watcher were started as described in Section
+5.3, and test messages were then sent to the configured mailbox so that the
+system could be observed processing live mail.
 
-**Table 5.6 — Command-line operations used to run the system.**
+### 5.4.1 Live Mailbox Monitoring and Quarantine
 
-| Operation | Command |
-|---|---|
-| Create the virtual environment and install the libraries | `python -m venv .venv` ; `.venv\Scripts\activate` ; `pip install -r requirements.txt` |
-| Train on the reviewed corpus, evaluate on the held-out split and save the model | `python -m spam_detection.evaluate data/reviewed_mail.csv --save models/email_spam_detector.joblib` |
-| Score an external or AI-generated message set | `python -m spam_detection.evaluate_external models/email_spam_detector.joblib data/llm_test.csv` |
-| Start the detection service and open it in a web browser | `python -m uvicorn spam_detection.api:app --host 0.0.0.0 --port 8000` |
-| Monitor a mail folder and quarantine flagged messages | `python -m spam_detection.scan_mailbox mail_inbox --action quarantine --watch` |
-| Filter a live mailbox automatically over IMAP | `python -m spam_detection.imap_watch --all-folders --only-new --action quarantine --watch` |
-| Retrain from reviewer corrections | `python -m spam_detection.feedback review_queue.csv` |
+The mailbox watcher connected to the configured Gmail account over an encrypted
+IMAP connection on port 993 and monitored the available folders for newly
+received mail. Each message was retrieved in its complete RFC 5322 form, parsed,
+and scored by the saved model. Messages whose spam probability reached the
+configured threshold of 0.55 were moved into the quarantine folder, while
+legitimate mail was left in place. Figure 5.1 shows the watcher processing live
+messages.
 
-As shown in Table 5.6, every stage of the workflow was reproducible from a single command, which
-kept the environment easy to recreate on any machine with Python installed and required no
-graphics-processing hardware. The complete source code is provided in the accompanying
-submission archive, organised into the modules described in Section 4.2.
+[FIGURE 5.1: Live IMAP monitoring run showing a phishing message flagged and
+moved to quarantine and a legitimate message released.]
 
-### 5.4.1 Checking an Email in the Review Console
+Figure 5.1 shows the watcher after it connected to the mailbox and began
+monitoring. The header lines confirm the folders being scanned and the
+configured action. Each scored message is reported on one line giving the
+verdict and the spam probability, and a flagged message is additionally
+reported as moved to the quarantine folder. The legitimate message received a
+low probability and was left in the mailbox, confirming that the quarantine
+action applied only to messages the model identified as spam.
 
-The review console was the manual entry point to the detector. A reviewer pasted the complete
-source of an email into the console and submitted it for scoring. The console returned the
-predicted label, the spam probability, a confidence value and the list of structural signals that
-fired for that message, so that the verdict could be interpreted rather than merely accepted.
-Figure 5.2 shows the console after a phishing message was submitted.
+### 5.4.2 Classification Results and Review Console
 
-[FIGURE 5.2: Browser check-and-review console showing a phishing verdict and fired signals.]
+Every message scored by the watcher was recorded in the review queue and
+presented in the review console, which allowed the verdicts to be inspected
+without opening the mailbox separately. For each message the console reported
+the sender, the source folder, the spam probability, the structural signals that
+fired, and the action taken. Figure 5.2 shows the console after the test
+messages had been processed.
 
-Figure 5.2 shows the console classifying a credential-harvesting message as spam. The probability
-bar reports the score assigned by the model, and the signal chips beneath it name the structural
-evidence that contributed to the decision, including the mismatch between the sender domain and
-the domain of the embedded link and the presence of a reply-to address different from the sender.
+[FIGURE 5.2: Review console showing scored messages with their probabilities,
+fired signals, quarantine status and reviewer controls.]
 
-### 5.4.2 Service Prediction Response
+Figure 5.2 shows the queued messages together with the summary line reporting
+how many messages were scanned, how many were classified as spam and how many
+remained awaiting review. The phishing messages were assigned high spam
+probabilities and are marked as having been moved to the quarantine folder,
+whereas the legitimate messages were assigned low probabilities and were not
+moved. The named signals beneath each verdict identify the structural evidence
+that contributed to the decision, such as the presence of embedded links and a
+mismatch between the sender domain and the domain of those links, so that a
+verdict could be interpreted rather than merely accepted. The controls beneath
+each message allowed a reviewer to confirm the verdict or record a correction,
+and corrections were accumulated for the next retraining cycle rather than
+altering the deployed model immediately.
 
-The same detector was exposed as a local service so that other software could obtain a verdict
-programmatically rather than through the browser. A client submitted the raw email to the
-prediction endpoint and received a structured response. Figure 5.3 shows a response returned by
-the service.
+### 5.4.3 Quarantine Result in the Mailbox
 
-[FIGURE 5.3: Example service prediction response (label, probability and signals).]
+To confirm that the quarantine action took effect in the mailbox itself rather
+than only being reported by the system, the configured quarantine folder was
+inspected directly in the mail client. Figure 5.3 shows the contents of that
+folder after the test run.
 
-Figure 5.3 shows the response for a single message, containing the predicted label, the spam
-probability, the confidence value and the named structural signals. Returning the signals
-alongside the verdict allowed a calling system to log why a message was flagged, which was a
-requirement for the review and appeal process described in Section 4.4.
+[FIGURE 5.3: Quarantine folder in the mail client containing the messages the
+detector classified as spam.]
 
-### 5.4.3 Mailbox Watch and Quarantine
-
-The mailbox watcher applied the detector to a folder of stored messages rather than to a single
-pasted email. Each message file was parsed, scored and recorded in the review queue; in
-quarantine mode a flagged message was moved into a separate quarantine folder while legitimate
-mail was left untouched. Figure 5.4 shows a watch run in progress.
-
-[FIGURE 5.4: Mailbox watch run quarantining a flagged message.]
-
-Figure 5.4 shows the watcher processing a folder containing both legitimate and phishing
-messages. Each line reports the verdict and the probability for one message, and the flagged
-messages are reported as moved to the quarantine folder. Nothing was deleted at any point: the
-quarantine folder retained every flagged message so that a false positive could be recovered.
-
-### 5.4.4 Live Mailbox Filtering over IMAP
-
-To confirm that the connector operated outside a controlled local folder, it was run against a
-live mailbox hosted by a commercial provider. A disposable account was created for the purpose,
-application-specific credentials were issued for it, and four test messages were sent to it: one
-ordinary message and three phishing messages of the credential-harvesting, fraudulent invoice
-and account-suspension types. The connector authenticated over an encrypted IMAP connection on
-port 993, retrieved each message in its complete RFC 5322 form and scored it with the same saved
-model used throughout Chapter 6, with no change to the classifier, its features or its decision
-threshold.
-
-An unanticipated but instructive observation arose during this run. The provider applied its own
-filter before delivery and placed all four test messages, including the legitimate one, in its
-spam folder, so that none of them reached the inbox. Rather than redirecting the connector at a
-single folder, the watcher was configured to scan every folder the account exposed, so that a
-message was scored wherever the provider had filed it. This had the useful effect of turning the
-exercise into an independent second opinion on messages the provider had already judged.
-Figure 5.5 records the result.
-
-[FIGURE 5.5: Live IMAP run scoring four messages retrieved from a commercial mailbox, showing
-three phishing messages flagged and one legitimate message released.]
-
-Figure 5.5 shows that the three phishing messages were assigned spam probabilities of 97.6%,
-98.7% and 99.8% and were flagged, whereas the legitimate message received 27.4% and was correctly
-released. The proposed detector therefore agreed with the provider on the three phishing messages
-and disagreed on the one legitimate message, which the provider had filtered and the detector had
-not. This single observation is a demonstration of deployment, not a measurement of comparative
-accuracy, and no general claim about the relative performance of the two systems is drawn from
-it; the quantitative results in Chapter 6 rest entirely on the held-out corpus and the external
-test sets. It does, however, confirm that the detector operates correctly on live network mail.
-
-### 5.4.5 Reviewer Feedback and Retraining
-
-Every message scored by either watcher was written to the review queue, and the console presented
-those messages to a reviewer for confirmation or correction. For each message the reviewer either
-confirmed the verdict or recorded the correct label; a verdict entered by mistake could be
-changed simply by selecting a different one, and only the most recent verdict for a message was
-retained. Corrections accumulated in the feedback store and did not alter the deployed model
-until retraining was explicitly requested. Figure 5.6 shows the review inbox.
-
-[FIGURE 5.6: Review inbox showing scored messages with confirm and correct controls, and the
-retraining control.]
-
-Figure 5.6 shows the queued messages with their verdicts and probabilities, the controls used to
-confirm or correct each one, and the control that starts a retraining cycle. When retraining was
-requested, a candidate model was trained on the historical corpus together with the accumulated
-corrections and was compared with the deployed model on the held-out split; the candidate
-replaced the deployed model only if it did not reduce ranking quality. This validation gate is
-discussed further in Section 6.3.
+Figure 5.3 shows the messages that the detector classified as spam held in the
+quarantine folder and no longer present in the inbox. Nothing was deleted at any
+point: the quarantine folder retained every flagged message, so a message
+flagged in error could be recovered by the user and corrected through the review
+console. This confirmed that the classification decision produced an
+observable effect in the live mailbox, completing the path from message
+retrieval through classification to action.
 
 ## 5.5 Implementation Issues and Challenges
 
