@@ -209,6 +209,33 @@ def quarantine_message(mail: imaplib.IMAP4_SSL, uid: bytes, folder: str) -> bool
     return True
 
 
+def baseline_folder(mail: imaplib.IMAP4_SSL, state_path: Path, seen: set[bytes],
+                    folder: str) -> int:
+    """Record every message currently in ``folder`` as already seen, without scoring it.
+
+    Used by ``--only-new`` so a demonstration starts from a clean slate: the existing
+    backlog is ignored and only mail that arrives after start-up is classified. The
+    messages are not read, moved or flagged, so the mailbox is left untouched.
+    """
+    mailbox = folder if folder.startswith('"') else f'"{folder}"'
+    try:
+        typ, _ = mail.select(mailbox, readonly=True)
+        if typ != "OK":
+            return 0
+        typ, data = mail.uid("search", None, "ALL")
+        if typ != "OK" or not data or not data[0]:
+            return 0
+    except (imaplib.IMAP4.error, OSError) as exc:
+        print(f"  (could not baseline {folder!r}: {exc})")
+        return 0
+    uids = [u for u in data[0].split() if u not in seen]
+    with open(state_path, "a", encoding="utf-8") as f:
+        for uid in uids:
+            f.write(uid.decode() + "\n")
+            seen.add(uid)
+    return len(uids)
+
+
 def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: set[bytes],
                  folder: str = "INBOX") -> tuple[int, int]:
     # Fetch everything first so moving/deleting later does not shift UIDs mid-loop.
@@ -288,6 +315,9 @@ def main():
                         help="print the mailbox folder names available on the server and exit")
     parser.add_argument("--queue", default="review_queue.csv", help="review/feedback queue CSV")
     parser.add_argument("--state", default="imap_seen.txt", help="local file tracking processed message IDs")
+    parser.add_argument("--only-new", action="store_true",
+                        help="ignore mail already in the mailbox and classify only messages "
+                             "that arrive from now on (recommended for a live demonstration)")
     parser.add_argument("--watch", action="store_true", help="keep running and process new mail as it arrives")
     parser.add_argument("--poll-seconds", type=float, default=10.0)
     args = parser.parse_args()
@@ -336,6 +366,12 @@ def main():
         folders = [f.strip() for f in args.source_folder.split(",") if f.strip()] or ["INBOX"]
     state_paths = {f: state_for(f) for f in folders}
     seen_by_folder = {f: load_seen(state_paths[f]) for f in folders}
+
+    if args.only_new:
+        skipped = sum(baseline_folder(mail, state_paths[f], seen_by_folder[f], f)
+                      for f in folders)
+        print(f"Ignoring {skipped} message(s) already in the mailbox; "
+              "only mail arriving from now on will be classified.")
 
     print("Scanning folder(s): " + ", ".join(folders))
     print(f"Connected. Action = {args.action} "
