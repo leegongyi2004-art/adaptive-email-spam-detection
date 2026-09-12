@@ -147,7 +147,14 @@ def fetch_new(mail: imaplib.IMAP4_SSL, seen: set[bytes],
     never reach the inbox. Pointing the scanner at that folder (for Gmail,
     ``"[Gmail]/Spam"``) lets the classifier score those messages independently.
     """
-    typ, _ = mail.select(source_folder)
+    # Folder names containing spaces (e.g. "[Gmail]/Sent Mail") must be sent as a
+    # quoted IMAP string, otherwise the server rejects the command as unparseable.
+    mailbox = source_folder if source_folder.startswith('"') else f'"{source_folder}"'
+    try:
+        typ, _ = mail.select(mailbox, readonly=True)
+    except (imaplib.IMAP4.error, OSError) as exc:
+        print(f"  (could not open folder {source_folder!r}: {exc})")
+        return []
     if typ != "OK":
         print(f"  (could not open folder {source_folder!r}; check the name with --list-folders)")
         return []
@@ -173,7 +180,11 @@ def list_folders(mail: imaplib.IMAP4_SSL) -> list[str]:
     typ, entries = mail.list()
     if typ != "OK":
         return ["INBOX"]
-    skip = {"[gmail]/all mail", "[gmail]/trash", "[gmail]/bin", "[gmail]/drafts"}
+    # Gmail's Important/Starred are views over mail that already lives in a real
+    # folder, so including them would score the same message twice. Sent Mail is
+    # the account's own outgoing mail and is not incoming traffic to screen.
+    skip = {"[gmail]/all mail", "[gmail]/trash", "[gmail]/bin", "[gmail]/drafts",
+            "[gmail]/important", "[gmail]/starred", "[gmail]/sent mail"}
     names = []
     for entry in (entries or []):
         if not isinstance(entry, bytes):
@@ -203,7 +214,7 @@ def process_once(mail, model, args, queue_path: Path, state_path: Path, seen: se
     # Fetch everything first so moving/deleting later does not shift UIDs mid-loop.
     try:
         messages = fetch_new(mail, seen, folder)
-    except imaplib.IMAP4Error as exc:
+    except (imaplib.IMAP4.error, OSError) as exc:
         print(f"  (connection issue: {exc}; will retry)")
         return 0, 0
 
