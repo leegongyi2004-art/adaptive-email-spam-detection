@@ -255,6 +255,42 @@ compare three classifiers; and implement adaptive retraining from reviewed sampl
 [1 minute. Read them briefly - do not dwell, the detail comes in the results.]
 """)
 
+    # ----------------------------------------------------------- 5b hypotheses
+    s = _slide(prs, "Hypotheses", "Each is tested by a specific experiment in Chapter 6")
+    _box(s, Inches(0.8), Inches(1.5), Inches(11.7), Inches(1.75), fill=PANEL,
+         line=RGBColor(0xC7, 0xDA, 0xF2))
+    tb = s.shapes.add_textbox(Inches(1.1), Inches(1.72), Inches(11.1), Inches(1.4))
+    _text(tb.text_frame, [
+        ("H1  Combining textual content with structural metadata gives more robust "
+         "detection than content alone.", 18, True, NAVY),
+        ("Tested by the content-only versus content\u2013metadata comparison (Table 6.2).",
+         15, False, INK),
+    ])
+    _box(s, Inches(0.8), Inches(3.5), Inches(11.7), Inches(1.75), fill=PANEL,
+         line=RGBColor(0xC7, 0xDA, 0xF2))
+    tb = s.shapes.add_textbox(Inches(1.1), Inches(3.72), Inches(11.1), Inches(1.4))
+    _text(tb.text_frame, [
+        ("H2  Reviewed, validation-gated retraining improves detection of represented "
+         "modern threats while maintaining main-corpus performance.", 18, True, NAVY),
+        ("Tested by the before/after adaptive-retraining experiment (Table 6.4).",
+         15, False, INK),
+    ])
+    _notes(s, """
+The project tests two hypotheses.
+
+The first is that combining textual content with structural metadata gives more robust
+detection than content alone. I tested this directly by training every classifier twice - once
+on content only, once on the fused feature set - under identical conditions.
+
+The second is that reviewed, validation-gated retraining improves detection of represented
+modern threats while maintaining performance on the main corpus. I tested this with a
+before-and-after experiment on a held-out modern-threat set, checking main-corpus accuracy
+was not degraded.
+
+Both are answered in the results section.
+[1 minute. This slide connects your problem analysis directly to your experiments.]
+""")
+
     # --------------------------------------------------------------- 6 design
     s = _slide(prs, "System Design", "Three feature streams fused into one classifier")
     _figure_slot(s, Inches(0.8), Inches(1.5), Inches(11.7), Inches(5.3),
@@ -298,7 +334,8 @@ browser review console and a feedback store for retraining.
 """)
 
     # -------------------------------------------------- 8 results main corpus
-    s = _slide(prs, "Results \u2014 Held-out Test Split", "n = 20,288 emails never seen in training")
+    s = _slide(prs, "Results \u2014 Held-out Test Split",
+                "n = 20,288 emails never seen in training  \u2022  deployed threshold 0.55")
     _stat(s, Inches(0.7), Inches(1.45), Inches(2.9), "99.2%", "Accuracy")
     _stat(s, Inches(3.75), Inches(1.45), Inches(2.9), "0.991", "Precision")
     _stat(s, Inches(6.8), Inches(1.45), Inches(2.9), "0.992", "Recall")
@@ -333,7 +370,7 @@ model ranks spam above legitimate mail almost without exception on this corpus.
 """)
 
     # ----------------------------------------------- 9 classifier comparison
-    s = _slide(prs, "Classifier and Feature-Group Comparison", "Same split, same preprocessing, 0.5 threshold")
+    s = _slide(prs, "Classifier and Feature-Group Comparison", "Same split and preprocessing  \u2022  comparison at the default 0.5 threshold")
     _table(s, Inches(0.7), Inches(1.55), Inches(11.9), [
         ["Configuration", "Accuracy", "Precision", "Recall", "F1", "ROC-AUC"],
         ["Na\u00efve Bayes (content only)", "0.968", "0.988", "0.950", "0.969", "0.997"],
@@ -345,7 +382,7 @@ model ranks spam above legitimate mail almost without exception on this corpus.
     _bullets(s, Inches(0.9), Inches(4.9), Inches(11.5), Inches(2), [
         "Fusion raised recall over content-only for both linear classifiers \u2014 "
         "metadata bought additional phishing caught",
-        "SVM led by 0.001 (within noise); logistic regression deployed for calibrated "
+        "SVM led by 0.001 on this split; logistic regression deployed for calibrated "
         "probability, tunable threshold and explainable signals",
     ], size=17)
     _notes(s, """
@@ -358,7 +395,9 @@ but the lowest recall at 0.950, missing about five percent of phishing.
 Adding metadata raised recall for both linear classifiers: logistic regression from 0.990 to
 0.994, SVM from 0.993 to 0.995. That is the fusion design working as intended.
 
-The SVM was marginally highest at 0.993 versus 0.992 - one thousandth, within noise. I deployed
+The SVM was marginally highest at 0.993 versus 0.992 - one thousandth. That is a marginal difference on a single held-out split, and I did not
+run repeated trials or significance testing, so I would not claim the models are
+statistically distinguishable. I deployed
 logistic regression because it outputs a calibrated probability. That is what lets me tune the
 threshold and show a confidence value and signal explanation. Explainability was a stated
 objective, so I took the tunable model over a statistically indistinguishable alternative.
