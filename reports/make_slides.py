@@ -256,39 +256,39 @@ compare three classifiers; and implement adaptive retraining from reviewed sampl
 """)
 
     # ----------------------------------------------------------- 5b hypotheses
-    s = _slide(prs, "Hypotheses", "Each is tested by a specific experiment in Chapter 6")
+    s = _slide(prs, "Research Questions", "Each is answered by a specific experiment in Chapter 6")
     _box(s, Inches(0.8), Inches(1.5), Inches(11.7), Inches(1.75), fill=PANEL,
          line=RGBColor(0xC7, 0xDA, 0xF2))
     tb = s.shapes.add_textbox(Inches(1.1), Inches(1.72), Inches(11.1), Inches(1.4))
     _text(tb.text_frame, [
-        ("H1  Combining textual content with structural metadata gives more robust "
-         "detection than content alone.", 18, True, NAVY),
-        ("Tested by the content-only versus content\u2013metadata comparison (Table 6.2).",
+        ("Q1  Does combining textual content with structural metadata improve "
+         "detection over content alone?", 18, True, NAVY),
+        ("Answered by the content-only versus content\u2013metadata comparison (Table 6.2).",
          15, False, INK),
     ])
     _box(s, Inches(0.8), Inches(3.5), Inches(11.7), Inches(1.75), fill=PANEL,
          line=RGBColor(0xC7, 0xDA, 0xF2))
     tb = s.shapes.add_textbox(Inches(1.1), Inches(3.72), Inches(11.1), Inches(1.4))
     _text(tb.text_frame, [
-        ("H2  Reviewed, validation-gated retraining improves detection of represented "
-         "modern threats while maintaining main-corpus performance.", 18, True, NAVY),
-        ("Tested by the before/after adaptive-retraining experiment (Table 6.4).",
+        ("Q2  Can reviewed, validation-gated retraining improve detection of represented "
+         "modern threats while maintaining main-corpus performance?", 18, True, NAVY),
+        ("Answered by the before/after adaptive-retraining experiment (Table 6.4).",
          15, False, INK),
     ])
     _notes(s, """
-The project tests two hypotheses.
+Two research questions followed from the gap analysis.
 
-The first is that combining textual content with structural metadata gives more robust
-detection than content alone. I tested this directly by training every classifier twice - once
-on content only, once on the fused feature set - under identical conditions.
+The first: does combining textual content with structural metadata improve detection over
+content alone? I answered this by training every classifier twice - once on content only, once
+on the fused feature set - under identical conditions.
 
-The second is that reviewed, validation-gated retraining improves detection of represented
-modern threats while maintaining performance on the main corpus. I tested this with a
-before-and-after experiment on a held-out modern-threat set, checking main-corpus accuracy
-was not degraded.
+The second: can reviewed, validation-gated retraining improve detection of represented modern
+threats while maintaining main-corpus performance? I answered this with a before-and-after
+experiment on a held-out modern-threat set, checking that main-corpus accuracy was not degraded.
 
 Both are answered in the results section.
-[1 minute. This slide connects your problem analysis directly to your experiments.]
+[1 minute. NOTE: the report frames these as the research gap in Section 1.1 and answers them in
+6.2.2 and 6.2.4 - it does not use the word "hypothesis". If asked, say exactly that.]
 """)
 
     # --------------------------------------------------------------- 6 design
@@ -507,6 +507,132 @@ shared labelled corpus.
 
 Thank you. I am happy to take questions.
 [1.5 minutes. Say the limitations before you are asked - it reads as confidence.]
+""")
+
+    # ================================================================
+    # BACKUP SLIDES - not shown during the talk; jump to them in Q&A
+    # ================================================================
+    s = _slide(prs, "Backup Slides", "Not presented \u2014 reference material for questions")
+    _bullets(s, Inches(1.3), Inches(1.9), Inches(10.5), Inches(4.5), [
+        "B1  Confusion matrix and error breakdown",
+        "B2  Full classifier comparison (all five configurations)",
+        "B3  Structural metadata signals",
+        "B4  Commercial-filter context",
+        "B5  Validation gate and its known limit",
+        "B6  Implementation issues encountered",
+    ], size=20)
+    _notes(s, "Divider. Do not present. Jump straight to the slide you need.")
+
+    # B1 confusion matrix
+    s = _slide(prs, "B1  Confusion Matrix", "Held-out split, n = 20,288, threshold 0.55")
+    _table(s, Inches(1.4), Inches(1.7), Inches(10.5), [
+        ["", "Predicted spam", "Predicted legitimate"],
+        ["Actually phishing", "10,399  (true positive)", "80  (false negative)"],
+        ["Actually legitimate", "90  (false positive)", "9,719  (true negative)"],
+    ], col_w=[Inches(3.5), Inches(3.5), Inches(3.5)], size=15)
+    _bullets(s, Inches(1.4), Inches(3.9), Inches(10.5), Inches(2.5), [
+        "False-positive rate = 90 / 9,809 \u2248 0.9%",
+        "False-negative rate = 80 / 10,479 \u2248 0.8%",
+        "Flagged mail is quarantined, so a false positive is recoverable",
+    ])
+    _notes(s, """
+Of 9,809 legitimate messages, 90 were wrongly flagged - 0.9%. Of 10,479 phishing messages,
+80 were missed. Because flagged mail is quarantined rather than deleted, a false positive is
+recoverable by the user and correctable through the review console.
+""")
+
+    # B2 full comparison
+    s = _slide(prs, "B2  Full Classifier Comparison", "Same split and preprocessing, default 0.5 threshold")
+    _table(s, Inches(0.7), Inches(1.6), Inches(11.9), [
+        ["Configuration", "Accuracy", "Precision", "Recall", "F1", "ROC-AUC"],
+        ["Na\u00efve Bayes (content only)", "0.968", "0.988", "0.950", "0.969", "0.997"],
+        ["Logistic regression (content only)", "0.988", "0.987", "0.990", "0.989", "0.999"],
+        ["Linear SVM (content only)", "0.992", "0.990", "0.993", "0.992", "1.000"],
+        ["Logistic regression (fusion \u2014 deployed)", "0.992", "0.990", "0.994", "0.992", "1.000"],
+        ["Linear SVM (fusion)", "0.993", "0.992", "0.995", "0.993", "1.000"],
+    ], col_w=[Inches(4.4), Inches(1.5), Inches(1.5), Inches(1.5), Inches(1.5), Inches(1.5)], size=14)
+    _bullets(s, Inches(0.9), Inches(4.9), Inches(11.5), Inches(1.6), [
+        "SVM iteration limit raised to 10,000; metrics stable beyond that point",
+        "Deployed model runs at threshold 0.55, not the 0.5 used for this comparison",
+    ], size=16)
+    _notes(s, "Reference table. The deployed configuration is the fourth row.")
+
+    # B3 metadata signals
+    s = _slide(prs, "B3  Structural Metadata Signals")
+    _table(s, Inches(0.9), Inches(1.55), Inches(11.5), [
+        ["Signal", "What it captures"],
+        ["Subject length / body length", "Unusually short or long messages"],
+        ["URL count / distinct link domains", "Bulk campaigns and link-heavy mail"],
+        ["Attachment count", "Payload delivery"],
+        ["Sender has domain", "Malformed or missing sender address"],
+        ["Sender\u2013link domain mismatch", "Classic phishing indicator"],
+        ["Reply-To present", "Replies redirected away from the sender"],
+        ["SPF result / DKIM present", "Authentication indicators"],
+        ["Subject capitals ratio / exclamations", "Shouting and urgency styling"],
+        ["Suspicious-term count", "Urgency and verification vocabulary"],
+    ], col_w=[Inches(5.0), Inches(6.5)], size=14)
+    _notes(s, """
+These are standardised before fusion so that raw magnitudes - body length can be several
+thousand while TF-IDF values sit below one - do not dominate the text features.
+""")
+
+    # B4 commercial context
+    s = _slide(prs, "B4  Commercial-Filter Context", "Different test sets \u2014 not a head-to-head comparison")
+    _table(s, Inches(0.8), Inches(1.6), Inches(11.7), [
+        ["System", "AI-phishing flagged", "Legitimate AI mail wrongly flagged"],
+        ["Gmail", "\u2248 14%  (n = 63, Opara et al.)", "Low  (\u2248 1.6%)"],
+        ["Outlook", "\u2248 4%  (n = 63)", "\u2248 0%"],
+        ["Yahoo", "\u2248 90%  (n = 63)", "High  (\u2248 59\u201367%)"],
+        ["This project", "92%  (n = 4,986)", "\u2248 0.9% FPR on held-out corpus"],
+    ], col_w=[Inches(3.3), Inches(4.4), Inches(4.0)], size=14)
+    _bullets(s, Inches(0.9), Inches(4.4), Inches(11.5), Inches(2), [
+        "No claim of superiority: different corpora, different sample sizes, different protocol",
+        "A head-to-head test on one shared labelled corpus is Recommendation 2",
+    ], size=16)
+    _notes(s, """
+Only use this if asked about commercial filters. Lead with the caveat: the test sets differ,
+so this is context, not a comparison. Opara's study used 63 messages; mine used 4,986.
+""")
+
+    # B5 validation gate
+    s = _slide(prs, "B5  Validation Gate \u2014 and Its Limit")
+    _bullets(s, Inches(0.9), Inches(1.6), Inches(11.5), Inches(2.6), [
+        "Retraining is reviewer-initiated; the system never retrains on its own",
+        "A candidate is trained on the corpus plus accumulated corrections",
+        "Both models are scored on the same held-out split (fixed seed)",
+        "The candidate is deployed only if ranking quality is not reduced",
+        "The replaced model is archived, so the previous version can be restored",
+    ], size=17)
+    _box(s, Inches(0.9), Inches(4.5), Inches(11.5), Inches(2.0), fill=RGBColor(0xFF, 0xF7, 0xE6),
+         line=RGBColor(0xE8, 0xC4, 0x6A))
+    tb = s.shapes.add_textbox(Inches(1.2), Inches(4.75), Inches(10.9), Inches(1.6))
+    _text(tb.text_frame, [
+        ("Known limit", 17, True, NAVY),
+        ("The held-out split is drawn from the historical corpus, so corrections that are "
+         "internally consistent but mislabelled are never tested against. The gate catches "
+         "general degradation, not deliberate label poisoning \u2014 which is why the reviewer "
+         "checkpoint and model archiving matter.", 14, False, INK),
+    ])
+    _notes(s, """
+If asked about poisoning: be honest. The gate validates against a held-out split of the
+historical corpus, so it catches general degradation but not corrections that are internally
+consistent and mislabelled. That is why the reviewer checkpoint matters, and why every
+replaced model is archived - I tested recovery and restored the exact previous version.
+""")
+
+    # B6 implementation issues
+    s = _slide(prs, "B6  Implementation Issues Encountered")
+    _table(s, Inches(0.9), Inches(1.55), Inches(11.5), [
+        ["Issue", "Resolution"],
+        ["Email bodies exceeded Python's CSV field limit", "Raised the limit on package import"],
+        ["Bracketed and IPv6-like URLs crashed the parser", "Crash-safe URL extraction with fallback"],
+        ["Raw lengths dominated normalised TF-IDF values", "Standardised metadata before fusion"],
+        ["One source file duplicated others", "SHA-1 de-duplication: 82,500 \u2192 81,152"],
+        ["Body-only external sets contain a single class", "Report catch rate and threshold sweep instead"],
+    ], col_w=[Inches(6.3), Inches(5.2)], size=14)
+    _notes(s, """
+Use this if asked what went wrong during implementation. The metadata scaling issue is the most
+interesting one - short phishing messages were misclassified until the scaler was added.
 """)
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
