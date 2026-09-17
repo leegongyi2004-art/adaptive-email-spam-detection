@@ -1,0 +1,2501 @@
+raw_email,label
+"From: it.helpdesk@company.example
+Subject: Maintenance completed (8)
+
+The weekend mail-server maintenance finished on schedule. No action was required from staff and no settings changed. Report anything unusual via the normal IT ticket portal.",0
+"From: ap@remit-vendor.example
+Reply-To: collector@webmail.example
+Subject: Scheduled account verification
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://cloud-storage-verify.example/renew
+
+Cloud support",1
+"From: hr@company.example
+Subject: Benefits enrolment closing
+
+Benefits enrolment closes Friday. Make your selections in the HR system. Enrolment never requires sending bank details, passwords or a confirmation link by email.",0
+"From: facilities@company.example
+Subject: Access card ready (2)
+
+Your new building access card is at reception. Bring your old card and photo ID. This is a physical-card swap; it does not involve any account verification or online form.",0
+"From: it.helpdesk@company.example
+Subject: Two-factor authentication rollout (3)
+
+2FA enrolment is now open in the security portal under your account. Follow the on-screen prompts on your own device. No email replies with codes are needed; support never asks for verification codes.",0
+"From: newsletter@techdigest.example
+Subject: This week in security (9)
+
+This issue covers passkeys, phishing trends, and why legitimate providers never ask for passwords over email. You are receiving this because you subscribed; unsubscribe via the link in your settings.",0
+"From: hr@hr-document-portal.example
+Subject: Confidential document awaiting review
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://parcel-update.example/track
+
+This is an automated notice.",1
+"From: team@parcel-update.example
+Subject: Your cloud storage is expiring
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://helpdesk-verify.example/confirm
+
+Kind regards, IT Services",1
+"From: colleague@company.example
+Subject: Re: client call notes
+
+Thanks for the notes. The contract figures match what finance signed off; no new payment information was shared and no action is needed from us by email.",0
+"From: colleague@company.example
+Subject: Re: expense claim (1)
+
+Your expense claim was approved and will appear on the next payroll run. Submit receipts through the expenses app rather than by email, and never include full card numbers.",0
+"From: colleague@company.example
+Subject: Re: client call notes (1)
+
+Thanks for the notes. The contract figures match what finance signed off; no new payment information was shared and no action is needed from us by email.",0
+"From: hr@company.example
+Subject: Benefits enrolment closing (7)
+
+Benefits enrolment closes Friday. Make your selections in the HR system. Enrolment never requires sending bank details, passwords or a confirmation link by email.",0
+"From: admin@sharepoint-login.example
+Subject: Shared file needs review
+
+Your recent purchase could not be completed because the payment did not go through. Update your card details within 24 hours so the order is not cancelled:
+
+https://billing-verify.example/pay
+
+Billing services",1
+"From: accounts@invoice-payment.example
+Reply-To: collector@webmail.example
+Subject: Action required: unusual sign-in
+
+Dear accounts, invoice 8534 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://cloud-storage-verify.example/renew
+
+Accounts receivable",1
+"From: facilities@company.example
+Subject: Access card ready (8)
+
+Your new building access card is at reception. Bring your old card and photo ID. This is a physical-card swap; it does not involve any account verification or online form.",0
+"From: admin@sharepoint-login.example
+Reply-To: collector@webmail.example
+Subject: Security update for your account
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://hr-document-portal.example/share
+
+Document services",1
+"From: tracking@courier.example
+Subject: Delivery rescheduled to Tuesday (4)
+
+Your delivery has been rescheduled to Tuesday between 9am and noon at your request. No payment is needed to hold or redeliver; you can change the slot any time in the app.",0
+"From: admin@sharepoint-login.example
+Subject: Confidential document awaiting review
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://parcel-update.example/track
+
+Document services",1
+"From: billing@saas-vendor.example
+Subject: Your receipt for October (8)
+
+This is a receipt for your October subscription, charged to the card ending 4421 as usual. No action is required. Update billing details only from your account settings page.",0
+"From: admin@sharepoint-login.example
+Subject: Action required: unusual sign-in
+
+Dear accounts, invoice 8613 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://cloud-storage-verify.example/renew
+
+Accounts receivable",1
+"From: ap@remit-vendor.example
+Subject: Please confirm your direct deposit
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://account-verify.example/secure
+
+Document services",1
+"From: it.support@helpdesk-verify.example
+Reply-To: collector@webmail.example
+Subject: Invoice 7258 requires payment
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://account-verify.example/secure
+
+This is an automated notice.",1
+"From: security@account-verify.example
+Reply-To: collector@webmail.example
+Subject: Delivery address correction
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://helpdesk-verify.example/confirm
+
+Thank you, Account security team",1
+"From: accounts@invoice-payment.example
+Subject: Action required: unusual sign-in
+
+Your recent purchase could not be completed because the payment did not go through. Update your card details within 24 hours so the order is not cancelled:
+
+https://login-secure.example/auth
+
+Billing services",1
+"From: facilities@company.example
+Subject: Access card ready (8)
+
+Your new building access card is at reception. Bring your old card and photo ID. This is a physical-card swap; it does not involve any account verification or online form.",0
+"From: ap@remit-vendor.example
+Reply-To: collector@webmail.example
+Subject: Confidential document awaiting review
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://cloud-storage-verify.example/renew
+
+Payroll team",1
+"From: security@company.example
+Subject: Phishing awareness poster (7)
+
+October is cyber awareness month. Tip: real internal messages about accounts never ask you to reply with credentials or to click a link to 'verify'. When in doubt, call the IT desk using the number on the intranet.",0
+"From: accounts@invoice-payment.example
+Subject: Scheduled account verification
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://invoice-payment.example/remit
+
+Finance department",1
+"From: it.helpdesk@company.example
+Subject: Scheduled password change (2)
+
+Reminder: the quarterly password change opens Monday. Do it yourself via Settings > Security on your laptop. We will never send you a link or ask for your password by email. Visit the IT desk if you need help.",0
+"From: notifications@cloud-storage-verify.example
+Subject: Your mailbox is nearly full
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://account-verify.example/secure
+
+Document services",1
+"From: accounts@invoice-payment.example
+Subject: Your cloud storage is expiring
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://parcel-update.example/track
+
+Parcel support",1
+"From: it.helpdesk@company.example
+Subject: Scheduled password change (8)
+
+Reminder: the quarterly password change opens Monday. Do it yourself via Settings > Security on your laptop. We will never send you a link or ask for your password by email. Visit the IT desk if you need help.",0
+"From: it.support@helpdesk-verify.example
+Reply-To: collector@webmail.example
+Subject: Invoice 1255 requires payment
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://account-verify.example/secure
+
+Parcel support",1
+"From: security@account-verify.example
+Subject: Security update for your account
+
+Dear accounts, invoice 2183 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://account-verify.example/secure
+
+Accounts receivable",1
+"From: accounts@invoice-payment.example
+Reply-To: collector@webmail.example
+Subject: Invoice 2575 requires payment
+
+Dear accounts, invoice 8609 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://billing-verify.example/pay
+
+Accounts receivable",1
+"From: newsletter@techdigest.example
+Subject: This week in security (2)
+
+This issue covers passkeys, phishing trends, and why legitimate providers never ask for passwords over email. You are receiving this because you subscribed; unsubscribe via the link in your settings.",0
+"From: tracking@courier.example
+Subject: Your parcel has been delivered (5)
+
+Your parcel was delivered to your front porch at 2:14pm. A signature was not required. Nothing is owed; delivery fees were settled when you placed the order.",0
+"From: it.helpdesk@company.example
+Subject: Two-factor authentication rollout (9)
+
+2FA enrolment is now open in the security portal under your account. Follow the on-screen prompts on your own device. No email replies with codes are needed; support never asks for verification codes.",0
+"From: accounts@invoice-payment.example
+Subject: Scheduled account verification
+
+As part of our annual compliance check, all employees must confirm their login details this week. Accounts that are not verified will be disabled automatically.
+
+https://hr-document-portal.example/share
+
+Compliance team",1
+"From: it.helpdesk@company.example
+Subject: Scheduled password change (1)
+
+Reminder: the quarterly password change opens Monday. Do it yourself via Settings > Security on your laptop. We will never send you a link or ask for your password by email. Visit the IT desk if you need help.",0
+"From: hr@hr-document-portal.example
+Subject: Please confirm your direct deposit
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://hr-document-portal.example/share
+
+Kind regards, IT Services",1
+"From: it.support@helpdesk-verify.example
+Subject: Delivery address correction
+
+A confidential document has been prepared for you. For privacy reasons it requires sign-in to view. Please review and acknowledge receipt by end of day.
+
+https://hr-document-portal.example/share
+
+Human Resources",1
+"From: payroll@company.example
+Subject: Salary credited
+
+Your October salary has been transferred to the bank account registered in the HR system. Please check the payslip in the portal. We do not change account details from email requests.",0
+"From: ap@remit-vendor.example
+Reply-To: collector@webmail.example
+Subject: Security update for your account
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://helpdesk-verify.example/confirm
+
+Payroll team",1
+"From: team@parcel-update.example
+Subject: Your cloud storage is expiring
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://hr-document-portal.example/share
+
+Parcel support",1
+"From: security@company.example
+Subject: Phishing awareness poster (8)
+
+October is cyber awareness month. Tip: real internal messages about accounts never ask you to reply with credentials or to click a link to 'verify'. When in doubt, call the IT desk using the number on the intranet.",0
+"From: payroll@company.example
+Subject: Salary credited (6)
+
+Your October salary has been transferred to the bank account registered in the HR system. Please check the payslip in the portal. We do not change account details from email requests.",0
+"From: accounts@invoice-payment.example
+Subject: Your mailbox is nearly full
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://hr-document-portal.example/share
+
+Cloud support",1
+"From: ap@company.example
+Subject: Invoice 4821 on file (6)
+
+Thank you - invoice 4821 was paid on the 5th to the account we already have on record. No updated bank details are required; future invoices follow the same net-30 process.",0
+"From: it.support@helpdesk-verify.example
+Subject: Shared file needs review
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://helpdesk-verify.example/confirm
+
+Parcel support",1
+"From: notifications@cloud-storage-verify.example
+Subject: Please confirm your direct deposit
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://parcel-update.example/track
+
+Finance department",1
+"From: accounts@invoice-payment.example
+Reply-To: collector@webmail.example
+Subject: Payment failed for order 6187
+
+As part of our annual compliance check, all employees must confirm their login details this week. Accounts that are not verified will be disabled automatically.
+
+https://hr-document-portal.example/share
+
+Compliance team",1
+"From: colleague@company.example
+Subject: Re: expense claim (5)
+
+Your expense claim was approved and will appear on the next payroll run. Submit receipts through the expenses app rather than by email, and never include full card numbers.",0
+"From: it.helpdesk@company.example
+Subject: Two-factor authentication rollout (2)
+
+2FA enrolment is now open in the security portal under your account. Follow the on-screen prompts on your own device. No email replies with codes are needed; support never asks for verification codes.",0
+"From: library@university.example
+Subject: Account notice (9)
+
+Your library account is in good standing and nothing is due this week. Renew books from the library portal. Please disregard any message asking for a password or payment via email.",0
+"From: payroll@company.example
+Subject: Salary credited (9)
+
+Your October salary has been transferred to the bank account registered in the HR system. Please check the payslip in the portal. We do not change account details from email requests.",0
+"From: facilities@company.example
+Subject: Access card ready (5)
+
+Your new building access card is at reception. Bring your old card and photo ID. This is a physical-card swap; it does not involve any account verification or online form.",0
+"From: security@account-verify.example
+Reply-To: collector@webmail.example
+Subject: Scheduled account verification
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://billing-verify.example/pay
+
+Parcel support",1
+"From: tracking@courier.example
+Subject: Delivery rescheduled to Tuesday
+
+Your delivery has been rescheduled to Tuesday between 9am and noon at your request. No payment is needed to hold or redeliver; you can change the slot any time in the app.",0
+"From: it.helpdesk@company.example
+Subject: Scheduled password change (4)
+
+Reminder: the quarterly password change opens Monday. Do it yourself via Settings > Security on your laptop. We will never send you a link or ask for your password by email. Visit the IT desk if you need help.",0
+"From: notifications@cloud-storage-verify.example
+Subject: Confidential document awaiting review
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://helpdesk-verify.example/confirm
+
+Document services",1
+"From: facilities@company.example
+Subject: Access card ready (7)
+
+Your new building access card is at reception. Bring your old card and photo ID. This is a physical-card swap; it does not involve any account verification or online form.",0
+"From: facilities@company.example
+Subject: Access card ready (1)
+
+Your new building access card is at reception. Bring your old card and photo ID. This is a physical-card swap; it does not involve any account verification or online form.",0
+"From: notifications@cloud-storage-verify.example
+Reply-To: collector@webmail.example
+Subject: Confidential document awaiting review
+
+A confidential document has been prepared for you. For privacy reasons it requires sign-in to view. Please review and acknowledge receipt by end of day.
+
+https://parcel-update.example/track
+
+Human Resources",1
+"From: payroll@company.example
+Subject: Salary credited (3)
+
+Your October salary has been transferred to the bank account registered in the HR system. Please check the payslip in the portal. We do not change account details from email requests.",0
+"From: ap@remit-vendor.example
+Reply-To: collector@webmail.example
+Subject: Scheduled account verification
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://hr-document-portal.example/share
+
+This is an automated notice.",1
+"From: it.support@helpdesk-verify.example
+Subject: Invoice 6085 requires payment
+
+As part of our annual compliance check, all employees must confirm their login details this week. Accounts that are not verified will be disabled automatically.
+
+https://cloud-storage-verify.example/renew
+
+Compliance team",1
+"From: accounts@invoice-payment.example
+Reply-To: collector@webmail.example
+Subject: Security update for your account
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://invoice-payment.example/remit
+
+Cloud support",1
+"From: billing@saas-vendor.example
+Subject: Your receipt for October (4)
+
+This is a receipt for your October subscription, charged to the card ending 4421 as usual. No action is required. Update billing details only from your account settings page.",0
+"From: team@parcel-update.example
+Subject: Delivery address correction
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://invoice-payment.example/remit
+
+Kind regards, IT Services",1
+"From: hr@hr-document-portal.example
+Subject: Updated payment details
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://parcel-update.example/track
+
+Cloud support",1
+"From: ap@remit-vendor.example
+Reply-To: collector@webmail.example
+Subject: Updated payment details
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://helpdesk-verify.example/confirm
+
+Finance department",1
+"From: tracking@courier.example
+Subject: Your parcel has been delivered (2)
+
+Your parcel was delivered to your front porch at 2:14pm. A signature was not required. Nothing is owed; delivery fees were settled when you placed the order.",0
+"From: accounts@invoice-payment.example
+Subject: Please confirm your direct deposit
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://account-verify.example/secure
+
+Thank you, Account security team",1
+"From: team@parcel-update.example
+Reply-To: collector@webmail.example
+Subject: Action required: unusual sign-in
+
+Your recent purchase could not be completed because the payment did not go through. Update your card details within 24 hours so the order is not cancelled:
+
+https://parcel-update.example/track
+
+Billing services",1
+"From: ap@company.example
+Subject: Invoice 4821 on file (6)
+
+Thank you - invoice 4821 was paid on the 5th to the account we already have on record. No updated bank details are required; future invoices follow the same net-30 process.",0
+"From: ap@company.example
+Subject: Invoice 4821 on file (8)
+
+Thank you - invoice 4821 was paid on the 5th to the account we already have on record. No updated bank details are required; future invoices follow the same net-30 process.",0
+"From: library@university.example
+Subject: Account notice (8)
+
+Your library account is in good standing and nothing is due this week. Renew books from the library portal. Please disregard any message asking for a password or payment via email.",0
+"From: newsletter@techdigest.example
+Subject: This week in security (5)
+
+This issue covers passkeys, phishing trends, and why legitimate providers never ask for passwords over email. You are receiving this because you subscribed; unsubscribe via the link in your settings.",0
+"From: accounts@invoice-payment.example
+Reply-To: collector@webmail.example
+Subject: Please confirm your direct deposit
+
+Dear accounts, invoice 3202 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://helpdesk-verify.example/confirm
+
+Accounts receivable",1
+"From: hr@hr-document-portal.example
+Subject: Action required: unusual sign-in
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://billing-verify.example/pay
+
+This is an automated notice.",1
+"From: team@parcel-update.example
+Subject: Confidential document awaiting review
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://parcel-update.example/track
+
+Kind regards, IT Services",1
+"From: it.support@helpdesk-verify.example
+Reply-To: collector@webmail.example
+Subject: Delivery address correction
+
+As part of our annual compliance check, all employees must confirm their login details this week. Accounts that are not verified will be disabled automatically.
+
+https://parcel-update.example/track
+
+Compliance team",1
+"From: it.helpdesk@company.example
+Subject: Maintenance completed (2)
+
+The weekend mail-server maintenance finished on schedule. No action was required from staff and no settings changed. Report anything unusual via the normal IT ticket portal.",0
+"From: colleague@company.example
+Subject: Re: client call notes (4)
+
+Thanks for the notes. The contract figures match what finance signed off; no new payment information was shared and no action is needed from us by email.",0
+"From: tracking@courier.example
+Subject: Your parcel has been delivered (2)
+
+Your parcel was delivered to your front porch at 2:14pm. A signature was not required. Nothing is owed; delivery fees were settled when you placed the order.",0
+"From: security@account-verify.example
+Reply-To: collector@webmail.example
+Subject: Invoice 8509 requires payment
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://parcel-update.example/track
+
+Payroll team",1
+"From: accounts@invoice-payment.example
+Subject: Action required: unusual sign-in
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://login-secure.example/auth
+
+This is an automated notice.",1
+"From: notifications@cloud-storage-verify.example
+Subject: Your mailbox is nearly full
+
+Your recent purchase could not be completed because the payment did not go through. Update your card details within 24 hours so the order is not cancelled:
+
+https://cloud-storage-verify.example/renew
+
+Billing services",1
+"From: billing@saas-vendor.example
+Subject: Your receipt for October (9)
+
+This is a receipt for your October subscription, charged to the card ending 4421 as usual. No action is required. Update billing details only from your account settings page.",0
+"From: security@account-verify.example
+Subject: Please confirm your direct deposit
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://helpdesk-verify.example/confirm
+
+Cloud support",1
+"From: team@parcel-update.example
+Subject: Please confirm your direct deposit
+
+Your recent purchase could not be completed because the payment did not go through. Update your card details within 24 hours so the order is not cancelled:
+
+https://login-secure.example/auth
+
+Billing services",1
+"From: hr@hr-document-portal.example
+Reply-To: collector@webmail.example
+Subject: Security update for your account
+
+Your recent purchase could not be completed because the payment did not go through. Update your card details within 24 hours so the order is not cancelled:
+
+https://helpdesk-verify.example/confirm
+
+Billing services",1
+"From: team@shared-drive.example
+Subject: Document access note (1)
+
+You now have view access to the project folder on the company intranet. Open it via your normal browser bookmark. We never email direct login pages; reach documents from the internal portal only.",0
+"From: it.support@helpdesk-verify.example
+Reply-To: collector@webmail.example
+Subject: Confidential document awaiting review
+
+Dear accounts, invoice 8025 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://account-verify.example/secure
+
+Accounts receivable",1
+"From: tracking@courier.example
+Subject: Delivery rescheduled to Tuesday (2)
+
+Your delivery has been rescheduled to Tuesday between 9am and noon at your request. No payment is needed to hold or redeliver; you can change the slot any time in the app.",0
+"From: security@account-verify.example
+Subject: Your cloud storage is expiring
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://helpdesk-verify.example/confirm
+
+Thank you, Account security team",1
+"From: it.support@helpdesk-verify.example
+Reply-To: collector@webmail.example
+Subject: Your cloud storage is expiring
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://invoice-payment.example/remit
+
+Cloud support",1
+"From: colleague@company.example
+Subject: Re: expense claim (2)
+
+Your expense claim was approved and will appear on the next payroll run. Submit receipts through the expenses app rather than by email, and never include full card numbers.",0
+"From: hr@hr-document-portal.example
+Subject: Shared file needs review
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://parcel-update.example/track
+
+Parcel support",1
+"From: hr@company.example
+Subject: Benefits enrolment closing (6)
+
+Benefits enrolment closes Friday. Make your selections in the HR system. Enrolment never requires sending bank details, passwords or a confirmation link by email.",0
+"From: ap@company.example
+Subject: Invoice 4821 on file (9)
+
+Thank you - invoice 4821 was paid on the 5th to the account we already have on record. No updated bank details are required; future invoices follow the same net-30 process.",0
+"From: it.helpdesk@company.example
+Subject: Scheduled password change (8)
+
+Reminder: the quarterly password change opens Monday. Do it yourself via Settings > Security on your laptop. We will never send you a link or ask for your password by email. Visit the IT desk if you need help.",0
+"From: ap@remit-vendor.example
+Subject: Confidential document awaiting review
+
+A confidential document has been prepared for you. For privacy reasons it requires sign-in to view. Please review and acknowledge receipt by end of day.
+
+https://account-verify.example/secure
+
+Human Resources",1
+"From: it.helpdesk@company.example
+Subject: Two-factor authentication rollout (5)
+
+2FA enrolment is now open in the security portal under your account. Follow the on-screen prompts on your own device. No email replies with codes are needed; support never asks for verification codes.",0
+"From: it.helpdesk@company.example
+Subject: Maintenance completed
+
+The weekend mail-server maintenance finished on schedule. No action was required from staff and no settings changed. Report anything unusual via the normal IT ticket portal.",0
+"From: billing@saas-vendor.example
+Subject: Your receipt for October (4)
+
+This is a receipt for your October subscription, charged to the card ending 4421 as usual. No action is required. Update billing details only from your account settings page.",0
+"From: ap@remit-vendor.example
+Subject: Action required: unusual sign-in
+
+Dear accounts, invoice 6991 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://login-secure.example/auth
+
+Accounts receivable",1
+"From: it.helpdesk@company.example
+Subject: Two-factor authentication rollout (7)
+
+2FA enrolment is now open in the security portal under your account. Follow the on-screen prompts on your own device. No email replies with codes are needed; support never asks for verification codes.",0
+"From: it.helpdesk@company.example
+Subject: Maintenance completed (9)
+
+The weekend mail-server maintenance finished on schedule. No action was required from staff and no settings changed. Report anything unusual via the normal IT ticket portal.",0
+"From: newsletter@techdigest.example
+Subject: This week in security (6)
+
+This issue covers passkeys, phishing trends, and why legitimate providers never ask for passwords over email. You are receiving this because you subscribed; unsubscribe via the link in your settings.",0
+"From: accounts@invoice-payment.example
+Subject: Scheduled account verification
+
+Dear accounts, invoice 6629 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://login-secure.example/auth
+
+Accounts receivable",1
+"From: hr@hr-document-portal.example
+Reply-To: collector@webmail.example
+Subject: Scheduled account verification
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://helpdesk-verify.example/confirm
+
+This is an automated notice.",1
+"From: payroll@company.example
+Subject: Salary credited (5)
+
+Your October salary has been transferred to the bank account registered in the HR system. Please check the payslip in the portal. We do not change account details from email requests.",0
+"From: security@account-verify.example
+Reply-To: collector@webmail.example
+Subject: Your cloud storage is expiring
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://cloud-storage-verify.example/renew
+
+Kind regards, IT Services",1
+"From: notifications@cloud-storage-verify.example
+Reply-To: collector@webmail.example
+Subject: Your mailbox is nearly full
+
+Dear accounts, invoice 6092 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://billing-verify.example/pay
+
+Accounts receivable",1
+"From: security@company.example
+Subject: Phishing awareness poster (6)
+
+October is cyber awareness month. Tip: real internal messages about accounts never ask you to reply with credentials or to click a link to 'verify'. When in doubt, call the IT desk using the number on the intranet.",0
+"From: it.helpdesk@company.example
+Subject: Scheduled password change (4)
+
+Reminder: the quarterly password change opens Monday. Do it yourself via Settings > Security on your laptop. We will never send you a link or ask for your password by email. Visit the IT desk if you need help.",0
+"From: admin@sharepoint-login.example
+Subject: Payment failed for order 4568
+
+A confidential document has been prepared for you. For privacy reasons it requires sign-in to view. Please review and acknowledge receipt by end of day.
+
+https://billing-verify.example/pay
+
+Human Resources",1
+"From: colleague@company.example
+Subject: Re: expense claim (6)
+
+Your expense claim was approved and will appear on the next payroll run. Submit receipts through the expenses app rather than by email, and never include full card numbers.",0
+"From: hr@hr-document-portal.example
+Subject: Shared file needs review
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://billing-verify.example/pay
+
+Thank you, Account security team",1
+"From: security@account-verify.example
+Reply-To: collector@webmail.example
+Subject: Your cloud storage is expiring
+
+Dear accounts, invoice 1961 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://invoice-payment.example/remit
+
+Accounts receivable",1
+"From: facilities@company.example
+Subject: Access card ready (6)
+
+Your new building access card is at reception. Bring your old card and photo ID. This is a physical-card swap; it does not involve any account verification or online form.",0
+"From: hr@company.example
+Subject: Benefits enrolment closing (6)
+
+Benefits enrolment closes Friday. Make your selections in the HR system. Enrolment never requires sending bank details, passwords or a confirmation link by email.",0
+"From: payroll@company.example
+Subject: Salary credited (6)
+
+Your October salary has been transferred to the bank account registered in the HR system. Please check the payslip in the portal. We do not change account details from email requests.",0
+"From: it.helpdesk@company.example
+Subject: Maintenance completed (7)
+
+The weekend mail-server maintenance finished on schedule. No action was required from staff and no settings changed. Report anything unusual via the normal IT ticket portal.",0
+"From: it.helpdesk@company.example
+Subject: Two-factor authentication rollout (2)
+
+2FA enrolment is now open in the security portal under your account. Follow the on-screen prompts on your own device. No email replies with codes are needed; support never asks for verification codes.",0
+"From: accounts@invoice-payment.example
+Subject: Security update for your account
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://cloud-storage-verify.example/renew
+
+Parcel support",1
+"From: newsletter@techdigest.example
+Subject: This week in security (5)
+
+This issue covers passkeys, phishing trends, and why legitimate providers never ask for passwords over email. You are receiving this because you subscribed; unsubscribe via the link in your settings.",0
+"From: it.helpdesk@company.example
+Subject: Two-factor authentication rollout (6)
+
+2FA enrolment is now open in the security portal under your account. Follow the on-screen prompts on your own device. No email replies with codes are needed; support never asks for verification codes.",0
+"From: it.support@helpdesk-verify.example
+Subject: Payment failed for order 1520
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://invoice-payment.example/remit
+
+Parcel support",1
+"From: security@account-verify.example
+Subject: Updated payment details
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://cloud-storage-verify.example/renew
+
+Thank you, Account security team",1
+"From: it.support@helpdesk-verify.example
+Subject: Your mailbox is nearly full
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://cloud-storage-verify.example/renew
+
+Cloud support",1
+"From: tracking@courier.example
+Subject: Delivery rescheduled to Tuesday (5)
+
+Your delivery has been rescheduled to Tuesday between 9am and noon at your request. No payment is needed to hold or redeliver; you can change the slot any time in the app.",0
+"From: accounts@invoice-payment.example
+Subject: Scheduled account verification
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://hr-document-portal.example/share
+
+Thank you, Account security team",1
+"From: team@parcel-update.example
+Subject: Delivery address correction
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://invoice-payment.example/remit
+
+Payroll team",1
+"From: notifications@cloud-storage-verify.example
+Subject: Please confirm your direct deposit
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://cloud-storage-verify.example/renew
+
+Parcel support",1
+"From: hr@company.example
+Subject: Benefits enrolment closing (9)
+
+Benefits enrolment closes Friday. Make your selections in the HR system. Enrolment never requires sending bank details, passwords or a confirmation link by email.",0
+"From: security@account-verify.example
+Subject: Your cloud storage is expiring
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://login-secure.example/auth
+
+Kind regards, IT Services",1
+"From: ap@remit-vendor.example
+Reply-To: collector@webmail.example
+Subject: Your mailbox is nearly full
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://helpdesk-verify.example/confirm
+
+Payroll team",1
+"From: newsletter@techdigest.example
+Subject: This week in security (5)
+
+This issue covers passkeys, phishing trends, and why legitimate providers never ask for passwords over email. You are receiving this because you subscribed; unsubscribe via the link in your settings.",0
+"From: it.support@helpdesk-verify.example
+Reply-To: collector@webmail.example
+Subject: Updated payment details
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://account-verify.example/secure
+
+Cloud support",1
+"From: accounts@invoice-payment.example
+Subject: Payment failed for order 2513
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://billing-verify.example/pay
+
+This is an automated notice.",1
+"From: tracking@courier.example
+Subject: Delivery rescheduled to Tuesday (9)
+
+Your delivery has been rescheduled to Tuesday between 9am and noon at your request. No payment is needed to hold or redeliver; you can change the slot any time in the app.",0
+"From: tracking@courier.example
+Subject: Your parcel has been delivered (4)
+
+Your parcel was delivered to your front porch at 2:14pm. A signature was not required. Nothing is owed; delivery fees were settled when you placed the order.",0
+"From: billing@saas-vendor.example
+Subject: Your receipt for October
+
+This is a receipt for your October subscription, charged to the card ending 4421 as usual. No action is required. Update billing details only from your account settings page.",0
+"From: team@shared-drive.example
+Subject: Document access note (1)
+
+You now have view access to the project folder on the company intranet. Open it via your normal browser bookmark. We never email direct login pages; reach documents from the internal portal only.",0
+"From: ap@remit-vendor.example
+Subject: Scheduled account verification
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://billing-verify.example/pay
+
+Document services",1
+"From: it.helpdesk@company.example
+Subject: Scheduled password change (5)
+
+Reminder: the quarterly password change opens Monday. Do it yourself via Settings > Security on your laptop. We will never send you a link or ask for your password by email. Visit the IT desk if you need help.",0
+"From: security@company.example
+Subject: Phishing awareness poster (9)
+
+October is cyber awareness month. Tip: real internal messages about accounts never ask you to reply with credentials or to click a link to 'verify'. When in doubt, call the IT desk using the number on the intranet.",0
+"From: ap@company.example
+Subject: Invoice 4821 on file (1)
+
+Thank you - invoice 4821 was paid on the 5th to the account we already have on record. No updated bank details are required; future invoices follow the same net-30 process.",0
+"From: hr@company.example
+Subject: Benefits enrolment closing (9)
+
+Benefits enrolment closes Friday. Make your selections in the HR system. Enrolment never requires sending bank details, passwords or a confirmation link by email.",0
+"From: it.support@helpdesk-verify.example
+Reply-To: collector@webmail.example
+Subject: Security update for your account
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://invoice-payment.example/remit
+
+This is an automated notice.",1
+"From: payroll@company.example
+Subject: Salary credited (1)
+
+Your October salary has been transferred to the bank account registered in the HR system. Please check the payslip in the portal. We do not change account details from email requests.",0
+"From: facilities@company.example
+Subject: Access card ready (1)
+
+Your new building access card is at reception. Bring your old card and photo ID. This is a physical-card swap; it does not involve any account verification or online form.",0
+"From: admin@sharepoint-login.example
+Reply-To: collector@webmail.example
+Subject: Your mailbox is nearly full
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://cloud-storage-verify.example/renew
+
+Kind regards, IT Services",1
+"From: newsletter@techdigest.example
+Subject: This week in security (3)
+
+This issue covers passkeys, phishing trends, and why legitimate providers never ask for passwords over email. You are receiving this because you subscribed; unsubscribe via the link in your settings.",0
+"From: team@parcel-update.example
+Reply-To: collector@webmail.example
+Subject: Action required: unusual sign-in
+
+As part of our annual compliance check, all employees must confirm their login details this week. Accounts that are not verified will be disabled automatically.
+
+https://cloud-storage-verify.example/renew
+
+Compliance team",1
+"From: newsletter@techdigest.example
+Subject: This week in security (8)
+
+This issue covers passkeys, phishing trends, and why legitimate providers never ask for passwords over email. You are receiving this because you subscribed; unsubscribe via the link in your settings.",0
+"From: accounts@invoice-payment.example
+Reply-To: collector@webmail.example
+Subject: Please confirm your direct deposit
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://account-verify.example/secure
+
+Payroll team",1
+"From: library@university.example
+Subject: Account notice (1)
+
+Your library account is in good standing and nothing is due this week. Renew books from the library portal. Please disregard any message asking for a password or payment via email.",0
+"From: ap@remit-vendor.example
+Subject: Your cloud storage is expiring
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://cloud-storage-verify.example/renew
+
+Document services",1
+"From: hr@hr-document-portal.example
+Subject: Your cloud storage is expiring
+
+As part of our annual compliance check, all employees must confirm their login details this week. Accounts that are not verified will be disabled automatically.
+
+https://helpdesk-verify.example/confirm
+
+Compliance team",1
+"From: ap@remit-vendor.example
+Subject: Scheduled account verification
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://login-secure.example/auth
+
+Document services",1
+"From: it.support@helpdesk-verify.example
+Subject: Action required: unusual sign-in
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://invoice-payment.example/remit
+
+Document services",1
+"From: partner@legal-matter.example
+Subject: Urgent NDA and transfer
+
+This acquisition is moving fast. Please wire the deposit and send the signed documents back to this email. Do not call my office line as I am in a confidential negotiation all week.",1
+"From: payroll@company.example
+Subject: Salary credited (1)
+
+Your October salary has been transferred to the bank account registered in the HR system. Please check the payslip in the portal. We do not change account details from email requests.",0
+"From: it.helpdesk@company.example
+Subject: Scheduled password change (6)
+
+Reminder: the quarterly password change opens Monday. Do it yourself via Settings > Security on your laptop. We will never send you a link or ask for your password by email. Visit the IT desk if you need help.",0
+"From: ap@remit-vendor.example
+Reply-To: collector@webmail.example
+Subject: Shared file needs review
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://billing-verify.example/pay
+
+Payroll team",1
+"From: admin@sharepoint-login.example
+Subject: Action required: unusual sign-in
+
+Dear accounts, invoice 7791 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://helpdesk-verify.example/confirm
+
+Accounts receivable",1
+"From: it.support@helpdesk-verify.example
+Subject: Delivery address correction
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://invoice-payment.example/remit
+
+This is an automated notice.",1
+"From: it.helpdesk@company.example
+Subject: Scheduled password change
+
+Reminder: the quarterly password change opens Monday. Do it yourself via Settings > Security on your laptop. We will never send you a link or ask for your password by email. Visit the IT desk if you need help.",0
+"From: security@account-verify.example
+Reply-To: collector@webmail.example
+Subject: Shared file needs review
+
+Your recent purchase could not be completed because the payment did not go through. Update your card details within 24 hours so the order is not cancelled:
+
+https://invoice-payment.example/remit
+
+Billing services",1
+"From: admin@sharepoint-login.example
+Subject: Security update for your account
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://cloud-storage-verify.example/renew
+
+Document services",1
+"From: it.helpdesk@company.example
+Subject: Scheduled password change (3)
+
+Reminder: the quarterly password change opens Monday. Do it yourself via Settings > Security on your laptop. We will never send you a link or ask for your password by email. Visit the IT desk if you need help.",0
+"From: admin@sharepoint-login.example
+Reply-To: collector@webmail.example
+Subject: Updated payment details
+
+A confidential document has been prepared for you. For privacy reasons it requires sign-in to view. Please review and acknowledge receipt by end of day.
+
+https://helpdesk-verify.example/confirm
+
+Human Resources",1
+"From: ap@company.example
+Subject: Invoice 4821 on file (1)
+
+Thank you - invoice 4821 was paid on the 5th to the account we already have on record. No updated bank details are required; future invoices follow the same net-30 process.",0
+"From: notifications@cloud-storage-verify.example
+Reply-To: collector@webmail.example
+Subject: Payment failed for order 5454
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://billing-verify.example/pay
+
+Cloud support",1
+"From: hr@hr-document-portal.example
+Reply-To: collector@webmail.example
+Subject: Shared file needs review
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://billing-verify.example/pay
+
+Kind regards, IT Services",1
+"From: security@account-verify.example
+Subject: Please confirm your direct deposit
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://hr-document-portal.example/share
+
+Payroll team",1
+"From: accounts@invoice-payment.example
+Reply-To: collector@webmail.example
+Subject: Your mailbox is nearly full
+
+As part of our annual compliance check, all employees must confirm their login details this week. Accounts that are not verified will be disabled automatically.
+
+https://helpdesk-verify.example/confirm
+
+Compliance team",1
+"From: admin@sharepoint-login.example
+Subject: Shared file needs review
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://login-secure.example/auth
+
+Kind regards, IT Services",1
+"From: ap@company.example
+Subject: Invoice 4821 on file (2)
+
+Thank you - invoice 4821 was paid on the 5th to the account we already have on record. No updated bank details are required; future invoices follow the same net-30 process.",0
+"From: accounts@invoice-payment.example
+Subject: Updated payment details
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://login-secure.example/auth
+
+Payroll team",1
+"From: it.helpdesk@company.example
+Subject: Two-factor authentication rollout (5)
+
+2FA enrolment is now open in the security portal under your account. Follow the on-screen prompts on your own device. No email replies with codes are needed; support never asks for verification codes.",0
+"From: it.helpdesk@company.example
+Subject: Two-factor authentication rollout
+
+2FA enrolment is now open in the security portal under your account. Follow the on-screen prompts on your own device. No email replies with codes are needed; support never asks for verification codes.",0
+"From: admin@sharepoint-login.example
+Subject: Action required: unusual sign-in
+
+A confidential document has been prepared for you. For privacy reasons it requires sign-in to view. Please review and acknowledge receipt by end of day.
+
+https://account-verify.example/secure
+
+Human Resources",1
+"From: notifications@cloud-storage-verify.example
+Subject: Security update for your account
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://parcel-update.example/track
+
+Thank you, Account security team",1
+"From: team@shared-drive.example
+Subject: Document access note (2)
+
+You now have view access to the project folder on the company intranet. Open it via your normal browser bookmark. We never email direct login pages; reach documents from the internal portal only.",0
+"From: team@parcel-update.example
+Reply-To: collector@webmail.example
+Subject: Your mailbox is nearly full
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://cloud-storage-verify.example/renew
+
+Finance department",1
+"From: team@parcel-update.example
+Reply-To: collector@webmail.example
+Subject: Delivery address correction
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://hr-document-portal.example/share
+
+Payroll team",1
+"From: ap@company.example
+Subject: Invoice 4821 on file (2)
+
+Thank you - invoice 4821 was paid on the 5th to the account we already have on record. No updated bank details are required; future invoices follow the same net-30 process.",0
+"From: it.helpdesk@company.example
+Subject: Scheduled password change (9)
+
+Reminder: the quarterly password change opens Monday. Do it yourself via Settings > Security on your laptop. We will never send you a link or ask for your password by email. Visit the IT desk if you need help.",0
+"From: payroll@company.example
+Subject: Salary credited (6)
+
+Your October salary has been transferred to the bank account registered in the HR system. Please check the payslip in the portal. We do not change account details from email requests.",0
+"From: library@university.example
+Subject: Account notice (6)
+
+Your library account is in good standing and nothing is due this week. Renew books from the library portal. Please disregard any message asking for a password or payment via email.",0
+"From: newsletter@techdigest.example
+Subject: This week in security (4)
+
+This issue covers passkeys, phishing trends, and why legitimate providers never ask for passwords over email. You are receiving this because you subscribed; unsubscribe via the link in your settings.",0
+"From: notifications@cloud-storage-verify.example
+Reply-To: collector@webmail.example
+Subject: Security update for your account
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://parcel-update.example/track
+
+Finance department",1
+"From: tracking@courier.example
+Subject: Your parcel has been delivered (6)
+
+Your parcel was delivered to your front porch at 2:14pm. A signature was not required. Nothing is owed; delivery fees were settled when you placed the order.",0
+"From: tracking@courier.example
+Subject: Delivery rescheduled to Tuesday (9)
+
+Your delivery has been rescheduled to Tuesday between 9am and noon at your request. No payment is needed to hold or redeliver; you can change the slot any time in the app.",0
+"From: security@company.example
+Subject: Phishing awareness poster
+
+October is cyber awareness month. Tip: real internal messages about accounts never ask you to reply with credentials or to click a link to 'verify'. When in doubt, call the IT desk using the number on the intranet.",0
+"From: colleague@company.example
+Subject: Re: expense claim (9)
+
+Your expense claim was approved and will appear on the next payroll run. Submit receipts through the expenses app rather than by email, and never include full card numbers.",0
+"From: hr@hr-document-portal.example
+Subject: Shared file needs review
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://parcel-update.example/track
+
+This is an automated notice.",1
+"From: hr@company.example
+Subject: Benefits enrolment closing (5)
+
+Benefits enrolment closes Friday. Make your selections in the HR system. Enrolment never requires sending bank details, passwords or a confirmation link by email.",0
+"From: billing@saas-vendor.example
+Subject: Your receipt for October (2)
+
+This is a receipt for your October subscription, charged to the card ending 4421 as usual. No action is required. Update billing details only from your account settings page.",0
+"From: ap@remit-vendor.example
+Subject: Payment failed for order 8840
+
+As part of our annual compliance check, all employees must confirm their login details this week. Accounts that are not verified will be disabled automatically.
+
+https://login-secure.example/auth
+
+Compliance team",1
+"From: notifications@cloud-storage-verify.example
+Subject: Please confirm your direct deposit
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://login-secure.example/auth
+
+Finance department",1
+"From: ap@remit-vendor.example
+Subject: Action required: unusual sign-in
+
+Dear accounts, invoice 2083 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://login-secure.example/auth
+
+Accounts receivable",1
+"From: library@university.example
+Subject: Account notice (6)
+
+Your library account is in good standing and nothing is due this week. Renew books from the library portal. Please disregard any message asking for a password or payment via email.",0
+"From: ap@company.example
+Subject: Invoice 4821 on file (8)
+
+Thank you - invoice 4821 was paid on the 5th to the account we already have on record. No updated bank details are required; future invoices follow the same net-30 process.",0
+"From: tracking@courier.example
+Subject: Delivery rescheduled to Tuesday (7)
+
+Your delivery has been rescheduled to Tuesday between 9am and noon at your request. No payment is needed to hold or redeliver; you can change the slot any time in the app.",0
+"From: colleague@company.example
+Subject: Re: expense claim
+
+Your expense claim was approved and will appear on the next payroll run. Submit receipts through the expenses app rather than by email, and never include full card numbers.",0
+"From: colleague@company.example
+Subject: Re: expense claim (6)
+
+Your expense claim was approved and will appear on the next payroll run. Submit receipts through the expenses app rather than by email, and never include full card numbers.",0
+"From: team@parcel-update.example
+Reply-To: collector@webmail.example
+Subject: Your mailbox is nearly full
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://invoice-payment.example/remit
+
+This is an automated notice.",1
+"From: library@university.example
+Subject: Account notice (6)
+
+Your library account is in good standing and nothing is due this week. Renew books from the library portal. Please disregard any message asking for a password or payment via email.",0
+"From: ap@remit-vendor.example
+Reply-To: collector@webmail.example
+Subject: Confidential document awaiting review
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://parcel-update.example/track
+
+Thank you, Account security team",1
+"From: security@account-verify.example
+Reply-To: collector@webmail.example
+Subject: Shared file needs review
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://parcel-update.example/track
+
+This is an automated notice.",1
+"From: it.helpdesk@company.example
+Subject: Maintenance completed (3)
+
+The weekend mail-server maintenance finished on schedule. No action was required from staff and no settings changed. Report anything unusual via the normal IT ticket portal.",0
+"From: ap@remit-vendor.example
+Reply-To: collector@webmail.example
+Subject: Scheduled account verification
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://hr-document-portal.example/share
+
+Finance department",1
+"From: security@company.example
+Subject: Phishing awareness poster (5)
+
+October is cyber awareness month. Tip: real internal messages about accounts never ask you to reply with credentials or to click a link to 'verify'. When in doubt, call the IT desk using the number on the intranet.",0
+"From: hr@hr-document-portal.example
+Subject: Payment failed for order 1470
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://login-secure.example/auth
+
+Document services",1
+"From: team@parcel-update.example
+Subject: Delivery address correction
+
+As part of our annual compliance check, all employees must confirm their login details this week. Accounts that are not verified will be disabled automatically.
+
+https://invoice-payment.example/remit
+
+Compliance team",1
+"From: hr@company.example
+Subject: Benefits enrolment closing (4)
+
+Benefits enrolment closes Friday. Make your selections in the HR system. Enrolment never requires sending bank details, passwords or a confirmation link by email.",0
+"From: team@parcel-update.example
+Reply-To: collector@webmail.example
+Subject: Updated payment details
+
+Your recent purchase could not be completed because the payment did not go through. Update your card details within 24 hours so the order is not cancelled:
+
+https://cloud-storage-verify.example/renew
+
+Billing services",1
+"From: billing@saas-vendor.example
+Subject: Your receipt for October (5)
+
+This is a receipt for your October subscription, charged to the card ending 4421 as usual. No action is required. Update billing details only from your account settings page.",0
+"From: tracking@courier.example
+Subject: Your parcel has been delivered (5)
+
+Your parcel was delivered to your front porch at 2:14pm. A signature was not required. Nothing is owed; delivery fees were settled when you placed the order.",0
+"From: accounts@invoice-payment.example
+Subject: Security update for your account
+
+A confidential document has been prepared for you. For privacy reasons it requires sign-in to view. Please review and acknowledge receipt by end of day.
+
+https://helpdesk-verify.example/confirm
+
+Human Resources",1
+"From: ap@company.example
+Subject: Invoice 4821 on file (2)
+
+Thank you - invoice 4821 was paid on the 5th to the account we already have on record. No updated bank details are required; future invoices follow the same net-30 process.",0
+"From: team@shared-drive.example
+Subject: Document access note
+
+You now have view access to the project folder on the company intranet. Open it via your normal browser bookmark. We never email direct login pages; reach documents from the internal portal only.",0
+"From: colleague@company.example
+Subject: Re: client call notes (1)
+
+Thanks for the notes. The contract figures match what finance signed off; no new payment information was shared and no action is needed from us by email.",0
+"From: ap@company.example
+Subject: Invoice 4821 on file (8)
+
+Thank you - invoice 4821 was paid on the 5th to the account we already have on record. No updated bank details are required; future invoices follow the same net-30 process.",0
+"From: notifications@cloud-storage-verify.example
+Reply-To: collector@webmail.example
+Subject: Security update for your account
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://login-secure.example/auth
+
+Parcel support",1
+"From: security@account-verify.example
+Subject: Invoice 5278 requires payment
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://login-secure.example/auth
+
+Cloud support",1
+"From: security@account-verify.example
+Subject: Shared file needs review
+
+Your recent purchase could not be completed because the payment did not go through. Update your card details within 24 hours so the order is not cancelled:
+
+https://account-verify.example/secure
+
+Billing services",1
+"From: library@university.example
+Subject: Account notice (3)
+
+Your library account is in good standing and nothing is due this week. Renew books from the library portal. Please disregard any message asking for a password or payment via email.",0
+"From: ap@remit-vendor.example
+Reply-To: collector@webmail.example
+Subject: Delivery address correction
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://invoice-payment.example/remit
+
+Thank you, Account security team",1
+"From: billing@saas-vendor.example
+Subject: Your receipt for October (4)
+
+This is a receipt for your October subscription, charged to the card ending 4421 as usual. No action is required. Update billing details only from your account settings page.",0
+"From: tracking@courier.example
+Subject: Delivery rescheduled to Tuesday (5)
+
+Your delivery has been rescheduled to Tuesday between 9am and noon at your request. No payment is needed to hold or redeliver; you can change the slot any time in the app.",0
+"From: team@parcel-update.example
+Reply-To: collector@webmail.example
+Subject: Shared file needs review
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://hr-document-portal.example/share
+
+Finance department",1
+"From: it.helpdesk@company.example
+Subject: Scheduled password change (1)
+
+Reminder: the quarterly password change opens Monday. Do it yourself via Settings > Security on your laptop. We will never send you a link or ask for your password by email. Visit the IT desk if you need help.",0
+"From: hr@hr-document-portal.example
+Subject: Updated payment details
+
+Your recent purchase could not be completed because the payment did not go through. Update your card details within 24 hours so the order is not cancelled:
+
+https://hr-document-portal.example/share
+
+Billing services",1
+"From: hr@company.example
+Subject: Benefits enrolment closing (2)
+
+Benefits enrolment closes Friday. Make your selections in the HR system. Enrolment never requires sending bank details, passwords or a confirmation link by email.",0
+"From: colleague@company.example
+Subject: Re: expense claim (5)
+
+Your expense claim was approved and will appear on the next payroll run. Submit receipts through the expenses app rather than by email, and never include full card numbers.",0
+"From: hr@company.example
+Subject: Benefits enrolment closing (7)
+
+Benefits enrolment closes Friday. Make your selections in the HR system. Enrolment never requires sending bank details, passwords or a confirmation link by email.",0
+"From: hr@hr-document-portal.example
+Subject: Security update for your account
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://login-secure.example/auth
+
+Cloud support",1
+"From: it.support@helpdesk-verify.example
+Subject: Updated payment details
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://hr-document-portal.example/share
+
+This is an automated notice.",1
+"From: colleague@company.example
+Subject: Re: client call notes (5)
+
+Thanks for the notes. The contract figures match what finance signed off; no new payment information was shared and no action is needed from us by email.",0
+"From: it.support@helpdesk-verify.example
+Subject: Please confirm your direct deposit
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://helpdesk-verify.example/confirm
+
+Kind regards, IT Services",1
+"From: it.helpdesk@company.example
+Subject: Maintenance completed (8)
+
+The weekend mail-server maintenance finished on schedule. No action was required from staff and no settings changed. Report anything unusual via the normal IT ticket portal.",0
+"From: team@shared-drive.example
+Subject: Document access note (4)
+
+You now have view access to the project folder on the company intranet. Open it via your normal browser bookmark. We never email direct login pages; reach documents from the internal portal only.",0
+"From: it.helpdesk@company.example
+Subject: Two-factor authentication rollout (7)
+
+2FA enrolment is now open in the security portal under your account. Follow the on-screen prompts on your own device. No email replies with codes are needed; support never asks for verification codes.",0
+"From: it.support@helpdesk-verify.example
+Reply-To: collector@webmail.example
+Subject: Your cloud storage is expiring
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://login-secure.example/auth
+
+Thank you, Account security team",1
+"From: ap@remit-vendor.example
+Subject: Updated payment details
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://login-secure.example/auth
+
+Payroll team",1
+"From: it.helpdesk@company.example
+Subject: Maintenance completed (5)
+
+The weekend mail-server maintenance finished on schedule. No action was required from staff and no settings changed. Report anything unusual via the normal IT ticket portal.",0
+"From: ap@company.example
+Subject: Invoice 4821 on file (5)
+
+Thank you - invoice 4821 was paid on the 5th to the account we already have on record. No updated bank details are required; future invoices follow the same net-30 process.",0
+"From: it.support@helpdesk-verify.example
+Subject: Payment failed for order 7916
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://parcel-update.example/track
+
+Cloud support",1
+"From: it.support@helpdesk-verify.example
+Subject: Security update for your account
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://cloud-storage-verify.example/renew
+
+Finance department",1
+"From: ap@remit-vendor.example
+Reply-To: collector@webmail.example
+Subject: Delivery address correction
+
+Dear accounts, invoice 3686 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://parcel-update.example/track
+
+Accounts receivable",1
+"From: colleague@company.example
+Subject: Re: expense claim (1)
+
+Your expense claim was approved and will appear on the next payroll run. Submit receipts through the expenses app rather than by email, and never include full card numbers.",0
+"From: accounts@invoice-payment.example
+Subject: Confidential document awaiting review
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://billing-verify.example/pay
+
+Document services",1
+"From: tracking@courier.example
+Subject: Your parcel has been delivered (5)
+
+Your parcel was delivered to your front porch at 2:14pm. A signature was not required. Nothing is owed; delivery fees were settled when you placed the order.",0
+"From: security@company.example
+Subject: Phishing awareness poster (3)
+
+October is cyber awareness month. Tip: real internal messages about accounts never ask you to reply with credentials or to click a link to 'verify'. When in doubt, call the IT desk using the number on the intranet.",0
+"From: team@parcel-update.example
+Subject: Invoice 9405 requires payment
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://parcel-update.example/track
+
+Payroll team",1
+"From: security@company.example
+Subject: Phishing awareness poster (6)
+
+October is cyber awareness month. Tip: real internal messages about accounts never ask you to reply with credentials or to click a link to 'verify'. When in doubt, call the IT desk using the number on the intranet.",0
+"From: newsletter@techdigest.example
+Subject: This week in security
+
+This issue covers passkeys, phishing trends, and why legitimate providers never ask for passwords over email. You are receiving this because you subscribed; unsubscribe via the link in your settings.",0
+"From: tracking@courier.example
+Subject: Your parcel has been delivered (2)
+
+Your parcel was delivered to your front porch at 2:14pm. A signature was not required. Nothing is owed; delivery fees were settled when you placed the order.",0
+"From: library@university.example
+Subject: Account notice (7)
+
+Your library account is in good standing and nothing is due this week. Renew books from the library portal. Please disregard any message asking for a password or payment via email.",0
+"From: colleague@company.example
+Subject: Re: client call notes (1)
+
+Thanks for the notes. The contract figures match what finance signed off; no new payment information was shared and no action is needed from us by email.",0
+"From: team@shared-drive.example
+Subject: Document access note (2)
+
+You now have view access to the project folder on the company intranet. Open it via your normal browser bookmark. We never email direct login pages; reach documents from the internal portal only.",0
+"From: colleague@company.example
+Subject: Re: client call notes (4)
+
+Thanks for the notes. The contract figures match what finance signed off; no new payment information was shared and no action is needed from us by email.",0
+"From: colleague@company.example
+Subject: Re: client call notes (7)
+
+Thanks for the notes. The contract figures match what finance signed off; no new payment information was shared and no action is needed from us by email.",0
+"From: billing@saas-vendor.example
+Subject: Your receipt for October (6)
+
+This is a receipt for your October subscription, charged to the card ending 4421 as usual. No action is required. Update billing details only from your account settings page.",0
+"From: it.support@helpdesk-verify.example
+Subject: Scheduled account verification
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://invoice-payment.example/remit
+
+Parcel support",1
+"From: notifications@cloud-storage-verify.example
+Reply-To: collector@webmail.example
+Subject: Security update for your account
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://cloud-storage-verify.example/renew
+
+Thank you, Account security team",1
+"From: accounts@invoice-payment.example
+Reply-To: collector@webmail.example
+Subject: Please confirm your direct deposit
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://account-verify.example/secure
+
+Cloud support",1
+"From: colleague@company.example
+Subject: Re: client call notes (2)
+
+Thanks for the notes. The contract figures match what finance signed off; no new payment information was shared and no action is needed from us by email.",0
+"From: notifications@cloud-storage-verify.example
+Subject: Your cloud storage is expiring
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://cloud-storage-verify.example/renew
+
+Payroll team",1
+"From: admin@sharepoint-login.example
+Subject: Security update for your account
+
+Your recent purchase could not be completed because the payment did not go through. Update your card details within 24 hours so the order is not cancelled:
+
+https://account-verify.example/secure
+
+Billing services",1
+"From: it.helpdesk@company.example
+Subject: Two-factor authentication rollout (6)
+
+2FA enrolment is now open in the security portal under your account. Follow the on-screen prompts on your own device. No email replies with codes are needed; support never asks for verification codes.",0
+"From: hr@hr-document-portal.example
+Subject: Scheduled account verification
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://hr-document-portal.example/share
+
+Parcel support",1
+"From: tracking@courier.example
+Subject: Delivery rescheduled to Tuesday (4)
+
+Your delivery has been rescheduled to Tuesday between 9am and noon at your request. No payment is needed to hold or redeliver; you can change the slot any time in the app.",0
+"From: accounts@invoice-payment.example
+Subject: Scheduled account verification
+
+Your recent purchase could not be completed because the payment did not go through. Update your card details within 24 hours so the order is not cancelled:
+
+https://parcel-update.example/track
+
+Billing services",1
+"From: admin@sharepoint-login.example
+Reply-To: collector@webmail.example
+Subject: Payment failed for order 3943
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://billing-verify.example/pay
+
+Payroll team",1
+"From: notifications@cloud-storage-verify.example
+Reply-To: collector@webmail.example
+Subject: Your cloud storage is expiring
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://account-verify.example/secure
+
+Payroll team",1
+"From: hr.onboarding@company-internal.example
+Subject: New employee details
+
+Please share your bank routing and account number by email so finance can set up your direct deposit before your first day; we complete this step outside the portal for speed.",1
+"From: library@university.example
+Subject: Account notice (3)
+
+Your library account is in good standing and nothing is due this week. Renew books from the library portal. Please disregard any message asking for a password or payment via email.",0
+"From: library@university.example
+Subject: Account notice
+
+Your library account is in good standing and nothing is due this week. Renew books from the library portal. Please disregard any message asking for a password or payment via email.",0
+"From: team@shared-drive.example
+Subject: Document access note (4)
+
+You now have view access to the project folder on the company intranet. Open it via your normal browser bookmark. We never email direct login pages; reach documents from the internal portal only.",0
+"From: admin@sharepoint-login.example
+Subject: Security update for your account
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://account-verify.example/secure
+
+Finance department",1
+"From: it.helpdesk@company.example
+Subject: Maintenance completed (7)
+
+The weekend mail-server maintenance finished on schedule. No action was required from staff and no settings changed. Report anything unusual via the normal IT ticket portal.",0
+"From: security@account-verify.example
+Subject: Security update for your account
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://helpdesk-verify.example/confirm
+
+Cloud support",1
+"From: notifications@cloud-storage-verify.example
+Reply-To: collector@webmail.example
+Subject: Action required: unusual sign-in
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://helpdesk-verify.example/confirm
+
+Cloud support",1
+"From: payroll@company.example
+Subject: Salary credited (8)
+
+Your October salary has been transferred to the bank account registered in the HR system. Please check the payslip in the portal. We do not change account details from email requests.",0
+"From: it.support@helpdesk-verify.example
+Reply-To: collector@webmail.example
+Subject: Action required: unusual sign-in
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://helpdesk-verify.example/confirm
+
+This is an automated notice.",1
+"From: it.support@helpdesk-verify.example
+Subject: Action required: unusual sign-in
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://account-verify.example/secure
+
+Parcel support",1
+"From: colleague@company.example
+Subject: Re: expense claim (1)
+
+Your expense claim was approved and will appear on the next payroll run. Submit receipts through the expenses app rather than by email, and never include full card numbers.",0
+"From: payroll@hr-internal.example
+Subject: Re: reimbursement
+
+There was an issue with the payroll file. Reply with your full bank account number and online banking log-in so we can verify and re-issue your bonus before the holiday.",1
+"From: library@university.example
+Subject: Account notice (8)
+
+Your library account is in good standing and nothing is due this week. Renew books from the library portal. Please disregard any message asking for a password or payment via email.",0
+"From: accounts@invoice-payment.example
+Subject: Shared file needs review
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://login-secure.example/auth
+
+This is an automated notice.",1
+"From: it.helpdesk@company.example
+Subject: Two-factor authentication rollout (9)
+
+2FA enrolment is now open in the security portal under your account. Follow the on-screen prompts on your own device. No email replies with codes are needed; support never asks for verification codes.",0
+"From: facilities@company.example
+Subject: Access card ready (1)
+
+Your new building access card is at reception. Bring your old card and photo ID. This is a physical-card swap; it does not involve any account verification or online form.",0
+"From: tracking@courier.example
+Subject: Your parcel has been delivered
+
+Your parcel was delivered to your front porch at 2:14pm. A signature was not required. Nothing is owed; delivery fees were settled when you placed the order.",0
+"From: admin@sharepoint-login.example
+Subject: Payment failed for order 8771
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://parcel-update.example/track
+
+Document services",1
+"From: colleague@company.example
+Subject: Re: expense claim (2)
+
+Your expense claim was approved and will appear on the next payroll run. Submit receipts through the expenses app rather than by email, and never include full card numbers.",0
+"From: it.support@helpdesk-verify.example
+Reply-To: collector@webmail.example
+Subject: Your mailbox is nearly full
+
+A confidential document has been prepared for you. For privacy reasons it requires sign-in to view. Please review and acknowledge receipt by end of day.
+
+https://parcel-update.example/track
+
+Human Resources",1
+"From: it.support@helpdesk-verify.example
+Reply-To: collector@webmail.example
+Subject: Shared file needs review
+
+A confidential document has been prepared for you. For privacy reasons it requires sign-in to view. Please review and acknowledge receipt by end of day.
+
+https://login-secure.example/auth
+
+Human Resources",1
+"From: tracking@courier.example
+Subject: Your parcel has been delivered (7)
+
+Your parcel was delivered to your front porch at 2:14pm. A signature was not required. Nothing is owed; delivery fees were settled when you placed the order.",0
+"From: ap@remit-vendor.example
+Subject: Delivery address correction
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://hr-document-portal.example/share
+
+Thank you, Account security team",1
+"From: payroll@company.example
+Subject: Salary credited (5)
+
+Your October salary has been transferred to the bank account registered in the HR system. Please check the payslip in the portal. We do not change account details from email requests.",0
+"From: ap@remit-vendor.example
+Subject: Your cloud storage is expiring
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://billing-verify.example/pay
+
+Kind regards, IT Services",1
+"From: payroll@company.example
+Subject: Salary credited (9)
+
+Your October salary has been transferred to the bank account registered in the HR system. Please check the payslip in the portal. We do not change account details from email requests.",0
+"From: team@parcel-update.example
+Reply-To: collector@webmail.example
+Subject: Updated payment details
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://login-secure.example/auth
+
+Thank you, Account security team",1
+"From: facilities@company.example
+Subject: Access card ready (6)
+
+Your new building access card is at reception. Bring your old card and photo ID. This is a physical-card swap; it does not involve any account verification or online form.",0
+"From: it.support@helpdesk-verify.example
+Reply-To: collector@webmail.example
+Subject: Updated payment details
+
+Your recent purchase could not be completed because the payment did not go through. Update your card details within 24 hours so the order is not cancelled:
+
+https://invoice-payment.example/remit
+
+Billing services",1
+"From: ceo@exec-team.example
+Subject: Are you free
+
+I need a small favour urgently. My phone is about to die, so email only. I need to make a payment to a new supplier today - reply and I will forward the details. Strictly between us for now.",1
+"From: admin@sharepoint-login.example
+Reply-To: collector@webmail.example
+Subject: Please confirm your direct deposit
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://account-verify.example/secure
+
+Thank you, Account security team",1
+"From: security@account-verify.example
+Subject: Please confirm your direct deposit
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://account-verify.example/secure
+
+This is an automated notice.",1
+"From: tracking@courier.example
+Subject: Your parcel has been delivered (3)
+
+Your parcel was delivered to your front porch at 2:14pm. A signature was not required. Nothing is owed; delivery fees were settled when you placed the order.",0
+"From: security@account-verify.example
+Reply-To: collector@webmail.example
+Subject: Confidential document awaiting review
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://invoice-payment.example/remit
+
+Payroll team",1
+"From: hr@hr-document-portal.example
+Reply-To: collector@webmail.example
+Subject: Action required: unusual sign-in
+
+Your recent purchase could not be completed because the payment did not go through. Update your card details within 24 hours so the order is not cancelled:
+
+https://helpdesk-verify.example/confirm
+
+Billing services",1
+"From: notifications@cloud-storage-verify.example
+Subject: Security update for your account
+
+As part of our annual compliance check, all employees must confirm their login details this week. Accounts that are not verified will be disabled automatically.
+
+https://invoice-payment.example/remit
+
+Compliance team",1
+"From: it.helpdesk@company.example
+Subject: Two-factor authentication rollout (1)
+
+2FA enrolment is now open in the security portal under your account. Follow the on-screen prompts on your own device. No email replies with codes are needed; support never asks for verification codes.",0
+"From: notifications@cloud-storage-verify.example
+Reply-To: collector@webmail.example
+Subject: Delivery address correction
+
+A confidential document has been prepared for you. For privacy reasons it requires sign-in to view. Please review and acknowledge receipt by end of day.
+
+https://invoice-payment.example/remit
+
+Human Resources",1
+"From: ap@remit-vendor.example
+Reply-To: collector@webmail.example
+Subject: Payment failed for order 7149
+
+A confidential document has been prepared for you. For privacy reasons it requires sign-in to view. Please review and acknowledge receipt by end of day.
+
+https://cloud-storage-verify.example/renew
+
+Human Resources",1
+"From: admin@sharepoint-login.example
+Subject: Scheduled account verification
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://helpdesk-verify.example/confirm
+
+Parcel support",1
+"From: ap@company.example
+Subject: Invoice 4821 on file
+
+Thank you - invoice 4821 was paid on the 5th to the account we already have on record. No updated bank details are required; future invoices follow the same net-30 process.",0
+"From: admin@sharepoint-login.example
+Reply-To: collector@webmail.example
+Subject: Action required: unusual sign-in
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://invoice-payment.example/remit
+
+Kind regards, IT Services",1
+"From: team@parcel-update.example
+Reply-To: collector@webmail.example
+Subject: Security update for your account
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://parcel-update.example/track
+
+Finance department",1
+"From: hr@company.example
+Subject: Benefits enrolment closing (5)
+
+Benefits enrolment closes Friday. Make your selections in the HR system. Enrolment never requires sending bank details, passwords or a confirmation link by email.",0
+"From: notifications@cloud-storage-verify.example
+Subject: Shared file needs review
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://billing-verify.example/pay
+
+Finance department",1
+"From: tracking@courier.example
+Subject: Your parcel has been delivered (8)
+
+Your parcel was delivered to your front porch at 2:14pm. A signature was not required. Nothing is owed; delivery fees were settled when you placed the order.",0
+"From: colleague@company.example
+Subject: Re: client call notes (9)
+
+Thanks for the notes. The contract figures match what finance signed off; no new payment information was shared and no action is needed from us by email.",0
+"From: colleague@company.example
+Subject: Re: expense claim (9)
+
+Your expense claim was approved and will appear on the next payroll run. Submit receipts through the expenses app rather than by email, and never include full card numbers.",0
+"From: team@shared-drive.example
+Subject: Document access note (8)
+
+You now have view access to the project folder on the company intranet. Open it via your normal browser bookmark. We never email direct login pages; reach documents from the internal portal only.",0
+"From: accounts@invoice-payment.example
+Subject: Scheduled account verification
+
+As part of our annual compliance check, all employees must confirm their login details this week. Accounts that are not verified will be disabled automatically.
+
+https://billing-verify.example/pay
+
+Compliance team",1
+"From: it.helpdesk@company.example
+Subject: Maintenance completed (4)
+
+The weekend mail-server maintenance finished on schedule. No action was required from staff and no settings changed. Report anything unusual via the normal IT ticket portal.",0
+"From: tracking@courier.example
+Subject: Delivery rescheduled to Tuesday (6)
+
+Your delivery has been rescheduled to Tuesday between 9am and noon at your request. No payment is needed to hold or redeliver; you can change the slot any time in the app.",0
+"From: accounts@invoice-payment.example
+Subject: Delivery address correction
+
+Your recent purchase could not be completed because the payment did not go through. Update your card details within 24 hours so the order is not cancelled:
+
+https://hr-document-portal.example/share
+
+Billing services",1
+"From: notifications@cloud-storage-verify.example
+Subject: Action required: unusual sign-in
+
+Your recent purchase could not be completed because the payment did not go through. Update your card details within 24 hours so the order is not cancelled:
+
+https://billing-verify.example/pay
+
+Billing services",1
+"From: admin@sharepoint-login.example
+Subject: Shared file needs review
+
+Dear accounts, invoice 4544 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://invoice-payment.example/remit
+
+Accounts receivable",1
+"From: admin@sharepoint-login.example
+Reply-To: collector@webmail.example
+Subject: Security update for your account
+
+Dear accounts, invoice 8328 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://parcel-update.example/track
+
+Accounts receivable",1
+"From: library@university.example
+Subject: Account notice (8)
+
+Your library account is in good standing and nothing is due this week. Renew books from the library portal. Please disregard any message asking for a password or payment via email.",0
+"From: it.support@helpdesk-verify.example
+Reply-To: collector@webmail.example
+Subject: Your cloud storage is expiring
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://invoice-payment.example/remit
+
+Document services",1
+"From: ap@remit-vendor.example
+Reply-To: collector@webmail.example
+Subject: Scheduled account verification
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://billing-verify.example/pay
+
+Parcel support",1
+"From: security@company.example
+Subject: Phishing awareness poster (3)
+
+October is cyber awareness month. Tip: real internal messages about accounts never ask you to reply with credentials or to click a link to 'verify'. When in doubt, call the IT desk using the number on the intranet.",0
+"From: colleague@company.example
+Subject: Re: client call notes (6)
+
+Thanks for the notes. The contract figures match what finance signed off; no new payment information was shared and no action is needed from us by email.",0
+"From: team@parcel-update.example
+Subject: Please confirm your direct deposit
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://hr-document-portal.example/share
+
+Cloud support",1
+"From: billing@saas-vendor.example
+Subject: Your receipt for October (7)
+
+This is a receipt for your October subscription, charged to the card ending 4421 as usual. No action is required. Update billing details only from your account settings page.",0
+"From: admin@sharepoint-login.example
+Subject: Delivery address correction
+
+A confidential document has been prepared for you. For privacy reasons it requires sign-in to view. Please review and acknowledge receipt by end of day.
+
+https://hr-document-portal.example/share
+
+Human Resources",1
+"From: it.support@helpdesk-verify.example
+Reply-To: collector@webmail.example
+Subject: Confidential document awaiting review
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://helpdesk-verify.example/confirm
+
+Document services",1
+"From: team@shared-drive.example
+Subject: Document access note (1)
+
+You now have view access to the project folder on the company intranet. Open it via your normal browser bookmark. We never email direct login pages; reach documents from the internal portal only.",0
+"From: payroll@company.example
+Subject: Salary credited (6)
+
+Your October salary has been transferred to the bank account registered in the HR system. Please check the payslip in the portal. We do not change account details from email requests.",0
+"From: ap@remit-vendor.example
+Subject: Security update for your account
+
+As part of our annual compliance check, all employees must confirm their login details this week. Accounts that are not verified will be disabled automatically.
+
+https://account-verify.example/secure
+
+Compliance team",1
+"From: notifications@cloud-storage-verify.example
+Reply-To: collector@webmail.example
+Subject: Payment failed for order 7112
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://helpdesk-verify.example/confirm
+
+Finance department",1
+"From: accounts@invoice-payment.example
+Subject: Shared file needs review
+
+Your cloud storage subscription has expired. Renew now to avoid losing access to shared files and backups.
+
+https://billing-verify.example/pay
+
+Cloud support",1
+"From: team@shared-drive.example
+Subject: Document access note (5)
+
+You now have view access to the project folder on the company intranet. Open it via your normal browser bookmark. We never email direct login pages; reach documents from the internal portal only.",0
+"From: team@shared-drive.example
+Subject: Document access note (4)
+
+You now have view access to the project folder on the company intranet. Open it via your normal browser bookmark. We never email direct login pages; reach documents from the internal portal only.",0
+"From: security@company.example
+Subject: Phishing awareness poster (2)
+
+October is cyber awareness month. Tip: real internal messages about accounts never ask you to reply with credentials or to click a link to 'verify'. When in doubt, call the IT desk using the number on the intranet.",0
+"From: billing@saas-vendor.example
+Subject: Your receipt for October (2)
+
+This is a receipt for your October subscription, charged to the card ending 4421 as usual. No action is required. Update billing details only from your account settings page.",0
+"From: notifications@cloud-storage-verify.example
+Reply-To: collector@webmail.example
+Subject: Payment failed for order 2049
+
+A file has been shared with you by a colleague. Sign in with your work email and password to open it; the link expires in 12 hours.
+
+https://hr-document-portal.example/share
+
+Document services",1
+"From: tracking@courier.example
+Subject: Delivery rescheduled to Tuesday (2)
+
+Your delivery has been rescheduled to Tuesday between 9am and noon at your request. No payment is needed to hold or redeliver; you can change the slot any time in the app.",0
+"From: team@parcel-update.example
+Subject: Confidential document awaiting review
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://billing-verify.example/pay
+
+Thank you, Account security team",1
+"From: tracking@courier.example
+Subject: Your parcel has been delivered (7)
+
+Your parcel was delivered to your front porch at 2:14pm. A signature was not required. Nothing is owed; delivery fees were settled when you placed the order.",0
+"From: security@company.example
+Subject: Phishing awareness poster (2)
+
+October is cyber awareness month. Tip: real internal messages about accounts never ask you to reply with credentials or to click a link to 'verify'. When in doubt, call the IT desk using the number on the intranet.",0
+"From: admin@sharepoint-login.example
+Subject: Shared file needs review
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://login-secure.example/auth
+
+Finance department",1
+"From: security@company.example
+Subject: Phishing awareness poster (5)
+
+October is cyber awareness month. Tip: real internal messages about accounts never ask you to reply with credentials or to click a link to 'verify'. When in doubt, call the IT desk using the number on the intranet.",0
+"From: hr@company.example
+Subject: Benefits enrolment closing (5)
+
+Benefits enrolment closes Friday. Make your selections in the HR system. Enrolment never requires sending bank details, passwords or a confirmation link by email.",0
+"From: security@account-verify.example
+Subject: Security update for your account
+
+A confidential document has been prepared for you. For privacy reasons it requires sign-in to view. Please review and acknowledge receipt by end of day.
+
+https://invoice-payment.example/remit
+
+Human Resources",1
+"From: billing@saas-vendor.example
+Subject: Your receipt for October (3)
+
+This is a receipt for your October subscription, charged to the card ending 4421 as usual. No action is required. Update billing details only from your account settings page.",0
+"From: notifications@cloud-storage-verify.example
+Reply-To: collector@webmail.example
+Subject: Security update for your account
+
+As part of our annual compliance check, all employees must confirm their login details this week. Accounts that are not verified will be disabled automatically.
+
+https://billing-verify.example/pay
+
+Compliance team",1
+"From: billing@saas-vendor.example
+Subject: Your receipt for October (4)
+
+This is a receipt for your October subscription, charged to the card ending 4421 as usual. No action is required. Update billing details only from your account settings page.",0
+"From: newsletter@techdigest.example
+Subject: This week in security (7)
+
+This issue covers passkeys, phishing trends, and why legitimate providers never ask for passwords over email. You are receiving this because you subscribed; unsubscribe via the link in your settings.",0
+"From: newsletter@techdigest.example
+Subject: This week in security (8)
+
+This issue covers passkeys, phishing trends, and why legitimate providers never ask for passwords over email. You are receiving this because you subscribed; unsubscribe via the link in your settings.",0
+"From: it.support@helpdesk-verify.example
+Reply-To: collector@webmail.example
+Subject: Delivery address correction
+
+A confidential document has been prepared for you. For privacy reasons it requires sign-in to view. Please review and acknowledge receipt by end of day.
+
+https://billing-verify.example/pay
+
+Human Resources",1
+"From: hr@hr-document-portal.example
+Subject: Security update for your account
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://hr-document-portal.example/share
+
+Kind regards, IT Services",1
+"From: notifications@cloud-storage-verify.example
+Reply-To: collector@webmail.example
+Subject: Invoice 2317 requires payment
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://login-secure.example/auth
+
+Thank you, Account security team",1
+"From: colleague@company.example
+Subject: Re: client call notes (5)
+
+Thanks for the notes. The contract figures match what finance signed off; no new payment information was shared and no action is needed from us by email.",0
+"From: hr@hr-document-portal.example
+Reply-To: collector@webmail.example
+Subject: Please confirm your direct deposit
+
+As part of our annual compliance check, all employees must confirm their login details this week. Accounts that are not verified will be disabled automatically.
+
+https://account-verify.example/secure
+
+Compliance team",1
+"From: team@shared-drive.example
+Subject: Document access note (7)
+
+You now have view access to the project folder on the company intranet. Open it via your normal browser bookmark. We never email direct login pages; reach documents from the internal portal only.",0
+"From: ap@remit-vendor.example
+Reply-To: collector@webmail.example
+Subject: Please confirm your direct deposit
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://cloud-storage-verify.example/renew
+
+This is an automated notice.",1
+"From: tracking@courier.example
+Subject: Delivery rescheduled to Tuesday (6)
+
+Your delivery has been rescheduled to Tuesday between 9am and noon at your request. No payment is needed to hold or redeliver; you can change the slot any time in the app.",0
+"From: hr@company.example
+Subject: Benefits enrolment closing (9)
+
+Benefits enrolment closes Friday. Make your selections in the HR system. Enrolment never requires sending bank details, passwords or a confirmation link by email.",0
+"From: hr@hr-document-portal.example
+Subject: Action required: unusual sign-in
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://cloud-storage-verify.example/renew
+
+Kind regards, IT Services",1
+"From: it.support@helpdesk-verify.example
+Subject: Scheduled account verification
+
+Dear accounts, invoice 6417 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://hr-document-portal.example/share
+
+Accounts receivable",1
+"From: admin@sharepoint-login.example
+Subject: Security update for your account
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://parcel-update.example/track
+
+Kind regards, IT Services",1
+"From: hr@hr-document-portal.example
+Subject: Confidential document awaiting review
+
+Your parcel could not be delivered due to an incomplete address. A small redelivery fee is required to release the package within 48 hours.
+
+https://login-secure.example/auth
+
+Parcel support",1
+"From: hr@hr-document-portal.example
+Subject: Your cloud storage is expiring
+
+A confidential document has been prepared for you. For privacy reasons it requires sign-in to view. Please review and acknowledge receipt by end of day.
+
+https://cloud-storage-verify.example/renew
+
+Human Resources",1
+"From: hr@hr-document-portal.example
+Reply-To: collector@webmail.example
+Subject: Confidential document awaiting review
+
+As part of our annual compliance check, all employees must confirm their login details this week. Accounts that are not verified will be disabled automatically.
+
+https://login-secure.example/auth
+
+Compliance team",1
+"From: security@account-verify.example
+Subject: Scheduled account verification
+
+Action needed: please confirm your direct-deposit details so your next salary is routed correctly. Updates must be completed before payroll closes this week.
+
+https://hr-document-portal.example/share
+
+Payroll team",1
+"From: hr@hr-document-portal.example
+Reply-To: collector@webmail.example
+Subject: Security update for your account
+
+We noticed a sign-in to your account from a device we do not recognise. If this was you, no action is needed. If not, please secure your account now:
+
+https://invoice-payment.example/remit
+
+Thank you, Account security team",1
+"From: it.support@helpdesk-verify.example
+Subject: Shared file needs review
+
+Our records show your mailbox has reached its storage limit. To avoid interruption to incoming messages, verify your account within the next 24 hours:
+
+https://cloud-storage-verify.example/renew
+
+This is an automated notice.",1
+"From: security@account-verify.example
+Reply-To: collector@webmail.example
+Subject: Your mailbox is nearly full
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://invoice-payment.example/remit
+
+Finance department",1
+"From: it.helpdesk@company.example
+Subject: Maintenance completed (2)
+
+The weekend mail-server maintenance finished on schedule. No action was required from staff and no settings changed. Report anything unusual via the normal IT ticket portal.",0
+"From: notifications@cloud-storage-verify.example
+Subject: Action required: unusual sign-in
+
+A confidential document has been prepared for you. For privacy reasons it requires sign-in to view. Please review and acknowledge receipt by end of day.
+
+https://login-secure.example/auth
+
+Human Resources",1
+"From: hr@hr-document-portal.example
+Reply-To: collector@webmail.example
+Subject: Payment failed for order 8191
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://account-verify.example/secure
+
+Kind regards, IT Services",1
+"From: notifications@cloud-storage-verify.example
+Subject: Your cloud storage is expiring
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://billing-verify.example/pay
+
+Finance department",1
+"From: tracking@courier.example
+Subject: Delivery rescheduled to Tuesday (2)
+
+Your delivery has been rescheduled to Tuesday between 9am and noon at your request. No payment is needed to hold or redeliver; you can change the slot any time in the app.",0
+"From: it.support@helpdesk-verify.example
+Subject: Invoice 2472 requires payment
+
+As part of our annual compliance check, all employees must confirm their login details this week. Accounts that are not verified will be disabled automatically.
+
+https://parcel-update.example/track
+
+Compliance team",1
+"From: team@parcel-update.example
+Subject: Security update for your account
+
+We are updating our banking details for vendor payments. Please submit your next payment to the new account listed in the form below to avoid delays.
+
+https://account-verify.example/secure
+
+Finance department",1
+"From: admin@sharepoint-login.example
+Subject: Payment failed for order 9403
+
+Dear accounts, invoice 1727 is now outstanding. Please settle today using the updated remittance details in the payment portal and reply with confirmation so we can reconcile our records.
+
+https://hr-document-portal.example/share
+
+Accounts receivable",1
+"From: facilities@company.example
+Subject: Access card ready (2)
+
+Your new building access card is at reception. Bring your old card and photo ID. This is a physical-card swap; it does not involve any account verification or online form.",0
+"From: it.helpdesk@company.example
+Subject: Scheduled password change (9)
+
+Reminder: the quarterly password change opens Monday. Do it yourself via Settings > Security on your laptop. We will never send you a link or ask for your password by email. Visit the IT desk if you need help.",0
+"From: hr@hr-document-portal.example
+Reply-To: collector@webmail.example
+Subject: Payment failed for order 3293
+
+Hello, as part of routine security maintenance, your account needs a quick verification to stay active. The process takes about a minute and helps protect your data. Please confirm your credentials at your earliest convenience:
+
+https://account-verify.example/secure
+
+Kind regards, IT Services",1
+"From: it.helpdesk@company.example
+Subject: Maintenance completed (9)
+
+The weekend mail-server maintenance finished on schedule. No action was required from staff and no settings changed. Report anything unusual via the normal IT ticket portal.",0
+"From: facilities@company.example
+Subject: Access card ready
+
+Your new building access card is at reception. Bring your old card and photo ID. This is a physical-card swap; it does not involve any account verification or online form.",0

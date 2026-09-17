@@ -1,0 +1,477 @@
+==============================================================================
+CHANGES ONLY - paste-ready sections to replace in your Word document
+Each block is labelled. Replace the matching section in your report.
+Tables are tab-separated: paste, then Insert > Table > Convert Text
+to Table (separator: Tabs). <<< FIGURE ... >>> = insert the PNG there.
+Anything NOT listed here is unchanged - leave it as is.
+==============================================================================
+
+##############################################################################
+CHANGE 1 OF 22:  FRONT MATTER - List of Figures (added Figures 1.2 and 1.3)
+##############################################################################
+
+[LIST OF FIGURES]
+
+- Figure 1.1 Spam as a share of worldwide email traffic in 2024 (Kaspersky Securelist). - Figure 1.2 Phishing attacks recorded per quarter in 2024 (Anti-Phishing Working Group). - Figure 1.3 Key email-security threat statistics summary. - Figure 2.1 Taxonomy of spam-detection approaches and the position of this project. - Figure 2.2 Rule- / keyword-based filtering. - Figure 2.3 Content-based statistical (machine-learning) classification. - Figure 2.4 Metadata / reputation-based filtering. - Figure 2.5 Hybrid content-metadata fusion classification. - Figure 3.1 System architecture of the adaptive fusion spam-detection framework. - Figure 3.2 Use-case diagram for the reviewer/administrator actor. - Figure 3.3 Activity diagram for scoring, review and adaptive retraining. - Figure 4.1 System block diagram (ingestion, features, fusion, action, adaptation). - Figure 5.1 Software and virtual-environment setup. - Figure 5.2 Browser check-and-review console showing a phishing verdict and signal chips. - Figure 5.3 Example service prediction response (label, probability and signals). - Figure 5.4 Mailbox watch run quarantining a flagged message. - Figure 6.1 Confusion matrix of the fused model on the held-out test split (n = 20,288). - Figure 6.2 ROC curve and threshold sweep for the fused model. - Figure 6.3 Catch rate versus decision threshold on the LLM-phishing set. - Figure 6.4 ROC curves before and after one adaptive retraining cycle. - Appendix A Poster.
+
+
+##############################################################################
+CHANGE 2 OF 22:  FRONT MATTER - List of Tables (renumbered 5.1/5.2/5.3)
+##############################################################################
+
+[LIST OF TABLES]
+
+- Table 2.1 Comparison of detection paradigms. - Table 2.2 Review of existing methods and their limitations. - Table 3.1 Use-case descriptions. - Table 3.2 Integrated public corpus and class distribution. - Table 4.1 Component modules and responsibilities. - Table 4.2 The twelve structural metadata signals. - Table 5.1 Specifications of the development machine. - Table 5.2 Software and libraries used in the project. - Table 5.3 Model and feature hyper-parameters. - Table 6.1 Held-out performance of the deployed fused model. - Table 6.2 Classifier and feature-group comparison (Objective 3). - Table 6.3 Detection of genuine LLM-generated phishing (n = 4,986). - Table 6.4 Before/after adaptive retraining on held-out modern-threat email. - Table 6.5 Commercial-filter comparison: vendor-reported and independently measured AI-phishing detection. - Table 6.6 Comparison with published classical models on comparable public corpora. - Table 6.7 Objectives evaluation summary.
+
+
+##############################################################################
+CHANGE 3 OF 22:  CHAPTER 1 - opener (new Figures 1.2/1.3 + BEC/phishing/Verizon stats)
+##############################################################################
+
+[CHAPTER 1: INTRODUCTION]
+
+Electronic mail remained one of the most widely used communication channels in organisations and, at the same time, one of the most exploited. Cybersecurity had become a pressing global concern as internet adoption, cloud services, e-commerce and remote work expanded the exposure of individuals and organisations to cyber risk; industry estimates projected annual cybercrime damages reaching into the trillions of United States dollars, with ransomware, phishing, data breaches and identity theft among the principal causes [1]. Among the available attack vectors, email continued to be favoured because it was ubiquitous, trusted and inexpensive to abuse. Unsolicited or fraudulent messages, broadly termed spam, had for many years accounted for a large share of global email traffic - Kaspersky measured spam at roughly 47 per cent of all email sent worldwide in 2024 [18] - and ranged from nuisance advertisements to sophisticated phishing campaigns designed to steal credentials or financial data or to distribute malware [2]. The scale of the problem is illustrated in Figure 1.1.
+
+<<< FIGURE 1.1: Spam as a share of worldwide email traffic in 2024 (Kaspersky Securelist [18]). >>>
+
+Early spam messages were comparatively simple and could be blocked by keyword filters or blacklists, but attackers evolved their techniques continuously. Modern campaigns used obfuscation such as inserted characters, misleading links and disguised headers, while phishing - the subset of spam that deceived recipients into revealing sensitive information - grew particularly dangerous and featured prominently in reported data breaches [2]. Two trends made the problem materially harder. First, business-email-compromise attacks used calm, professional, grammatically correct language and frequently contained no malicious link or attachment, so they evaded signatures designed for obvious, keyword-laden spam. These link-less impersonation attacks were also among the costliest of cybercrimes: the Federal Bureau of Investigation recorded business-email-compromise losses of USD 2.77 billion across 21,442 complaints in 2024 [19], and the Anti-Phishing Working Group recorded close to 3.8 million phishing attacks over the same year [20], as shown in Figure 1.2. Second, large language models allowed attackers to generate fluent, personalised, typo-free fraudulent messages at scale. Compounding these trends was concept drift: the characteristics of spam evolved over time, so a model trained once on older data gradually failed to recognise new tactics unless it was updated.
+
+<<< FIGURE 1.2: Phishing attacks recorded per quarter in 2024 (Anti-Phishing Working Group [20]). >>>
+
+Such threats also acted faster than manual review could: the 2024 Verizon study found that the median time for a user to click a phishing link was 21 seconds and that a non-malicious human element was involved in 68% of breaches [2], reinforcing the case for automatic detection. The key threat statistics are summarised in Figure 1.3.
+
+<<< FIGURE 1.3: Summary of key email-security threat statistics from recent official reports. >>>
+
+Machine learning offered a more robust basis than static rules, because a learned model generalised from labelled examples rather than matching hand-maintained patterns and could be retrained as new campaigns appeared. Even so, no single view of a message was sufficient: content-based models examined what a message said but ignored how it was constructed, whereas structural and reputation-based signals caught routing and authentication anomalies but were bypassed by well-written text. This project therefore developed an adaptive detector that fused the textual content of a message with its structural metadata within a classical machine-learning pipeline and improved over time through a reviewed-feedback retraining loop. The system was designed to run locally on commodity hardware without a graphics processor, to remain interpretable through its metadata signals, and to detect malicious intent rather than artificial-intelligence authorship.
+
+The remainder of this chapter states the problem and motivation (Section 1.1), lists the objectives (Section 1.2), defines the project scope (Section 1.3), states the contributions (Section 1.4) and outlines the organisation of the report (Section 1.5).
+
+
+##############################################################################
+CHANGE 4 OF 22:  SECTION 1.1 - added citations [4][5][19]
+##############################################################################
+
+[1.1 Problem Statement and Motivation]
+
+Despite the widespread deployment of anti-spam filters, email spam remained a persistent and evolving problem. Static rule lists and keyword filters were brittle: they required constant manual maintenance and were easily evaded by rewording or obfuscation [4, 5]. Learned content models were more effective but examined only what a message said and ignored its structure, while metadata and reputation systems used structural indicators that were themselves bypassed by well-formed, link-less business-email-compromise mail sent from plausibly configured accounts [19]. Models that were never updated could not follow evolving campaigns, so their accuracy degraded as concept drift accumulated [4, 5].
+
+These weaknesses produced the two errors that mattered most in practice. False negatives allowed malicious mail to reach the user, while false positives - legitimate email wrongly marked as spam - interrupted business communication and damaged trust in the filter, and were often judged the costlier error in an organisational setting. A detector therefore needed to combine complementary views of a message, to keep false positives low, and to be updated as threats changed, without depending on the proprietary, non-reproducible models used by large commercial providers.
+
+The motivation for this project was therefore to build a detector that (a) fused content and metadata so that fluent wording and structural anomalies were judged together, (b) remained fast and interpretable enough to run locally on ordinary hardware without dependence on external cloud services, and (c) adapted to new threats through a reviewed retraining loop rather than through manual editing of rules. The project therefore designed, implemented and evaluated a complete, deployable adaptive content-metadata fusion spam-detection system: the pipeline was built at scale on a varied public corpus, hardened against malformed real-world input, wrapped in a service and quarantine layer, equipped with a reviewed retraining loop, and tested for generalisation against genuinely AI-generated phishing. The remainder of this report describes that system and measures the extent to which each stated objective was met.
+
+
+##############################################################################
+CHANGE 5 OF 22:  REFERENCES - new entries [18] Kaspersky, [19] FBI IC3, [20] APWG
+##############################################################################
+
+[18] Kaspersky, "Spam and phishing in 2024," Securelist, Kaspersky Lab, Feb. 2025. [Online]. Available: https://securelist.com/spam-and-phishing-report-2024/115536/
+
+[19] Federal Bureau of Investigation, "2024 Internet Crime Report," Internet Crime Complaint Center (IC3), 2025. [Online]. Available: https://www.ic3.gov/AnnualReport/Reports
+
+[20] Anti-Phishing Working Group, "Phishing Activity Trends Report, 2024," APWG, 2024-2025. [Online]. Available: https://apwg.org/resources/phishingactivitytrends/
+
+
+##############################################################################
+CHANGE 6 OF 22:  SECTION 2.1.2 - removed 'also tested on Linux' claim (Windows 11 only)
+##############################################################################
+
+[2.1.2 Firmware / Operating System]
+
+All core components were written in Python and were developed and tested on Windows 11. No special firmware was required, and no hardware programming was involved. The operating system served only as the host for the Python runtime, the virtual environment and the local file storage used for email and model artefacts.
+
+
+##############################################################################
+CHANGE 7 OF 22:  SECTION 2.4 - 'Python virtual environment' wording
+##############################################################################
+
+[2.4 Summary]
+
+This chapter reviewed the technologies used in the project - commodity central-processing-unit hardware, a Python virtual environment, comma-separated-value storage, and the scikit-learn machine-learning stack - and surveyed existing spam-detection systems, from rule-based and content-statistical methods through metadata and hybrid/fusion approaches to proprietary commercial filters. The review established that no single source of evidence was sufficient on its own, that fusion of content and metadata was among the most robust approaches, and that adaptation to evolving and AI-assisted threats remained under-served by locally deployable, explainable systems. These findings motivated the proposed solution.
+
+
+##############################################################################
+CHANGE 8 OF 22:  SECTION 3.1 (use-case table) - generic service wording
+##############################################################################
+
+[3.1.2 Use Case Diagram and Description]
+
+The primary actor was an IT administrator or reviewer. A secondary, automated actor was a mail automation workflow that called the service. Figure 3.2 presents the use-case diagram and Table 3.1 describes each use case.
+
+<<< FIGURE 3.2: insert the use-case diagram for the reviewer/administrator actor. >>>
+
+Table 3.1 - Use-case descriptions.
+
+--- TABLE START (tab-separated -> Convert Text to Table) ---
+Use case	Actor	Description
+Submit email for scoring	Reviewer; automation	An email is pasted in the review console, submitted to the prediction service, or picked up by the mailbox watcher.
+View verdict and signals	Reviewer	The system returns a label, spam probability and the structural signals that fired.
+Quarantine flagged mail	Reviewer; watcher	Messages above threshold are moved to a quarantine folder in quarantine mode.
+Correct misclassification	Reviewer	The reviewer marks a result as spam/ham/correct; the correction is appended to the labelled feedback store.
+Retrain on feedback	Reviewer; scheduler	Reviewed labels are merged with training data and a new model is fitted, validated and redeployed.
+Serve predictions	Automation	External workflows obtain scores through the REST API.
+--- TABLE END ---
+
+
+##############################################################################
+CHANGE 9 OF 22:  SECTION 3.3 - added plain-English TF-IDF explanation
+##############################################################################
+
+[3.3 Feature Extraction and Classification Approach]
+
+Content features. Subject and body text were concatenated and converted into numerical features using term frequency-inverse document frequency (TF-IDF). In plain terms, TF-IDF gave each word a high score when it appeared often in a particular email but rarely across all emails, so distinctive spam vocabulary stood out while common words such as "the" or "and" were down-weighted. The text was vectorised with TF-IDF over word unigrams/bigrams (up to 40,000 terms) and over character n-grams of length three to five (up to 30,000 features), using sub-linear term-frequency scaling. The word stream captured phrasing while the character stream tolerated obfuscation.
+
+Metadata features. Twelve structural signals were extracted from the parsed message and encoded with a dictionary vectoriser: subject length, body length, URL count, number of unique link domains, attachment count, a sender-has-domain flag, a sender-domain/link-domain mismatch flag, reply-to presence, sender-policy-framework pass indicator, DomainKeys-Identified-Mail presence indicator, subject all-capitals ratio, exclamation count and a suspicious/urgency-term count. These metadata values were standardised (with a sparse-safe standard scaler) so that raw lengths could not dominate the normalised text features.
+
+Preprocessing. Raw messages were parsed with the Python standard-library email package so that multipart bodies, HTML and headers were handled uniformly. The visible text of each part was extracted, HTML markup was reduced to its text content, and the subject was prefixed to the body. Structural values were derived without reading attachment content, and no message body left the local machine. Malformed or plain-text inputs were handled by a fallback path that treated the entire input as body text and zeroed the header-derived metadata.
+
+Fusion and classification. A scikit-learn feature union concatenated the three streams into a single sparse vector. Three classifiers were evaluated - multinomial Naïve Bayes, class-balanced logistic regression and a linear support-vector classifier - all on identical features for a fair comparison. Logistic regression was selected for deployment because it produced a probability, supported balanced class weighting and exposed interpretable signal contributions. The pipeline was fitted on training data only and serialised as a single artefact, eliminating train/test leakage and making the deployed model exactly the model that was evaluated.
+
+
+##############################################################################
+CHANGE 10 OF 22:  SECTION 3.4 - added plain definitions of TP/FP/FN/TN and the metrics
+##############################################################################
+
+[3.4 Evaluation Design and Performance Definitions]
+
+Performance was measured using accuracy, precision, recall, the F1 score and the receiver-operating-characteristic area under the curve, together with the confusion matrix and false-positive rate, because a legitimate message wrongly quarantined was the most costly error. These terms were defined as follows. A true positive (TP) was a spam message correctly caught; a false negative (FN) was spam that reached the user; a false positive (FP) was a legitimate message wrongly marked as spam; and a true negative (TN) was legitimate mail correctly allowed through. Accuracy was the overall fraction of messages classified correctly; precision was the fraction of flagged messages that were truly spam (so a high precision meant few legitimate emails were blocked); recall was the fraction of real spam that was caught (so a high recall meant little spam slipped through); and the F1 score was the harmonic mean of precision and recall, summarising the balance between them. Formally, precision was TP/(TP+FP), recall was TP/(TP+FN), and the F1 score was their harmonic mean. A threshold sweep reported phishing recall at a low (≤5%) false-positive operating point. Per-message latency (50th and 95th percentiles) was measured on the central processing unit. External tests assessed generalisation to large-language-model-generated phishing, and a before/after experiment measured the improvement attributable to reviewed retraining. Validity controls were strict train/test separation, no training on any test email, and the use of inert placeholder domains in synthetic data.
+
+
+##############################################################################
+CHANGE 11 OF 22:  SECTION 4.1 - fixed broken sentence / removed code names
+##############################################################################
+
+[4.1 System Block Diagram]
+
+The system comprised five top-level blocks, shown in Figure 4.1:
+
+1. Ingestion - a request to the detection service, a mailbox folder watcher, or a local file. 2. Parsing and feature extraction - robust RFC-5322 parsing producing content text and the twelve metadata signals, with crash-safe handling of malformed mail. 3. Fusion classifier - the word/character/metadata feature union, standardisation and the logistic-regression classifier. 4. Action and decision - threshold comparison, labelling, quarantine and signal explanation. 5. Adaptation - the review queue, feedback store and scheduled retraining path.
+
+<<< FIGURE 4.1: insert the system block diagram (ingestion, features, fusion, action, adaptation). >>>
+
+Each block was implemented as an independent, testable module within the detector package, which allowed individual stages to be updated and retrained without rebuilding the whole pipeline. The following section specifies each block in turn.
+
+
+##############################################################################
+CHANGE 12 OF 22:  SECTION 4.2 - RESTRUCTURED: overview Table 4.1 + new subsections 4.2.1-4.2.5
+##############################################################################
+
+[4.2 System Components Specifications]
+
+The five blocks of Figure 4.1 were realised as eight functional components, summarised in Table 4.1 and then described in detail in Sections 4.2.1 to 4.2.5. Each component was kept independent so that it could be modified or replaced without affecting the others.
+
+Table 4.1 - System components and their responsibilities.
+
+--- TABLE START (tab-separated -> Convert Text to Table) ---
+Component	Block (Figure 4.1)	Responsibility
+Email parsing and feature extraction	Parsing and feature extraction	Parsed each message and produced the content text together with the twelve structural metadata signals.
+Data preparation	Ingestion	Merged and de-duplicated the public corpora into one reviewed dataset.
+Fusion classification engine	Fusion classifier	Combined content and metadata features and produced the label, probability and fired signals.
+Detection service	Action and decision	Exposed the trained engine through a web interface with a review console.
+Mailbox scanner	Action and decision	Monitored a mail folder and quarantined flagged messages.
+Review and feedback store	Adaptation	Recorded reviewer corrections as labelled examples for retraining.
+Training and evaluation	Fusion classifier	Fitted, validated and saved the model, and reported the metrics.
+External (AI-mail) evaluation	Fusion classifier	Scored external and AI-generated sets and reported catch rate.
+--- TABLE END ---
+
+[4.2.1 Data Ingestion and Preparation]
+
+The input to the system was an electronic-mail message, which could arrive in three ways: pasted into the review console, submitted to the detection service, or present as a file in a monitored mailbox folder. Before training, a data-preparation stage combined the several public source corpora into a single reviewed dataset. Because the same message sometimes appeared in more than one source corpus, the preparation stage de-duplicated the records on the normalised message content so that no email could appear in both the training and the held-out split; such leakage would otherwise have inflated the reported metrics. The stage also tolerated the practical inconsistencies of public data by handling several text encodings, raising the limit on very long email bodies, and accepting the different label conventions used by each source.
+
+[4.2.2 Email Parsing and Feature Extraction]
+
+Each message was parsed according to the standard Internet message format (RFC 5322) to separate the headers, the subject, the body and any attachments. Parsing was deliberately defensive: malformed links were handled without aborting, and a message that was plain text with no headers (as in the body-only AI-generated test sets) was still accepted, with the header-derived signals set to neutral values so that the feature structure was preserved. From the parsed message the extractor produced two outputs: the textual content (subject and body concatenated) for the content features, and a set of twelve structural metadata signals described in Section 4.3.
+
+[4.2.3 Fusion Classification Engine]
+
+The classification engine was the core of the system and is specified in full in Table 5.3. It joined three feature branches into one sparse vector. Two branches described the text using term frequency-inverse document frequency: a word branch over one- and two-word terms (capped at 40,000 features) that captured phrasing, and a character branch over three- to five-character sequences (capped at 30,000 features) that tolerated obfuscation such as inserted symbols. The third branch encoded the twelve metadata signals and scaled them so that their magnitudes did not overwhelm the text features. The scaled, combined vector was passed to a class-balanced logistic-regression classifier (regularisation strength C = 1.5), which output a spam probability; multinomial Naïve Bayes and a linear support-vector machine were also implemented and evaluated for comparison. A configurable decision threshold (0.55 by default) converted the probability into a spam-or-legitimate label, and the metadata signals that contributed most to a positive decision were returned as an explanation.
+
+[4.2.4 Detection Service and Mailbox Scanner]
+
+The trained engine was exposed in two ways. The detection service provided a web interface with a health check, a prediction endpoint and a feedback endpoint, together with a browser console in which a reviewer could paste an email, immediately see its label, probability and fired signals, and confirm or correct the decision. The mailbox scanner instead monitored a folder on disk and operated in one of three modes: report only (log decisions), quarantine (move flagged messages to a quarantine folder), or continuous watch (act on new mail as it arrived). Every decision, whether from the service or the scanner, was written to a review queue with a blank correction field awaiting human review.
+
+[4.2.5 Review, Feedback and Adaptive Retraining]
+
+The adaptation block closed the learning loop. When a reviewer corrected a decision in the console, the correction was saved as a labelled example in the feedback store. A scheduled retraining stage merged these reviewed labels with the original training data, fitted a new model, and validated it on the held-out split; the new model replaced the deployed one only if it maintained accuracy on the main corpus while improving performance on the target threat. This validation gate prevented a small batch of feedback from degrading the detector, and it distinguished the system from both a static model and an uncontrolled online-learning loop.
+
+
+##############################################################################
+CHANGE 13 OF 22:  SECTION 4.3 - Table 4.2 signals in plain English; code snippets removed
+##############################################################################
+
+[4.3 Data and Feature Design]
+
+The twelve structural metadata signals are defined in Table 4.2.
+
+Table 4.2 - The twelve structural metadata signals.
+
+--- TABLE START (tab-separated -> Convert Text to Table) ---
+Signal	Meaning / rationale
+Subject length	Phishing often uses unusually short or long subjects.
+Body length	Length of the body in characters.
+Number of links	Count of URLs in the body.
+Distinct link domains	Number of different domains linked; many distinct domains suggest bulk campaigns.
+Number of attachments	Count of attached files.
+Sender has a domain	Whether the sender address contained a usable domain.
+Sender-link domain mismatch	The sender's domain was absent from the body's link domains - a classic phishing signal.
+Reply-To present	Whether a Reply-To header was present (a possible redirect of replies).
+SPF authentication result	Whether a sender-policy-framework pass was indicated in the authentication headers.
+DKIM signature present	Whether a DomainKeys-Identified-Mail signature header was present.
+Capitals ratio in subject	Fraction of upper-case letters in the subject line.
+Urgency markers	Count of exclamation marks and of urgent/verification terms.
+--- TABLE END ---
+
+The subject and body were concatenated into a single content string so that both parts were represented in the text features. For plain-text inputs without headers (such as the body-only external sets), the parser treated the whole input as the body and set the header-derived signals to neutral values, preserving the feature-vector structure. Once trained, the model was saved to a single file so that the service and the mailbox watcher loaded an identical predictor. Keeping the metadata to twelve signals deliberately avoided a large, fragile handcrafted rule set: unlike a keyword blocklist, each signal contributed a numeric feature whose weight was learned by the classifier rather than maintained by hand, satisfying the objective of an adaptive, learning-based system rather than a static rule engine.
+
+
+##############################################################################
+CHANGE 14 OF 22:  SECTION 4.4 - removed 'one-line commands' phrase
+##############################################################################
+
+[4.4 System Components Interaction Operations]
+
+Ingestion passed raw email text to the feature block, which returned a content string and a metadata dictionary. The fusion pipeline transformed these into a single vector and the classifier returned a probability. The action block compared the probability to the threshold, emitted a label and the fired signals, and - in quarantine mode - moved the file to a quarantine directory. Every decision was appended to a review queue with a blank correction field. The reviewer's corrections were written to the labelled feedback store; the retraining path merged those reviewed labels with the training data, fitted a new model, validated it on the held-out split, and replaced the deployed model only if performance was maintained. All randomness used fixed seeds for reproducibility, and the data-preparation, training and evaluation stages were each implemented as a single repeatable procedure, so that the entire system could be rebuilt from the public corpus by following Sections 4.2 and 4.3.
+
+
+##############################################################################
+CHANGE 15 OF 22:  CHAPTER 5 - opener + 5.1 Hardware + 5.2 Software + 5.3 Config + 5.4 Operation
+##############################################################################
+
+[CHAPTER 5: SYSTEM IMPLEMENTATION]
+
+This chapter explains how the design presented in Chapter 4 was implemented and operated. It describes the hardware used, the software environment and the role of each library, the configuration settings of the deployed model, and the commands used to train, evaluate and run the system, before discussing the implementation issues encountered and how they were resolved.
+
+[5.1 Hardware Setup]
+
+This section outlines the hardware used to develop, train and evaluate the spam-detection system. Because the detector used classical machine-learning models rather than deep neural networks, it trained and ran entirely on the central processing unit and needed no graphics processing unit, so it could be reproduced on an ordinary consumer laptop. The specifications of the development machine are summarised in Table 5.1.
+
+Table 5.1 - Specifications of the development machine.
+
+--- TABLE START (tab-separated -> Convert Text to Table) ---
+Description	Specifications
+Model	[FILL IN: laptop brand and model, e.g. Acer Aspire 5 A514]
+Processor	Intel Core i5-13420H (central processing unit only)
+Operating system	Windows 11
+Graphic	Intel UHD Graphics (integrated; no discrete GPU)
+Memory	24 GB
+Storage	475 GB SSD
+--- TABLE END ---
+
+Based on Table 5.1, the development and evaluation machine was a consumer laptop powered by an Intel Core i5-13420H processor with 24 GB of memory and 475 GB solid-state storage, running Windows 11. The machine used integrated Intel UHD graphics and had no discrete graphics processing unit, which was fully sufficient because the classical models trained and served predictions entirely on the central processing unit: training on the full corpus completed within minutes, and the median inference latency was approximately 16 milliseconds per email, as reported in Chapter 6.
+
+<<< FIGURE 5.1: Screenshot of the terminal showing the Python virtual environment created and the >>>
+
+requirements installed successfully.]
+
+[5.2 Software Setup]
+
+The system was implemented entirely in Python using a dedicated virtual environment. The libraries used by the project, together with their version numbers, were recorded in a requirements text file (requirements.txt) so that the same software environment could be recreated on another machine, and these dependencies were installed into the virtual environment. Only mature, widely used open-source libraries were chosen so that the project could be understood and reproduced without proprietary software. The software stack and the role of each component are summarised in Table 5.2.
+
+Table 5.2 - Software and libraries used in the project.
+
+--- TABLE START (tab-separated -> Convert Text to Table) ---
+Software / library	Purpose in the project
+Python 3.11	Programming language for all scripts and the detection service
+scikit-learn 1.4+	Core machine-learning library: TF-IDF vectorisation, Naive Bayes, logistic regression, support-vector machine, feature scaling
+NumPy (bundled with scikit-learn)	Numerical array and matrix operations used alongside scikit-learn
+Joblib 1.3+	Serialising (saving) the trained model and loading it for prediction
+FastAPI 0.110+	Web framework that exposes the detector as a representational-state-transfer (REST) service
+Uvicorn 0.27+	Server that runs the FastAPI service and accepts prediction requests
+Pydantic 2.0+	Validates the data received in each request to the service
+Matplotlib 3.7+	Generates the result charts and figures used in Chapter 6
+--- TABLE END ---
+
+The version numbers in Table 5.2 matched the minimum versions recorded in the requirements file, so the environment could be recreated exactly. The python-docx library (1.1+) was used only to generate this report document and was not part of the detection system.
+
+Based on Table 5.2, scikit-learn provided every machine-learning component, so no separate deep-learning framework was needed, which kept the installation light and the training fast on the central processing unit. The public corpus was prepared with a dataset-preparation script that merged the source comma-separated-value files, raised the field-size limit for long email bodies, handled multiple encodings and label formats, and de-duplicated the records. De-duplication was performed on normalised message content so that identical emails repeated across the merged corpora were counted once; this prevented the same message from appearing in both the training and the held-out split, which would otherwise have inflated the reported metrics. Training on the full corpus completed within minutes, and the resulting model file was small enough to be loaded instantly by the service.
+
+[5.3 Setting and Configuration]
+
+The deployed decision threshold defaulted to 0.55 in the mailbox tool and was re-tuned per deployment using the threshold sweep; lowering the threshold increased recall at the cost of more false positives, which was useful when prioritising catch rate for AI-style mail. Table 5.3 lists the model and feature hyper-parameters.
+
+Table 5.3 - Model and feature hyper-parameters.
+
+--- TABLE START (tab-separated -> Convert Text to Table) ---
+Component	Setting
+Word TF-IDF	n-grams 1-2; max 40,000 features; sub-linear TF
+Character TF-IDF	char_wb; n-grams 3-5; max 30,000 features; sub-linear TF
+Metadata vectoriser	DictVectorizer (sparse)
+Metadata scaling	StandardScaler(with_mean=False)
+Classifier	LogisticRegression(class_weight="balanced", C=1.5, max_iter=1000)
+Decision threshold	0.55 default; sweep-tunable
+Random state	Fixed seed for reproducibility
+--- TABLE END ---
+
+[5.4 System Operation (with Screenshots)]
+
+The system was operated through four stages. First, the public corpus was merged and de-duplicated into a single reviewed dataset, as described in Section 5.2. Second, the fusion model was trained on the training split and evaluated on the held-out split, after which the trained model was saved for deployment. Third, the external and AI-generated message sets were scored to measure generalisation to modern threats. Fourth, the detection service and the mailbox watcher loaded the saved model and served predictions, while reviewer corrections accumulated in the feedback store to be incorporated in the next retraining cycle. These stages could be triggered through short command-line instructions, which are listed in full in Appendix D for reproducibility; the following figures illustrate the system in operation.
+
+The review console, shown in Figure 5.2, allowed a reviewer to paste an email and immediately see its classification, the probability assigned, and the individual structural signals that fired, together with buttons to confirm or correct the decision. When the detector was accessed through its service interface, it returned a structured response containing the predicted label, the spam probability, a confidence value and the list of contributing signals, as shown in Figure 5.3. Finally, the mailbox watcher could monitor a folder and, in quarantine mode, move each flagged message into a quarantine directory while logging the decision to the review queue, as shown in Figure 5.4.
+
+<<< FIGURE 5.2: Screenshot of the browser check-and-review console showing an email classified as >>>
+
+phishing with a high probability and the fired structural-signal chips, plus the Spam / Ham / Correct feedback buttons.]
+
+<<< FIGURE 5.3: Screenshot of an example service prediction response showing the label, probability, >>>
+
+confidence and list of signals.]
+
+<<< FIGURE 5.4: Screenshot of a mailbox watch run in quarantine mode, showing a flagged message >>>
+
+being moved to the quarantine directory and the decision being logged to the review queue.]
+
+
+##############################################################################
+CHANGE 16 OF 22:  CHAPTER 6 - new opener paragraph
+##############################################################################
+
+[CHAPTER 6: SYSTEM EVALUATION AND DISCUSSION]
+
+This chapter reports and discusses the experimental results. It describes the testing setup and the metrics used, presents the performance of the three classifiers in both content-only and fused configurations, examines precision, recall, the false-positive rate, latency and the effect of the decision threshold, evaluates the adaptive-retraining mechanism, and assesses each objective against the measured evidence.
+
+
+##############################################################################
+CHANGE 17 OF 22:  SECTION 6.2.2 - classifier comparison rewritten as prose (no commands)
+##############################################################################
+
+[6.2.2 Classifier and Feature-Group Comparison (Objective 3)]
+
+The three classifiers - multinomial Naïve Bayes, class-balanced logistic regression and a linear support-vector machine - were each trained and evaluated under two feature configurations: content features only, and the full content-metadata fusion. All five resulting configurations used the same training and held-out split, the same preprocessing and the same decision threshold, so that the comparison reflected only the choice of classifier and feature set. For each configuration the accuracy, precision, recall, F1 score and ROC-AUC were recorded on the held-out split; the complete command-line procedure is documented in Appendix D. The results on the full 81,152-email corpus are summarised in Table 6.2. The support-vector machine's iteration limit was raised from the default 1,000 to 10,000 because the default value produced a convergence warning on the large fused feature set; with this setting the metrics were stable and effectively unchanged beyond that point.
+
+Table 6.2 - Classifier and feature-group comparison (held-out split, default 0.5 threshold).
+
+--- TABLE START (tab-separated -> Convert Text to Table) ---
+Configuration	Accuracy	Precision	Recall	F1	ROC-AUC
+Naïve Bayes (content only)	0.968	0.988	0.950	0.969	0.997
+Logistic regression (content only)	0.988	0.987	0.990	0.989	0.999
+Linear SVM (content only)	0.992	0.990	0.993	0.992	1.000
+Logistic regression (content + metadata fusion - deployed)	0.992	0.990	0.994	0.992	1.000
+Linear SVM (content + metadata fusion)	0.993	0.992	0.995	0.993	1.000
+--- TABLE END ---
+
+All configurations were trained and evaluated on the same 75/25 stratified split, using the classifier's default 0.5 decision threshold so that the five configurations were compared under identical conditions. The deployed mailbox tool instead operates at a tuned threshold of 0.55 (Table 5.3), which is why the deployed-fusion precision/recall pair reported for the production operating point in Table 6.1 (precision 0.991, recall 0.992) differs slightly from the default-threshold figures here; accuracy and F1 are identical at 0.992.
+
+The results supported the design choices. All learned classifiers comfortably exceeded the Naïve Bayes baseline, which, despite the highest standalone precision, sacrificed recall and recorded the lowest accuracy (0.968). Content-only logistic regression and the linear support vector machine were already strong (0.988 and 0.992 accuracy), confirming that the word/character TF-IDF representation was effective on the public corpus. Fusing the twelve structural metadata signals improved both fusion classifiers relative to their content-only forms, with the fusion support vector machine reaching the highest raw accuracy (0.993) and the deployed fusion logistic regression reaching 0.992 accuracy, 0.994 recall and ROC-AUC of 1.000 - evidence that the fusion bought additional phishing recall while all learned configurations saturated the high-nineties on the stylistically distinct public corpus.
+
+The support-vector-machine fusion model edged logistic regression by one to two thousandths in the reported metrics, but logistic regression was selected for deployment for operational rather than raw-accuracy reasons: it produced a genuine probability that could be compared against the configurable decision threshold (a margin-mapped support-vector score is not a probability), it supported balanced class weighting and it exposed interpretable per-signal coefficients. Because both fusion models sat at ROC-AUC 1.000 on this corpus, the choice reflected these practical properties rather than a meaningful performance difference.
+
+
+##############################################################################
+CHANGE 18 OF 22:  SECTION 6.2.4 - adaptive demonstration sentence fixed
+##############################################################################
+
+[6.2.4 Adaptive Improvement (Objective 4)]
+
+After retraining on a disjoint, reviewed batch of modern AI-style and business-email-compromise emails, detection ranking on a held-out modern-threat set improved from ROC-AUC 0.81 to 0.945, and phishing recall at a near-zero false-positive point rose from approximately 20% to 85%, while main-corpus accuracy was maintained (0.991). Table 6.4 summarises the change; in a controlled before/after demonstration on a held-out new campaign, the number of campaign messages caught rose from 0 out of 6 before retraining to 5 out of 6 after a single reviewed retraining cycle.
+
+Table 6.4 - Before/after one adaptive retraining cycle on held-out modern-threat email.
+
+--- TABLE START (tab-separated -> Convert Text to Table) ---
+Measure	Before retraining	After retraining
+ROC-AUC (modern set)	0.81	0.945
+Phishing recall at near-zero FPR	≈ 20%	85%
+Main-corpus accuracy	0.991	0.991 (maintained)
+Demo campaign caught (held-out set)	0 / 6	5 / 6
+--- TABLE END ---
+
+The improvement was greatest for threat types actually represented in the reviewed feedback; this scope was reported honestly rather than claiming universal adaptation. The retraining path was fully automated but gated on a held-out validation check, so a new model was redeployed only if it maintained main-corpus accuracy while improving the target threat ranking. This prevented a small feedback batch from degrading the detector and distinguished the system from both a static model and an uncontrolled online-learning loop.
+
+<<< FIGURE 6.4: Two ROC curves on the held-out modern-threat set - before (AUC 0.81) and after >>>
+
+(AUC 0.945) retraining - on the same axes with a legend.]
+
+[6.2.5 Comparison with Existing Systems and Commercial Filters]
+
+Two comparisons were made to position the proposed model relative to the systems reviewed in the literature. The first (Table 6.5) concerned commercial mail providers. Google reported blocking more than 99.9% of spam, phishing and malware in Gmail with machine-learning models, including a large-language-model component that alone blocked about 20% more spam than the previous system [10], and Microsoft reported very high efficacy for its Defender for Office 365 e-mail protection [11]. These figures were aggregate production statistics reported by the vendors rather than per-class accuracy, precision, recall or F1 measured on a fixed labelled test set; the commercial providers did not publish such metrics, and Yahoo Mail published no comparable vendor figure at all.
+
+Independent, peer-reviewed measurement did exist, however. Opara, Modesti and Golightly created controlled accounts on Gmail, Outlook and Yahoo and sent the same set of 63 GPT-4o-generated phishing emails to each provider, recording how many each filter flagged [17]. On that test Yahoo was the most aggressive, flagging roughly 90% of the AI-phishing messages, Gmail flagged about 14% and Outlook only about 4%; the same study found that Yahoo's aggressive setting produced a high false-positive rate, flagging roughly 60-67% of legitimate AI-written mail, whereas Gmail and Outlook rarely over-blocked [17]. These were independent measured values rather than vendor claims, but they came from a small, one-shot sample of 63 messages on a different corpus from the 4,986 used here, so they were indicative rather than strictly identical in protocol; the authors themselves noted the limited scale. Table 6.5 lists both the vendor-reported and the independently measured figures. No claim of strict superiority was made because the test sets differed; the proposed model's 92% catch on a much larger, unseen AI-phishing set with an approximately 0.9% main-corpus false-positive rate nonetheless compared favourably, particularly against Gmail and Outlook, and without Yahoo's high false-positive cost. Replicating this controlled black-box protocol on one shared labelled corpus was retained as Recommendation 2 (Section 7.2).
+
+Table 6.5 - Commercial-filter comparison: vendor-reported block rates and independently measured detection of AI-generated phishing (independent study by Opara et al. [17]).
+
+--- TABLE START (tab-separated -> Convert Text to Table) ---
+System	Vendor-reported overall block rate	AI-phishing flagged (independent, n = 63) [17]	Legit AI-mail wrongly flagged (false positive) [17]	Reproducible offline?
+Gmail (Google)	> 99.9% block rate (vendor aggregate) [10]	≈ 14% flagged (≈ 86% bypassed)	Low (≈ 1.6%)	No (proprietary)
+Outlook / Microsoft 365	High efficacy reported; no numeric metric public [11]	≈ 4% flagged (≈ 97% bypassed)	≈ 0%	No (proprietary)
+Yahoo Mail	No vendor figure published	≈ 90% flagged (≈ 10% bypassed)	High (≈ 59-67%)	No (proprietary)
+Proposed fusion model (this project)	-	92% catch on 4,986 unseen AI-phishing (Table 6.3)	≈ 0.9% FPR on held-out main corpus (Table 6.1)	Yes
+--- TABLE END ---
+
+The second comparison (Table 6.6) concerned published classical models evaluated on the same family of public corpora used in this project (Enron, SpamAssassin, Ling-Spam, CEAS-2008, Nazario and Nigerian-Fraud). The figures were taken from recent comparative studies [6, 7], restricted to the classical machine-learning classifiers comparable to the deployed system. Because the studies used different splits, preprocessing and corpora combinations, the numbers were indicative rather than strictly identical in protocol; the dataset/setting is shown for each row. The proposed fusion model reached 99.2% accuracy on a merged 81,152-email corpus drawn from exactly these sources, running on a commodity central processing unit at about 16 milliseconds per email with no graphics processor and while exposing interpretable metadata signals.
+
+Table 6.6 - Comparison with published classical models on comparable public corpora.
+
+--- TABLE START (tab-separated -> Convert Text to Table) ---
+Method	Type	Corpus / setting	Reported accuracy
+Multinomial Naïve Bayes	Classical ML	Spambase / phishing corpora [7]	~79-88%
+Support vector machine	Classical ML	Enron1; merged corpora [6, 7]	~98-99%
+Random forest	Classical ML	Spam/Spambase; phishing corpora [7]	~97-99.9%
+Proposed fusion LR (word+char TF-IDF + 12 metadata)	Classical ML (fusion)	Merged Enron/Ling/SpamAssassin/CEAS/Nazario/Nigerian, 81,152 emails	99.2% (CPU, ~16 ms/email)
+--- TABLE END ---
+
+The interpretation was twofold. First, on the standard public-corpus task the proposed classical fusion model sat at the level of the strongest reported classical results, consistent with the observation that stylistically distinct public-corpus classes were relatively easy to separate and that most published systems saturated the high-nineties there. Second, the real differentiator was not the saturated benchmark number but the system's properties: local and fully reproducible, fast on a central processing unit, explainable through its metadata signals, and - through the reviewed retraining loop - able to adapt, with demonstrated improvement on unseen modern and AI-generated phishing (Sections 6.2.3 and 6.2.4).
+
+
+##############################################################################
+CHANGE 19 OF 22:  SECTION 6.4 - objectives table cells genericised
+##############################################################################
+
+[6.4 Objectives Evaluation]
+
+Table 6.7 maps each objective to its outcome and evidence.
+
+Table 6.7 - Objectives evaluation summary.
+
+--- TABLE START (tab-separated -> Convert Text to Table) ---
+Objective	Status	Evidence
+1. Extract content + metadata features	Achieved	Content and metadata extraction component; twelve metadata signals (Table 4.2)
+2. Content-metadata fusion framework	Achieved	FeatureUnion pipeline with standardised metadata (§3.3, §4.2)
+3. Train/evaluate NB, LR, SVM	Achieved	Classifier comparison experiment; Table 6.2
+4. Adaptive retraining maintains accuracy	Achieved	ROC-AUC 0.81 → 0.945; recall 20% → 85% (Table 6.4)
+--- TABLE END ---
+
+
+##############################################################################
+CHANGE 20 OF 22:  CHAPTER 7 - new opener paragraph
+##############################################################################
+
+[CHAPTER 7: CONCLUSION AND RECOMMENDATION]
+
+This final chapter concludes the project. It first summarises what was achieved and how the results satisfied each of the four objectives stated in Chapter 1, then reflects on the limitations of the present system and recommends directions for future work, including a direct comparison with commercial filters on the same emails and deployment in a live mail environment.
+
+
+##############################################################################
+CHANGE 21 OF 22:  APPENDIX B - placeholder wording genericised
+##############################################################################
+
+[Appendix B - Full Classifier Output and Confusion Matrices]
+
+[FILL IN: paste the complete classifier-comparison output table and the per-configuration confusion matrices produced during the evaluation described in Section 6.2.]
+
+
+##############################################################################
+CHANGE 22 OF 22:  APPENDIX D - NOW contains the full command reference
+##############################################################################
+
+[Appendix D - Command Reference and System Screenshots]
+
+For reproducibility, the system was run from the command line inside the Python virtual environment described in Section 5.2. The environment was created and the required libraries installed with the following commands:
+
+python -m venv .venv
+.venv\Scripts\activate          (Windows)   /   source .venv/bin/activate   (Linux/macOS)
+pip install -r requirements.txt
+
+The four principal operations - training and evaluation, external (AI-mail) evaluation, running the detection service, and continuous mailbox monitoring - were invoked as follows:
+
+# 1. Train on the reviewed corpus, evaluate on the held-out split, and save the model
+python -m spam_detection.evaluate data/reviewed_mail.csv --save models/email_spam_detector.joblib
+
+# 2. Score an external / AI-generated set (a body-only CSV is supported)
+python -m spam_detection.evaluate_external models/email_spam_detector.joblib data/llm_test.csv
+
+# 3. Start the detection service, then open its address in a web browser
+python -m uvicorn spam_detection.api:app --host 0.0.0.0 --port 8000
+
+# 4. Monitor a folder and quarantine flagged mail as it arrives
+python -m spam_detection.scan_mailbox mail_inbox --action quarantine --watch
+
+[FILL IN: add any further screenshots not placed in Chapter 5, e.g. the training output and the threshold-sweep output.]
+
